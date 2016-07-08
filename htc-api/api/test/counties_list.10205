@@ -1,0 +1,58 @@
+[
+  {
+    "ct_name": "Barnstable",
+    "ct_fips": "001"
+  },
+  {
+    "ct_name": "Berkshire",
+    "ct_fips": "003"
+  },
+  {
+    "ct_name": "Hampden",
+    "ct_fips": "013"
+  },
+  {
+    "ct_name": "Bristol",
+    "ct_fips": "005"
+  },
+  {
+    "ct_name": "Dukes",
+    "ct_fips": "007"
+  },
+  {
+    "ct_name": "Middlesex",
+    "ct_fips": "017"
+  },
+  {
+    "ct_name": "Essex",
+    "ct_fips": "009"
+  },
+  {
+    "ct_name": "Franklin",
+    "ct_fips": "011"
+  },
+  {
+    "ct_name": "Nantucket",
+    "ct_fips": "019"
+  },
+  {
+    "ct_name": "Hampshire",
+    "ct_fips": "015"
+  },
+  {
+    "ct_name": "Norfolk",
+    "ct_fips": "021"
+  },
+  {
+    "ct_name": "Plymouth",
+    "ct_fips": "023"
+  },
+  {
+    "ct_name": "Suffolk",
+    "ct_fips": "025"
+  },
+  {
+    "ct_name": "Worcester",
+    "ct_fips": "027"
+  }
+]

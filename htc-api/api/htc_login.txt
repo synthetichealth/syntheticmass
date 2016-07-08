@@ -1,0 +1,6 @@
+syntheticmass.mitre.org
+5432
+fhir
+synth_ma
+synth_ma123
+

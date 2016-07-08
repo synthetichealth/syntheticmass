@@ -1,0 +1,426 @@
+nohup: ignoring input
+2016-07-06 14:08:05,426 MainThread  starting server
+2016-07-06 14:08:06,088 MainThread  starting server
+2016-07-06 14:08:06,098 MainThread   * Debugger is active!
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:136]:
+entering get_counties_all() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:09,337 Thread-2  entering get_counties_all() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:145]:
+leaving get_counties_all()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:09,562 Thread-2  leaving get_counties_all()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:09,668 Thread-3  entering get_counties() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:09,682 Thread-3  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:168]:
+entering get_counties_geom() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:09,743 Thread-4  entering get_counties_geom() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:173]:
+leaving get_counties_geom()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:09,829 Thread-4  leaving get_counties_geom()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:182]:
+entering get_counties_stats() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:09,951 Thread-5  entering get_counties_stats() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:189]:
+leaving get_counties_stats()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:09,962 Thread-5  leaving get_counties_stats()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:200]:
+entering get_county_by_name() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,092 Thread-6  entering get_county_by_name() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:211]:
+leaving get_county_by_name()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,117 Thread-6  leaving get_county_by_name()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:220]:
+entering get_county_by_name_geom() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,212 Thread-7  entering get_county_by_name_geom() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:227]:
+leaving get_county_by_name_geom()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,226 Thread-7  leaving get_county_by_name_geom()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:236]:
+entering get_county_by_name_stats() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,355 Thread-8  entering get_county_by_name_stats() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:245]:
+leaving get_county_by_name_stats()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,358 Thread-8  leaving get_county_by_name_stats()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:254]:
+entering get_county_by_id() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,447 Thread-9  entering get_county_by_id() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:265]:
+leaving get_county_by_id()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,454 Thread-9  leaving get_county_by_id()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:274]:
+entering get_county_by_id_geom() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,549 Thread-10  entering get_county_by_id_geom() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:281]:
+leaving get_county_by_id_geom()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,557 Thread-10  leaving get_county_by_id_geom()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:290]:
+entering get_county_by_id_stats() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,651 Thread-11  entering get_county_by_id_stats() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:299]:
+leaving get_county_by_id_stats()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,659 Thread-11  leaving get_county_by_id_stats()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:311]:
+entering get_cousub_all() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:10,747 Thread-12  entering get_cousub_all() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:320]:
+leaving get_cousub_all()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:11,038 Thread-12  leaving get_cousub_all()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:329]:
+entering get_cousub_geom() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:11,123 Thread-13  entering get_cousub_geom() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:335]:
+leaving get_cousub_geom()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:11,431 Thread-13  leaving get_cousub_geom()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:344]:
+entering get_cousub_stats() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:11,530 Thread-14  entering get_cousub_stats() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:352]:
+leaving get_cousub_stats()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:11,643 Thread-14  leaving get_cousub_stats()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:363]:
+entering get_block_window() IP=127.0.0.1
+--------------------------------------------------------------------------------
+2016-07-06 14:08:11,728 Thread-15  entering get_block_window() IP=127.0.0.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:375]:
+leaving get_block_window()
+--------------------------------------------------------------------------------
+2016-07-06 14:08:11,807 Thread-15  leaving get_block_window()
+2016-07-06 14:11:00,746 Thread-16   - - [06/Jul/2016 14:11:00] code 400, message Bad HTTP/0.9 request type ('\x16\x03\x03\x00\xbb\x01\x00\x00\xb7\x03\x03W}I\xb5gkw\xc3t\x80)R\x1a\xd5\xc9jj7\x8dU\xad\x95')
+2016-07-06 14:11:00,752 Thread-17   - - [06/Jul/2016 14:11:00] code 400, message Bad request syntax ('\x80F\x01\x03\x01\x00-\x00\x00\x00\x10\x00\xc0\x14\x00\xc0\x13\x00\x005\x00\x00/\x00\xc0')
+2016-07-06 14:11:00,758 Thread-18   - - [06/Jul/2016 14:11:00] code 400, message Bad request syntax ('\x80.\x01\x03\x00\x00\x15\x00\x00\x00\x10\x00\x00')
+2016-07-06 14:11:00,763 Thread-19   - - [06/Jul/2016 14:11:00] code 400, message Bad request version ('\x0f\x8c')
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=10.144.12.198
+--------------------------------------------------------------------------------
+2016-07-06 14:57:03,564 Thread-24  entering get_counties() IP=10.144.12.198
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-06 14:57:03,570 Thread-24  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+2016-07-06 15:40:57,799 Thread-25  entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-06 15:40:57,802 Thread-25  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+2016-07-06 16:29:44,353 Thread-29  entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-06 16:29:44,355 Thread-29  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+2016-07-06 16:38:32,244 Thread-31  entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-06 16:38:32,246 Thread-31  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+2016-07-06 21:25:02,379 Thread-32  entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-06 21:25:02,381 Thread-32  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+2016-07-06 21:32:40,925 Thread-34  entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-06 21:32:40,927 Thread-34  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+2016-07-06 23:32:45,259 Thread-36  entering get_counties() IP=172.31.54.92
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-06 23:32:45,260 Thread-36  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=172.31.54.148
+--------------------------------------------------------------------------------
+2016-07-07 09:33:52,250 Thread-44  entering get_counties() IP=172.31.54.148
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-07 09:33:52,263 Thread-44  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=129.83.31.1
+--------------------------------------------------------------------------------
+2016-07-07 10:17:50,319 Thread-45  entering get_counties() IP=129.83.31.1
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-07 10:17:50,322 Thread-45  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=172.31.7.56
+--------------------------------------------------------------------------------
+2016-07-07 21:38:22,535 Thread-47  entering get_counties() IP=172.31.7.56
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-07 21:38:22,539 Thread-47  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=172.31.7.56
+--------------------------------------------------------------------------------
+2016-07-07 22:24:00,818 Thread-50  entering get_counties() IP=172.31.7.56
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-07 22:24:00,822 Thread-50  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=10.144.12.198
+--------------------------------------------------------------------------------
+2016-07-08 10:07:01,270 Thread-53  entering get_counties() IP=10.144.12.198
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-08 10:07:01,272 Thread-53  leaving get_counties()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:136]:
+entering get_counties_all() IP=10.144.12.198
+--------------------------------------------------------------------------------
+2016-07-08 10:07:36,107 Thread-56  entering get_counties_all() IP=10.144.12.198
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:145]:
+leaving get_counties_all()
+--------------------------------------------------------------------------------
+2016-07-08 10:07:36,187 Thread-56  leaving get_counties_all()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:182]:
+entering get_counties_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+2016-07-08 10:08:06,021 Thread-57  entering get_counties_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:189]:
+leaving get_counties_stats()
+--------------------------------------------------------------------------------
+2016-07-08 10:08:06,027 Thread-57  leaving get_counties_stats()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:344]:
+entering get_cousub_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+2016-07-08 10:08:47,127 Thread-58  entering get_cousub_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:352]:
+leaving get_cousub_stats()
+--------------------------------------------------------------------------------
+2016-07-08 10:08:47,193 Thread-58  leaving get_cousub_stats()
+2016-07-08 10:40:47,344 MainThread  starting server
+2016-07-08 10:40:47,354 MainThread   * Debugger is active!
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:182]:
+entering get_counties_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+2016-07-08 10:41:06,236 Thread-2  entering get_counties_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:189]:
+leaving get_counties_stats()
+--------------------------------------------------------------------------------
+2016-07-08 10:41:06,247 Thread-2  leaving get_counties_stats()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:182]:
+entering get_counties_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+2016-07-08 11:24:19,312 Thread-3  entering get_counties_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:189]:
+leaving get_counties_stats()
+--------------------------------------------------------------------------------
+2016-07-08 11:24:19,319 Thread-3  leaving get_counties_stats()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:344]:
+entering get_cousub_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+2016-07-08 11:24:30,146 Thread-5  entering get_cousub_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:352]:
+leaving get_cousub_stats()
+--------------------------------------------------------------------------------
+2016-07-08 11:24:30,195 Thread-5  leaving get_cousub_stats()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:182]:
+entering get_counties_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+2016-07-08 11:52:41,492 Thread-6  entering get_counties_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:189]:
+leaving get_counties_stats()
+--------------------------------------------------------------------------------
+2016-07-08 11:52:41,497 Thread-6  leaving get_counties_stats()
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:344]:
+entering get_cousub_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+2016-07-08 11:52:45,136 Thread-7  entering get_cousub_stats() IP=10.144.12.198
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:352]:
+leaving get_cousub_stats()
+--------------------------------------------------------------------------------
+2016-07-08 11:52:45,179 Thread-7  leaving get_cousub_stats()
+Traceback (most recent call last):
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1836, in __call__
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1820, in wsgi_app
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask_cors/extension.py", line 188, in wrapped_function
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1403, in handle_exception
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1817, in wsgi_app
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1477, in full_dispatch_request
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask_cors/extension.py", line 188, in wrapped_function
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1577, in make_response
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/werkzeug/wrappers.py", line 847, in force_type
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/werkzeug/wrappers.py", line 56, in _run_wsgi_app
+    
+ImportError: No module named test
+Traceback (most recent call last):
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1836, in __call__
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1820, in wsgi_app
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask_cors/extension.py", line 188, in wrapped_function
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1403, in handle_exception
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1817, in wsgi_app
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1477, in full_dispatch_request
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask_cors/extension.py", line 188, in wrapped_function
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1577, in make_response
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/werkzeug/wrappers.py", line 847, in force_type
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/werkzeug/wrappers.py", line 56, in _run_wsgi_app
+    
+ImportError: No module named test
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:154]:
+entering get_counties() IP=10.144.12.198
+--------------------------------------------------------------------------------
+2016-07-08 13:23:52,464 Thread-10  entering get_counties() IP=10.144.12.198
+--------------------------------------------------------------------------------
+DEBUG in htc_api [htc_api.py:159]:
+leaving get_counties()
+--------------------------------------------------------------------------------
+2016-07-08 13:23:52,467 Thread-10  leaving get_counties()
+Traceback (most recent call last):
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1836, in __call__
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1820, in wsgi_app
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask_cors/extension.py", line 188, in wrapped_function
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1403, in handle_exception
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1817, in wsgi_app
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1477, in full_dispatch_request
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask_cors/extension.py", line 188, in wrapped_function
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/flask/app.py", line 1577, in make_response
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/werkzeug/wrappers.py", line 847, in force_type
+    
+  File "/home/gquinn/htc-api/api/venv/local/lib/python2.7/site-packages/werkzeug/wrappers.py", line 56, in _run_wsgi_app
+    
+ImportError: No module named test
