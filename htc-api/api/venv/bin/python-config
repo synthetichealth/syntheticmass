@@ -1,4 +1,4 @@
-#!/home/gquinn/htc-api/api/venv/bin/python
+#!/home/gquinn/syntheticmass/htc-api/api/venv/bin/python
 
 import sys
 import getopt

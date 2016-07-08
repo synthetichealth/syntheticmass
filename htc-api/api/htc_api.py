@@ -182,7 +182,7 @@ def get_counties_stats():
     log.debug("entering get_counties_stats() IP=%s" % get_ip());
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
-        "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed " \
+        "chr.hs_graduate / 100 as chr_hs_grad, chr.college / 100 as chr_college, chr.unemployed / 100 as chr_unemployed " \
       "FROM synth_ma.county_stats s " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips"
     data = getData(con, sql)
