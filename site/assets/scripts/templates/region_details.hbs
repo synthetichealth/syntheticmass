@@ -1,0 +1,24 @@
+<h2>{{ name }}<button type="button" class="close" aria-label="Close"> <span aria-hidden="true">&times;</span> Close</button></h2>
+<div id="minimap"></div>
+ <table class="table table-condensed" id="detail_table">
+  <tbody>
+    {{#if cs_fips}}
+      <tr>
+        <th>County</th>
+       <td>{{ct_name}}</td>
+     </tr>
+    {{/if}}
+      <tr>
+        <th>Population</th>
+        <td>{{pop}}</td>
+      </tr>
+      <tr>
+        <th>Population Density</th>
+        <td>{{pop_sm}}</td>
+      </tr>
+      <tr>
+        <th>Area</th>
+        <td><a class="pull-right" href="#" id="zoom_to_feature_btn">Zoom</a>{{sq_mi}}</td>
+      </tr>
+  </tbody>
+</table>        

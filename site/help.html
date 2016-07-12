@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title><%= htmlWebpackPlugin.options.title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='//fonts.googleapis.com/css?family=Lato:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+</head>
+<body id="help_page">
+<%= require('html!./includes/nav.html') %>
+<div class="container page-container" id="help">
+  <div class="row">
+    <div class="col-md-4"><section><h1>Synthetic Mass Help</h1><img src="<%= require('./assets/img/ma.png') %>" style="width:300px" alt="Map of Massachusetts Counties"></section></div>
+    <div class="col-md-8">
+      
+      <section>
+        <h1>How to Use Synthetic Mass</h1>
+        <p>Placeholder for Help on Synthetic Mass</p>
+      </section>
+      
+
+      
+    </div>
+  </div>
+</div>
+<%= require('html!./includes/footer.html') %>
+</body>
+</html>

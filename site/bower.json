@@ -1,0 +1,21 @@
+{
+  "name": "syntheticmass",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Mike Nosal <mnosal@mitre.org>"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "./lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+  }
+}

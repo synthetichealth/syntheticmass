@@ -1,0 +1,24 @@
+<h1>{{ name }}</h1>
+<p>{{description}}</p>
+<table class="table table-condensed" id="detail_table">
+  <tr>
+    <th>Region Type</th>
+    <td>{{region}}</td>
+  </tr>
+  <tr>
+    <th>Data Set</th>
+    <td>{{#if data_source_url}}<a href="{{data_source_url}}">{{data_source_name}}</a>{{else}}{{#if data_source_html}}{{{data_source_html}}}{{else}}{{data_source_name}}{{/if}}{{/if}}</td>
+  </tr>
+  <tr>
+    <th>Median</th>
+    <td><span id="detail_median"></span></td>
+  </tr>
+  <tr>
+    <th>Max</th>
+    <td><span id="detail_max"></span></td>
+  </tr>
+  <tr>
+    <th>Min</th>
+    <td><span id="detail_min"></span></td>
+  </tr>
+</table>
