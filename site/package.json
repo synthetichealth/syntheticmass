@@ -1,7 +1,7 @@
 {
-  "name": "HealthyInsight",
+  "name": "SyntheticMass",
   "version": "1.0.0",
-  "description": "HealthyInsight website and data visualization application.",
+  "description": "SyntheticMass website and data visualization application.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

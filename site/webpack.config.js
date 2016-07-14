@@ -63,13 +63,13 @@ if (production) {
       }
     }),
     new webpack.DefinePlugin({
-      'API_HOST' : JSON.stringify('http://syntheticmass.org:8080/')
+      'API_HOST' : JSON.stringify('http://syntheticmass.mitre.org/')
     })
   ]);
 } else {
     plugins = plugins.concat([
     new webpack.DefinePlugin({
-      'API_HOST' : JSON.stringify('http://localhost:8080/htc')
+      'API_HOST' : JSON.stringify('http://localhost:4000/htc')
     })
     ]);
 }
