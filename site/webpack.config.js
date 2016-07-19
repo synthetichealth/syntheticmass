@@ -63,7 +63,7 @@ if (production) {
       }
     }),
     new webpack.DefinePlugin({
-      'API_HOST' : JSON.stringify('http://syntheticmass.mitre.org/')
+      'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org/')
     })
   ]);
 } else {
