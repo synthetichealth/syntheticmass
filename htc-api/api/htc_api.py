@@ -145,6 +145,22 @@ def get_counties_all():
     log.debug("leaving get_counties_all()");
     return data
 
+#Request geojson of all counties (synthetic data)
+@app.route('/htc/api/v1/synth/counties', methods=['GET'])
+@auto.doc()
+@cache.cached(timeout=300) # cache this view for 5 minutes
+def get_synth_counties_all():
+    """Counties in GeoJSON synthetic"""
+    log.debug("entering get_synth_counties_all() IP=%s" % get_ip());
+    con = get_db_con()
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
+        "ST_AsGeoJSON(the_geom) AS geometry " \
+      "FROM synth_ma.synth_county_stats s " \
+      "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips"
+    data = p2g.getData(con, sql)
+    log.debug("leaving get_synth_counties_all()");
+    return data
+
 #Request list of all counties
 @app.route('/htc/api/v1/counties/list', methods=['GET'])
 @auto.doc()
@@ -157,6 +173,20 @@ def get_counties():
       "FROM synth_ma.county_stats"
     data = getData(con, sql)
     log.debug("leaving get_counties()");
+    return data
+
+#Request list of all counties (synthetic)
+@app.route('/htc/api/v1/synth/counties/list', methods=['GET'])
+@auto.doc()
+@cache.cached(timeout=300) # cache this view for 5 minutes
+def get_synth_counties():
+    """Counties list in JSON synthetic"""
+    log.debug("entering get_synth_counties() IP=%s" % get_ip());
+    con = get_db_con()
+    sql = "SELECT ct_name, ct_fips " \
+      "FROM synth_ma.synth_county_stats"
+    data = getData(con, sql)
+    log.debug("leaving get_synth_counties()");
     return data
 
 #Request geojson of only the geometry of all counties
@@ -189,6 +219,20 @@ def get_counties_stats():
     log.debug("leaving get_counties_stats()");
     return data
 
+#Request only the statistics of all counties (synthetic)
+@app.route('/htc/api/v1/synth/counties/stats', methods=['GET'])
+@auto.doc()
+@cache.cached(timeout=300) # cache this view for 5 minutes
+def get_synth_counties_stats():
+    """Counties in JSON, statistics only synthetic"""
+    log.debug("entering get_synth_counties_stats() IP=%s" % get_ip());
+    con = get_db_con()
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm " \
+      "FROM synth_ma.synth_county_stats s"
+    data = getData(con, sql)
+    log.debug("leaving get_synth_counties_stats()");
+    return data
+
 #Single County
 #
 #Request geojson of single county by name
@@ -209,6 +253,24 @@ def get_county_by_name(ct_name):
     sql_params = (ct_name.title(),)
     data = p2g.getData(con, sql, sql_params)
     log.debug("leaving get_county_by_name()");
+    return data
+
+#Request geojson of single county by name (synthetic)
+@app.route('/htc/api/v1/synth/counties/name/<string:ct_name>', methods=['GET'])
+@auto.doc()
+@cache.memoize(timeout=300) # cache this view for 5 minutes
+def get_synth_county_by_name(ct_name):
+    """County in GeoJSON, by name synthetic"""
+    log.debug("entering get_synth_county_by_name() IP=%s" % get_ip());
+    con = get_db_con()
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
+        "ST_AsGeoJSON(s.ct_poly) AS geometry " \
+      "FROM synth_ma.synth_county_stats s " \
+      "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
+      "WHERE ct_name=%s"
+    sql_params = (ct_name.title(),)
+    data = p2g.getData(con, sql, sql_params)
+    log.debug("leaving get_synth_county_by_name()");
     return data
 
 #Request geojson of only the geometry of a single county by name
@@ -245,6 +307,22 @@ def get_county_by_name_stats(ct_name):
     log.debug("leaving get_county_by_name_stats()");
     return data
 
+#Request only the statistics of a single county by name (synthetic)
+@app.route('/htc/api/v1/synth/counties/name/<string:ct_name>/stats', methods=['GET'])
+@auto.doc()
+@cache.memoize(timeout=300) # cache this view for 5 minutes
+def get_synth_county_by_name_stats(ct_name):
+    """County in JSON, by name, statistics only (synthetic)"""
+    log.debug("entering get_synth_county_by_name_stats() IP=%s" % get_ip());
+    con = get_db_con()
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm " \
+      "FROM synth_ma.synth_county_stats s " \
+      "WHERE s.ct_name=%s"
+    sql_params = (ct_name.title(),)
+    data = getData(con, sql, sql_params)
+    log.debug("leaving get_synth_county_by_name_stats()");
+    return data
+
 #Request single county by county id
 @app.route('/htc/api/v1/counties/id/<string:ct_fips>', methods=['GET'])
 @auto.doc()
@@ -263,6 +341,24 @@ def get_county_by_id(ct_fips):
     sql_params = (ct_fips,)
     data = p2g.getData(con, sql, sql_params)
     log.debug("leaving get_county_by_id()");
+    return data
+
+#Request single county by county id (synthetic)
+@app.route('/htc/api/v1/synth/counties/id/<string:ct_fips>', methods=['GET'])
+@auto.doc()
+@cache.memoize(timeout=300) # cache this view for 5 minutes
+def get_synth_county_by_id(ct_fips):
+    """County in GeoJSON, by id (synthetic)"""
+    log.debug("entering get_synth_county_by_id() IP=%s" % get_ip());
+    con = get_db_con()
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
+        "ST_AsGeoJSON(the_geom) AS geometry " \
+      "FROM synth_ma.synth_county_stats s " \
+      "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
+      "WHERE ct_fips=%s"
+    sql_params = (ct_fips,)
+    data = p2g.getData(con, sql, sql_params)
+    log.debug("leaving get_synth_county_by_id()");
     return data
 
 #Request geojson of only geometry of a single county by county id
@@ -299,6 +395,22 @@ def get_county_by_id_stats(ct_fips):
     log.debug("leaving get_county_by_id_stats()");
     return data
 
+#Request only the statistics of a single county by county id (synthetic)
+@app.route('/htc/api/v1/synth/counties/id/<string:ct_fips>/stats', methods=['GET'])
+@auto.doc()
+@cache.memoize(timeout=300) # cache this view for 5 minutes
+def get_synth_county_by_id_stats(ct_fips):
+    """County in JSON, by id, statistics only (synthetic)"""
+    log.debug("entering get_synth_county_by_id_stats() IP=%s" % get_ip());
+    con = get_db_con()
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm " \
+      "FROM synth_ma.synth_county_stats s " \
+      "WHERE ct_fips=%s"
+    sql_params = (ct_fips,)
+    data = getData(con, sql, sql_params)
+    log.debug("leaving get_synth_county_by_id_stats()");
+    return data
+
 #
 # All cousub requests
 #
@@ -318,6 +430,24 @@ def get_cousub_all():
       "WHERE  g.statefp = '25' AND g.countyfp = s.ct_fips AND g.cousubfp = s.cs_fips AND s.cs_fips != '00000'"
     data = p2g.getData(con, sql)
     log.debug("leaving get_cousub_all()");
+    return data
+
+#Request geojson of all cousubs (synthetic)
+@app.route('/htc/api/v1/synth/cousubs', methods=['GET'])
+@auto.doc()
+@cache.cached(timeout=300) # cache this view for 5 minutes
+def get_synth_cousub_all():
+    """Cousubs in GeoJSON (synthetic)"""
+    log.debug("entering get_synth_cousub_all() IP=%s" % get_ip());
+    con = get_db_con()
+    sql = "SELECT s.ct_fips, s.ct_name, s.cs_fips, s.cs_name, s.sq_mi, s.pop, s.pop_sm, " \
+        "CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, " \
+        "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, " \
+        "ST_AsGeoJSON(g.the_geom) AS geometry " \
+        "FROM synth_ma.synth_cousub_stats s, tiger_cb14_500k.cousub g " \
+      "WHERE  g.statefp = '25' AND g.countyfp = s.ct_fips AND g.cousubfp = s.cs_fips AND s.cs_fips != '00000'"
+    data = p2g.getData(con, sql)
+    log.debug("leaving get_synth_cousub_all()");
     return data
 
 #Request geojson of only the geometry of all cousubs
@@ -352,6 +482,23 @@ def get_cousub_stats():
     log.debug("leaving get_cousub_stats()");
     return data
 
+#Request only the statistics of all cousubs (synthetic)
+@app.route('/htc/api/v1/synth/cousubs/stats', methods=['GET'])
+@auto.doc()
+@cache.cached(timeout=300) # cache this view for 5 minutes
+def get_synth_cousub_stats():
+    """Cousubs in JSON, statistics only (synthetic)"""
+    log.debug("entering get_synth_cousub_stats() IP=%s" % get_ip());
+    con = get_db_con()
+    sql = "SELECT s.ct_fips, s.ct_name, s.cs_fips, s.cs_name, s.sq_mi, s.pop, s.pop_sm, " \
+        "CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, " \
+        "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female " \
+      "FROM synth_ma.synth_cousub_stats s " \
+      "WHERE s.cs_fips != '00000'"
+    data = getData(con, sql)
+    log.debug("leaving get_synth_cousub_stats()");
+    return data
+
 #Block level, with filtering
 #Example: /htc/api/v1/block_window?minx=-71.26&maxx=-71.22&miny=42.49&maxy=42.51
 @app.route('/htc/api/v1/block_window', methods=['GET'])
@@ -374,6 +521,8 @@ def get_block_window():
     data = p2g.getData(con, sql, sql_params)
     log.debug("leaving get_block_window()");
     return data
+
+##TODO
 
 #Specific requests for less typing
 #
