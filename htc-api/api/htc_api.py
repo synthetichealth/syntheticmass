@@ -145,6 +145,28 @@ def get_counties_all():
     log.debug("leaving get_counties_all()");
     return data
 
+#Synthetic All Counties
+#
+#Request synthetic geojson of all counties
+@app.route('/htc/api/v1/synth/counties', methods=['GET'])
+@auto.doc()
+@cache.cached(timeout=300) # cache this view for 5 minutes
+def get_synth_counties_all():
+    """Synthetic Counties in GeoJSON"""
+    log.debug("entering get_synth_counties_all() IP=%s" % get_ip());
+    con = get_db_con()
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
+        "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, " \
+        "ST_AsGeoJSON(the_geom) AS geometry " \
+      "FROM synth_ma.synth_county_stats s " \
+      "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
+      "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips"
+    data = p2g.getData(con, sql)
+    log.debug("leaving get_synth_counties_all()");
+    return data
+
+#Request geojson 
+
 #Request list of all counties
 @app.route('/htc/api/v1/counties/list', methods=['GET'])
 @auto.doc()
