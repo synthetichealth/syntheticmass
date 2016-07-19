@@ -1,0 +1,316 @@
+$header-top-height : 50px;
+$footer-height:75px;
+
+html {
+  height: 100%; 
+}
+
+body {
+  background-color: white;
+  height: 100%; 
+  font-family:Lato,"Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.wrapper {
+  min-height:100%;
+  margin-bottom:$footer-height*-1;
+}
+
+footer, .push  {height:$footer-height;}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family:"Fjalla One",Lato,"Helvetica Neue",Helvetica, Arial, sans-serif;
+}
+// Fjalla One is a very tall x-height font, so we need to drop the font-sizes down
+h1, .h1 { font-size: $font-size-h2; }
+h2, .h2 { font-size: $font-size-h3; }
+h3, .h3 { font-size: $font-size-h4; }
+h4, .h4 { font-size: $font-size-h5; }
+h5, .h5 { font-size: $font-size-h6; }
+h6, .h6 { font-size: $font-size-h6; }
+
+span.subtitle {font-weight:300}
+.navbar-inverse {
+  background-color:#215e98;
+
+  .navbar-nav > li > a {color:white}
+  .navbar-brand {color:white;
+    &:hover, &:focus{
+    background-color:darken(#215e98,10%)
+    }
+  }
+  .navbar-nav > li > a:hover, .navbar-inverse .navbar-nav > li > a:focus {background-color:darken(#215e98,10%)}
+}
+
+.top-header {
+  padding-top:$header-top-height;
+  font-size:2rem;
+  ul.nav.navbar-nav {
+    width:100%;
+    
+    li {
+      width:20%;text-align:center;
+      &.active a {color:black}
+      &:hover, &.active a:hover {
+        background-color:#ccc;
+      }
+    }
+  }
+}
+
+#about, #help {
+  padding-top:$header-top-height * 2;
+  section {margin-bottom:4em;}
+  h1 {padding-top:10px;}
+  h1.page-title {padding-top:0}
+  img.logo {padding:0 0 12px 20px;float:right}
+  ul.nav-fixed {position:fixed}
+}
+
+@media (max-width:991px) {
+  #about ul.nav-fixed {position:relative}
+}
+
+#about_page #nav_about {background-color:#18446e}
+#help_page #nav_help {background-color:#18446e}
+#dashboard_page #nav_dash {background-color:#18446e}
+
+section.footer :target {background-color:#fe4}
+
+.scimage {background:url(../assets/img/ma.png)}
+
+.site-banner {
+  background:#00a5ea url(../assets/img/home.jpg) 50% 50% no-repeat;
+  padding-top:50px;
+  min-height:300px;
+  
+  .hero {
+    margin-top:25px;
+    font-size:200%;
+    padding:12px 0;
+    }
+    p.view-dashboard {margin:40px 0;font-size:16pt}
+}
+
+
+ul.data-sources {
+  li {font-weight:bold;margin-bottom:1.5em}
+  li a {font-weight:normal;
+  &:before {
+    content: " "; // 1
+    display: block; // 2
+  }
+  }
+}
+.page-container {padding-bottom:40px}
+
+#main_map {
+  width:100%;
+  height:600px;
+  border:1px solid #ccc;
+}
+
+#data_form .form-group {
+  display:inline-block;
+  margin-right:15px;
+}
+
+.info.leaflet-control {
+  padding:10px;
+  background-color:rgba(255,255,255,0.8);
+
+  &.info-box {
+    min-width:350px;
+    padding-top:0px;
+    margin-top:0;
+    margin-right:0;
+    h3 {margin-top:10px;margin-bottom:5px;}
+  }
+}
+  
+.legend {
+    line-height: 18px;
+    color: #555;
+}
+.legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+}
+
+#detail_max, #detail_min {
+  cursor:pointer;
+  transition:0.3;
+  color:#004fba;
+  &:hover {text-decoration:underline}
+}
+
+#layer_details {
+  input[type="range"] {margin-bottom:5px;}  
+}
+
+.sep {margin:0 10px}
+
+#region_details {
+  padding-right:10px;
+  
+  button.close {
+    color:black;
+    opacity:0.9;
+    font-size:16px;
+    font-family:Lato,"Helvetica Neue", Helvetica, Arial, sans-serif;
+    transition: color 0.25s ease;
+    &:hover {color:orange;opacity:0.9}
+    span {font-size:18px}
+  }
+  table td label {
+    display:block;
+    font-weight:normal;
+    .badge {
+      float:right;
+      margin-left:4px;
+    }
+  }
+
+}
+
+.c3-tooltip td {white-space:nowrap;}
+
+footer {
+  /* position: fixed; 
+  bottom: 0;*/
+  width: 100%;
+  padding: 15px 20px;
+  background-color: #f5f5f5;
+  font-size: 12px;
+  box-shadow: inset 0 6px 20px -12px #666;
+  z-index:1000;
+  p {margin-bottom: 5px; }
+}
+
+
+.disabled label {color:$gray-light}
+
+// remove extra margin on the checkboxes in the details panel
+td div.checkbox {margin-top:0}
+
+// Colors
+// Contextual variations (linked labels get darker on :hover)
+.badge {
+  border-radius:5px;
+  padding:3px 6px;
+  color:#333;
+  background-color:#ddd;
+}
+.badge-default {
+  @include label-variant($label-default-bg);
+}
+
+.badge-primary {
+  background-color:#c2e0f9;;
+}
+
+.badge-success {
+  @include label-variant($label-success-bg);
+}
+
+.badge-info {
+  @include label-variant($label-info-bg);
+}
+
+.badge-warning {
+  @include label-variant($label-warning-bg);
+}
+
+.badge-danger {
+  @include label-variant($label-danger-bg);
+}
+
+.popover-icon {margin:0 5px}
+[data-loader]
+{
+    margin: 0 5px -3px;
+}
+[data-loader='circle']
+{
+    width: 16px;
+    height: 16px;
+    display:inline-block;
+    -webkit-animation: circle infinite .75s linear;
+       -moz-animation: circle infinite .75s linear;
+         -o-animation: circle infinite .75s linear;
+            animation: circle infinite .75s linear;
+
+    border: 2px solid #579;
+    border-top-color: transparent;
+    border-radius: 100%;
+}
+
+@-webkit-keyframes circle
+{
+    0%
+    {
+        -webkit-transform: rotate(0);
+            -ms-transform: rotate(0);
+             -o-transform: rotate(0);
+                transform: rotate(0);
+    }
+    100%
+    {
+        -webkit-transform: rotate(360deg);
+            -ms-transform: rotate(360deg);
+             -o-transform: rotate(360deg);
+                transform: rotate(360deg);
+    }
+}
+@-moz-keyframes circle
+{
+    0%
+    {
+        -webkit-transform: rotate(0);
+            -ms-transform: rotate(0);
+             -o-transform: rotate(0);
+                transform: rotate(0);
+    }
+    100%
+    {
+        -webkit-transform: rotate(360deg);
+            -ms-transform: rotate(360deg);
+             -o-transform: rotate(360deg);
+                transform: rotate(360deg);
+    }
+}
+@-o-keyframes circle
+{
+    0%
+    {
+        -webkit-transform: rotate(0);
+            -ms-transform: rotate(0);
+             -o-transform: rotate(0);
+                transform: rotate(0);
+    }
+    100%
+    {
+        -webkit-transform: rotate(360deg);
+            -ms-transform: rotate(360deg);
+             -o-transform: rotate(360deg);
+                transform: rotate(360deg);
+    }
+}
+@keyframes circle
+{
+    0%
+    {
+        -webkit-transform: rotate(0);
+            -ms-transform: rotate(0);
+             -o-transform: rotate(0);
+                transform: rotate(0);
+    }
+    100%
+    {
+        -webkit-transform: rotate(360deg);
+            -ms-transform: rotate(360deg);
+             -o-transform: rotate(360deg);
+                transform: rotate(360deg);
+    }
+}

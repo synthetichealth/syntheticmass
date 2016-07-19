@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title><%= htmlWebpackPlugin.options.title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='//fonts.googleapis.com/css?family=Lato:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+</head>
+<body id="about_page">
+<%= require('html!./includes/nav.html') %>
+<div class="container page-container" id="about">
+  <div class="row">
+    <div class="col-md-4 col-lg-3">
+
+    </div>
+    <div class="col-md-8 col-lg-9">
+      <h1 class="page-title">About Synthetic Mass</h1>
+      <section>
+        <h1 id="background">Background</h1>
+        <p>Synthetic Mass is model of all 7 million residents of the state of Massachusetts, with artificial health records for the fictional residents. This establishes a risk-free environment for:</p>
+        <ul>
+          <li>Data Visualization</li>
+          <li>Risk stratification</li>
+          <li>Care management</li>
+          <li>Clinical decision support</li>
+          <li>Patient Reported data integration</li>
+          <li>Evaluation of new treatment models</li>
+          <li>Privacy and consent models</li>
+          <li>Security and authorization models</li>
+          <li>Third-party app development</li>
+        </ul>
+        
+        <p>Synthetic Mass will provide a sandbox for Health IT developers, researchers and clinicians interested in prototyping new healthcare solutions. It enables this through:</p>
+        <ul><li>Realistic data for fictional patients</li>
+        <li>Data that is free of protected health information (PHI) and personally identifiable information (PII) constraints</li>
+        <li>Datasets updated over time based on clinical healthcare models and epidemiological models of population health.</li>
+        </ul> 
+
+      </section>
+      <section>
+        <h1 id="team">About the Team Behind Synthetic Mass</h1>
+
+        <h2>The MITRE Corporation</h2>
+        <p><a href="http://www.mitre.org"><img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a><a href="http://www.mitre.org">The MITRE Corporation</a> is a not-for-profit organization working in the public interest that operates federally funded research and development centers to provide innovative solutions to national problems. </p>
+
+      </section>
+
+
+
+    </div>
+  </div>
+</div>
+<%= require('html!./includes/footer.html') %>
+<script>
+ $(document).ready(function(){$("#about_nav a").click(function() {
+    var id =  $(this).attr('href');
+     $('html, body').animate({         
+         scrollTop: $(id).offset().top-60
+     }, 1000);
+ });});
+ 
+</script>
+</body>
+</html>
