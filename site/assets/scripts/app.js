@@ -10,8 +10,8 @@ import region_details_tmpl  from './templates/region_details.hbs'
 import bar_tooltip_tmpl from './templates/bar_tooltip.hbs'
 import AppStyles from './config';
 
+// Which source of data (census or synthetic) are we pulling from
 var DataCatalog = DataCatalogCensus;
-var datasourceChanged = false;
 
 var App = window.App = {
   dataSet:{},
@@ -39,7 +39,6 @@ $(document).ready(function() {
   
   loadGeoLayer("cousub", DataCatalogSynth);
   loadGeoLayer("county", DataCatalogSynth);
-
   loadGeoLayer("cousub", DataCatalogCensus);
   loadGeoLayer("county", DataCatalogCensus)
     .done(function(data) {
@@ -84,9 +83,9 @@ $(document).ready(function() {
     }
   });
   
-  $("#geo_layers").change(function(e) {
+  $("#geo_layers").change(function(e, datasourceChanged = false) {
     const layer = $(e.target).val()
-    const geopromise = loadGeoLayer(layer, DataCatalog);
+    const geopromise = loadGeoLayer(layer);
     App.map.removeLayer(App.selected_layer);
 
     // temp hack to force CCD data to load:
@@ -107,20 +106,15 @@ $(document).ready(function() {
   // Added by Louis - allows for switching between Census and Synthea data catalogs
   $("#data_source_switch").change(function(e) {
     const datasource = $(e.target).val();
-    if (datasource === "census")
-    {
+
+    if (datasource === "census") {
       DataCatalog = DataCatalogCensus;
     } 
-    else if (datasource === "synthea")
-    {
+    else if (datasource === "synthea") {
       DataCatalog = DataCatalogSynth;
     }
-
-    datasourceChanged = true;
     // Reset everything so the map is regenerated
-    $("#geo_layers").trigger("change");
-
-    
+    $("#geo_layers").trigger("change", true);
   });
   
   $("#sort_chart").click(sortChart);
@@ -301,8 +295,9 @@ function _updateChart(sorted) {
   return false;
 }
 
-function loadGeoLayer(layerKey, DataCatalog) {
-  var layer = DataCatalog.geoLayers[layerKey];
+// Edited by Louis--added extra function argument so that both data sources can be loaded manually.
+function loadGeoLayer(layerKey, loadedCatalog = DataCatalog) {
+  var layer = loadedCatalog.geoLayers[layerKey];
   App.geoLayer = layer;
   App.geoId = layerKey;
 
@@ -312,7 +307,7 @@ function loadGeoLayer(layerKey, DataCatalog) {
         // leave the county borders on when we display the ccd's
         // App.geoFeatureLayer.clearLayers();
       }
-      DataCatalog.geoLayers[layerKey].geoJson = data;
+      loadedCatalog.geoLayers[layerKey].geoJson = data;
 
     })
     .fail(function(e) {
