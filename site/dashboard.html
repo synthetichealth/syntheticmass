@@ -30,6 +30,13 @@
     <a class="pull-right" href="#" id="zoom_to_all">Zoom map to all</a>
     <form id="data_form">
     <div class="form-group">
+    <label for="data_source_switch">Source of Data:</label>
+    <select id="data_source_switch">
+      <option value="census" selected>Census</option>
+      <option value="synthea">Synthea</option>
+    </select>
+    </div>
+    <div class="form-group">
     <label for="geo_layers">Geographic region:</label>
     <select id="geo_layers">
       <option value="county" selected>County</option>
