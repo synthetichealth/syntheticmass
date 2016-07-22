@@ -2,12 +2,16 @@
 
 import jQuery from 'jquery';
 import colorbrewer from './colorbrewer';
-import DataCatalog from './data-catalog';
+import DataCatalogCensus from './data-catalog';
+import DataCatalogSynth from './data-catalog-synth';
 import layers_dropdown_tmpl from './templates/layers_dropdown.hbs'
 import layer_details_tmpl   from './templates/layer_details.hbs'
 import region_details_tmpl  from './templates/region_details.hbs'
 import bar_tooltip_tmpl from './templates/bar_tooltip.hbs'
 import AppStyles from './config';
+
+// Which source of data (census or synthetic) are we pulling from
+var DataCatalog = DataCatalogCensus;
 
 var App = window.App = {
   dataSet:{},
@@ -32,8 +36,11 @@ $(document).ready(function() {
   App.map.addLayer(tiles);
   App.map.on("mouseout",() => App.map.removeLayer(App.hover_layer));
   // pre-fetch the geometry layers
-  loadGeoLayer("cousub");
-  loadGeoLayer("county")
+  
+  loadGeoLayer("cousub", DataCatalogSynth);
+  loadGeoLayer("county", DataCatalogSynth);
+  loadGeoLayer("cousub", DataCatalogCensus);
+  loadGeoLayer("county", DataCatalogCensus)
     .done(function(data) {
       App.baseRegions = L.geoJson(data,{style:AppStyles.baseStyle}).addTo(App.map);
       _.each(App.baseRegions.getLayers(),function(layer) {
@@ -47,6 +54,7 @@ $(document).ready(function() {
           $("#sort_chart").text("Sort by " + DataCatalog.demographics["pop"].name);
         });
     });
+  
   // populate the layers dropdown
   $("#data_form").append(layers_dropdown_tmpl({layers:_.where(DataCatalog.demographics,{active:true})}));
 
@@ -56,10 +64,10 @@ $(document).ready(function() {
     const fn = function() {
       showLayerDetails(datasetId);
       $("#sort_chart").text("Sort by " + DataCatalog.demographics[datasetId].name);
-    }
+    } 
     if (datasetId) {
       if (_.findWhere(App.dataSet.valueSet.properties,{key:datasetId})) {
-        fn();   
+        fn();  
       } else {
         const currCatalogKey = DataCatalog.demographics[datasetId];
         if (currCatalogKey) {
@@ -75,13 +83,13 @@ $(document).ready(function() {
     }
   });
   
-  $("#geo_layers").change(function(e) {
+  $("#geo_layers").change(function(e, datasourceChanged = false) {
     const layer = $(e.target).val()
     const geopromise = loadGeoLayer(layer);
     App.map.removeLayer(App.selected_layer);
 
     // temp hack to force CCD data to load:
-    if (App.dataSet.valueSet.geometry != App.geoLayer.geometry) {
+    if (App.dataSet.valueSet.geometry != App.geoLayer.geometry || datasourceChanged) {
       // we've changed geometry, so we need to refetch a dataSet for this new geometry
       App.dataSet.json = null;
       const currCatalogKey = DataCatalog.demographics[App.dataSet.catalogKey];
@@ -93,15 +101,31 @@ $(document).ready(function() {
       });
     }
   }); 
+
+  // Added by Louis - allows for switching between Census and Synthea data catalogs
+  $("#data_source_switch").change(function(e) {
+    const datasource = $(e.target).val();
+
+    if (datasource === "census") {
+      DataCatalog = DataCatalogCensus;
+    } 
+    else if (datasource === "synthea") {
+      DataCatalog = DataCatalogSynth;
+    }
+    // Reset everything so the map is regenerated
+    $("#geo_layers").trigger("change", true);
+  });
   
   $("#sort_chart").click(sortChart);
   $("#sort_chart_name").click(sortChartByName);
   $("#zoom_to_all").click((e) => {e.stopPropogation;App.map.fitBounds(original_bounds);return false;});
 
+
 });
- 
+
 
 function showLayerDetails(layerKey) {
+  
   let layer = DataCatalog.demographics[layerKey];
   App.dataSet.layer = layer;
   let valueKey = layer.value_key;
@@ -111,7 +135,7 @@ function showLayerDetails(layerKey) {
   $("#layer_details").empty().append(layer_details_tmpl(layer));
   $("#region_details").hide();
   $("#layer_details").show();
-
+  
   App.dataSet.values = _.pluck(App.dataSet.json,valueKey);
   const maxObj = _.max(App.dataSet.json,(d)=>{return d[valueKey]});
   const minObj = _.min(App.dataSet.json,(d)=>{return d[valueKey]});
@@ -119,7 +143,7 @@ function showLayerDetails(layerKey) {
   App.dataSet.maxValue = d3.max(App.dataSet.values);
   App.dataSet.minValue = d3.min(App.dataSet.values);
   renderFeatures(layerKey);
-
+  
   const median = d3.median(App.dataSet.values);
   const mean = d3.mean(App.dataSet.values);
   
@@ -139,6 +163,7 @@ function showLayerDetails(layerKey) {
       App.map.fitBounds(maxFeature.getBounds());
       maxFeature.fireEvent("click",maxFeature);
     });
+  
   $("#detail_min").text(minObj[App.dataSet.valueSet.name_key] + " " + App.dataSet.valueSet.geometry_label + ": " + fmt(minObj[valueKey]) )
     .mouseover(function() {
       minFeature.fireEvent("mouseover",minFeature);
@@ -153,6 +178,7 @@ function showLayerDetails(layerKey) {
     App.legend.update();
     App.infoBox.update();
     renderChart();
+    
 }
 
 
@@ -268,8 +294,9 @@ function _updateChart(sorted) {
   return false;
 }
 
-function loadGeoLayer(layerKey) {
-  var layer = DataCatalog.geoLayers[layerKey];
+// Edited by Louis--added extra function argument so that both data sources can be loaded manually.
+function loadGeoLayer(layerKey, loadedCatalog = DataCatalog) {
+  var layer = loadedCatalog.geoLayers[layerKey];
   App.geoLayer = layer;
   App.geoId = layerKey;
 
@@ -279,7 +306,8 @@ function loadGeoLayer(layerKey) {
         // leave the county borders on when we display the ccd's
         // App.geoFeatureLayer.clearLayers();
       }
-      DataCatalog.geoLayers[layerKey].geoJson = data;
+      loadedCatalog.geoLayers[layerKey].geoJson = data;
+
     })
     .fail(function(e) {
       console.log("Fail",e);
