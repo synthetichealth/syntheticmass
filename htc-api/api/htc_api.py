@@ -153,7 +153,7 @@ def get_synth_counties_all():
     """Counties in GeoJSON synthetic"""
     log.debug("entering get_synth_counties_all() IP=%s" % get_ip());
     con = get_db_con()
-    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
         "ST_AsGeoJSON(the_geom) AS geometry " \
       "FROM synth_ma.synth_county_stats s " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips"
@@ -227,7 +227,7 @@ def get_synth_counties_stats():
     """Counties in JSON, statistics only synthetic"""
     log.debug("entering get_synth_counties_stats() IP=%s" % get_ip());
     con = get_db_con()
-    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm " \
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm " \
       "FROM synth_ma.synth_county_stats s"
     data = getData(con, sql)
     log.debug("leaving get_synth_counties_stats()");
@@ -263,7 +263,7 @@ def get_synth_county_by_name(ct_name):
     """County in GeoJSON, by name synthetic"""
     log.debug("entering get_synth_county_by_name() IP=%s" % get_ip());
     con = get_db_con()
-    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
         "ST_AsGeoJSON(s.ct_poly) AS geometry " \
       "FROM synth_ma.synth_county_stats s " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
@@ -315,7 +315,7 @@ def get_synth_county_by_name_stats(ct_name):
     """County in JSON, by name, statistics only (synthetic)"""
     log.debug("entering get_synth_county_by_name_stats() IP=%s" % get_ip());
     con = get_db_con()
-    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm " \
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm " \
       "FROM synth_ma.synth_county_stats s " \
       "WHERE s.ct_name=%s"
     sql_params = (ct_name.title(),)
@@ -351,7 +351,7 @@ def get_synth_county_by_id(ct_fips):
     """County in GeoJSON, by id (synthetic)"""
     log.debug("entering get_synth_county_by_id() IP=%s" % get_ip());
     con = get_db_con()
-    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
         "ST_AsGeoJSON(the_geom) AS geometry " \
       "FROM synth_ma.synth_county_stats s " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
@@ -403,7 +403,7 @@ def get_synth_county_by_id_stats(ct_fips):
     """County in JSON, by id, statistics only (synthetic)"""
     log.debug("entering get_synth_county_by_id_stats() IP=%s" % get_ip());
     con = get_db_con()
-    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm " \
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm " \
       "FROM synth_ma.synth_county_stats s " \
       "WHERE ct_fips=%s"
     sql_params = (ct_fips,)
