@@ -99,7 +99,6 @@ $(document).ready(function() {
       promise.done(function(){
         showLayerDetails(App.dataSet.catalogKey);
       });
-      datasourceChanged = false;
     }
   }); 
 
