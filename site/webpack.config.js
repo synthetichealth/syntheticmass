@@ -63,13 +63,15 @@ if (production) {
       }
     }),
     new webpack.DefinePlugin({
-      'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org/')
+      'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org/'),
+      'FHIR_HOST' : JSON.stringify('https://syntheticmass.mitre.org/fhir/baseDstu3/')
     })
   ]);
 } else {
     plugins = plugins.concat([
     new webpack.DefinePlugin({
-      'API_HOST' : JSON.stringify('http://localhost:4000/htc')
+      'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org/'),
+      'FHIR_HOST' : JSON.stringify('https://syntheticmass.mitre.org/fhir/baseDstu3/')
     })
     ]);
 }
@@ -130,6 +132,9 @@ module.exports = {
       // Bootstrap 3
       { test: /bootstrap-sass\/assets\/javascripts\//, loader: 'imports?jQuery=jquery' },
 ]
+  },
+  node: {
+   fs: "empty"
   },
   plugins: plugins
   

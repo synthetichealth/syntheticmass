@@ -9,6 +9,7 @@ import layer_details_tmpl   from './templates/layer_details.hbs'
 import region_details_tmpl  from './templates/region_details.hbs'
 import bar_tooltip_tmpl from './templates/bar_tooltip.hbs'
 import AppStyles from './config';
+import * as Patients from './patients';
 
 // Which source of data (census or synthetic) are we pulling from
 var DataCatalog = DataCatalogCensus;
@@ -102,7 +103,6 @@ $(document).ready(function() {
     }
   }); 
 
-  // Added by Louis - allows for switching between Census and Synthea data catalogs
   $("#data_source_switch").change(function(e) {
     const datasource = $(e.target).val();
 
@@ -119,13 +119,10 @@ $(document).ready(function() {
   $("#sort_chart").click(sortChart);
   $("#sort_chart_name").click(sortChartByName);
   $("#zoom_to_all").click((e) => {e.stopPropogation;App.map.fitBounds(original_bounds);return false;});
-
-
 });
 
 
 function showLayerDetails(layerKey) {
-  
   let layer = DataCatalog.demographics[layerKey];
   App.dataSet.layer = layer;
   let valueKey = layer.value_key;
@@ -395,8 +392,7 @@ function addDataLegend() {
       maxVal = 0.6;
     }
     if (App.dataSet.valueKey == "pop" && App.geoId == "cousub") {
-      maxVal = 75000;
-      minVal = 5000;
+      maxVal = Math.min(maxVal,75000);
     }
     if (App.dataSet.valueKey == "pop_sm" && App.geoId == "cousub") {
       maxVal = 1500;
@@ -433,8 +429,8 @@ function renderFeatures(layerKey) {
     maxVal = 0.6;
   }
   if (App.dataSet.valueKey == "pop" && App.geoId == "cousub") {
-    maxVal = 75000;
-    minVal = 5000;
+    maxVal = Math.min(maxVal,75000);
+    minVal = 0;
 
   }
   if (App.dataSet.valueKey == "pop_sm" && App.geoId == "cousub") {
@@ -457,17 +453,18 @@ function renderFeatures(layerKey) {
   App.map.removeLayer(App.hover_layer);
 
   function highlightFeature(e) {
+    const featureLayer = e.target;
     App.map.removeLayer(App.hover_layer);
-    let newLayer = L.multiPolygon(e.target.getLatLngs(),e.target.options);
+    let newLayer = L.multiPolygon(featureLayer.getLatLngs(),featureLayer.options);
     newLayer.setStyle(AppStyles.newFeature);
     if (App.infoBox) {
-      App.infoBox.update(e.target.feature.properties);
+      App.infoBox.update(featureLayer.feature.properties);
     }
     newLayer.addTo(App.map);
     App.hover_layer = newLayer;
    
     const filterObj = {
-      [App.dataSet.valueSet.primary_key] : layer.feature.properties[App.geoLayer.primary_key]
+      [App.dataSet.valueSet.primary_key] : featureLayer.feature.properties[App.geoLayer.primary_key]
     };
     var rank = _.findIndex(App.dataSet.json, filterObj);
     App.chart.select(null,[rank],true);
@@ -494,7 +491,7 @@ function renderFeatures(layerKey) {
         App.selected_feature = props;
         App.map.removeLayer(App.selected_layer);
 
-        var layer = e.target;
+        let layer = e.target;
         let newLayer = L.multiPolygon(layer.getLatLngs(),layer.options);
         newLayer.setStyle(AppStyles.selectedFeature);
         newLayer.addTo(App.map);
@@ -502,12 +499,13 @@ function renderFeatures(layerKey) {
         App.map.removeLayer(App.hover_layer);
 
         let pop_fmt = _getFormatter(DataCatalog.demographics.pop);
+        let pop_sm_fmt = _getFormatter(DataCatalog.demographics.pop_sm);
         props.name = e.target.feature.properties[App.dataSet.valueSet.name_key];
         props.pop = pop_fmt(props.pop);
-        props.pop_sm = props.pop_sm + " people per sq. mi.";
+        props.pop_sm = pop_sm_fmt(props.pop_sm) + " people per sq. mi.";
         props.sq_mi = _getFormatter(DataCatalog.demographics.sq_mi)(props.sq_mi);
 
-        var html = $("#region_details").empty().append(region_details_tmpl(props)).show();
+        const html = $("#region_details").empty().append(region_details_tmpl(props)).show();
       
         /* select the corresponding bar in the chart */
         App.chart.unselect([DataCatalog.demographics[App.dataSet.catalogKey].legend]);
@@ -521,6 +519,14 @@ function renderFeatures(layerKey) {
           App.map.fitBounds(e.target.getBounds());
         });
 
+        $("#load_resident_list").on('click',function(){
+          const promise = Patients.loadPatients({city:props.name});
+          promise.done((data) => {
+            const html = Patients.generatePatientsHTML(data);
+            $("#region_patients").html(html);
+          });
+        });
+                  
         $("#region_details h2 button").on('click',function(){
           if (App.selected_layer) {
             App.map.removeLayer(App.selected_layer);
@@ -541,13 +547,31 @@ function renderFeatures(layerKey) {
       [valueKey] : layer.feature.properties[valueKey]
     };
     const obj = App.dataSet.index[layer.feature.properties[valueKey]];
-    if (obj) {
+//    if (obj) {
       _.extend(layer.feature.properties,obj);
-    }
+//    }
   });
   App.geoFeatureLayer = L.geoJson(App.geoLayer.geoJson, {style:styleFn,onEachFeature:onEachFeature}).addTo(App.map);
 }
 
+App.paginatePatientList = function(url = null) {
+  if (url !== null) {
+    const promise = Patients.loadPaginationURL(url);
+    promise.done((data) => {
+      const html = Patients.generatePatientsHTML(data);
+      $("#region_patients").html(html);
+    });
+  }
+  return false;
+}
+App.showPatientDetail = function(pid) {
+  console.log(`PID=${pid}`);
+  const promise = Patients.loadPatient(pid);
+  promise.done((data) => {
+    const html = Patients.generatePatientDetail(data);
+    $("#patient_detail_view").html(html);
+  });
+}
 /* Utility methods */
 /* return a function to format values for a specific demographic attribute */
 function _getFormatter({format_specifier=".1f",unit_label = ""}) {
