@@ -1,0 +1,25 @@
+<table class='table table-condensed'>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Gender</th>
+      <th>DOB</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{#each patients}}
+    <tr>
+      <td>{{patientDetailLink name pid}}</td>
+      <td>{{gender}}</td>
+      <td>{{dob}}</td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>
+{{#if prevUrl}}
+  {{paginationButton 'Prev' prevUrl}}
+{{/if}}
+  
+{{#if nextUrl}}
+  {{#if prevUrl}}|{{/if}} {{paginationButton 'Next' nextUrl}}
+{{/if}}
