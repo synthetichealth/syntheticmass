@@ -68,7 +68,9 @@ export function generatePatientsHTML(rawResponse, city = "") {
 }
 
 export function generatePatientDetail(json) {
-  return patient_detail_tmpl({givenName : "Bob", familyName: "Smith"});
+  const {familyName,givenName} = _getPatientName(json);
+  return patient_detail_tmpl({familyName,givenName});
+
 }
 
 
@@ -81,24 +83,33 @@ function renderPatientsTable(pNodes, nextUrl, prevUrl) {
   let patients = [];
   for (let i = 0; i < pNodes.length; i++) {
       let currResource = pNodes[i].resource,
-          name = '',
-          nameStr = '',
           pid = currResource.id;
 
-      // Loop to find the best name. Also, bring this back to the record spot.
-      for (let j = 0; j < currResource.name.length; j++) {
-        if (j == 0 || (currResource.name[j].hasProperty("use") &&
-                       currResource.name[j].use == "official")) {
-          name = currResource.name[j];
-        }
-      }
-      nameStr = `${name.family}, ${name.given}`; 
       patients.push({
         pid : pid,
-        name : nameStr,
+        name : _getPatientNameStr(currResource),
         gender : currResource.gender,
-        dob : moment(currResource.birthDate).format('DD.MMM.YYYY')
+        dob : _getPatientDOB(resource)
        });
   }
   return patients_list_tmpl({patients, prevUrl, nextUrl});
+}
+
+
+/* Lookup functions to extract patient resource details */
+function _getPatientDOB(resource) {
+  return moment(resource.birthDate).format('DD.MMM.YYYY');
+}
+
+function _getPatientName(resource) {
+  for (let j = 0; j < resource.name.length; j++) {
+    if (j == 0 || (resource.name[j].hasProperty("use") &&
+                   resource.name[j].use == "official")) {
+      name = resource.name[j];
+    }
+  }
+  return name;
+}
+function _getPatientNameStr(resource) {
+  return ((name) => {return `${name.family}, ${name.given}`;})(_getPatientName(resource));
 }
