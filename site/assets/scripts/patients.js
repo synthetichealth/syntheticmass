@@ -3,16 +3,83 @@ import patient_detail_tmpl from './templates/patient_detail.hbs';
 
 import moment from 'moment';
 
-const baseUrl = `${FHIR_HOST}`;
+const FORMAT_JSON = symbol("json");
+const FORMAT_XML  = symbol("xml");
 
-export function loadPatients({city = '',count = 20}) {
-  const param = $.param( { ['address-city'] : city, _count : count} );
-  const promise = $.ajax({
-    url :baseUrl + 'Patient',
-    type : 'get',
-    dataType:'json',
-    data : param});
-  return promise;
+const baseUrl = `${FHIR_HOST}`;
+const baseUrlCcda = baseUrl + '/api/v1/synth/ccda/id/';
+const conditionSystemUrl = "http://snomed.info/sct";
+
+const codeDiabetes = 44054006;
+
+// Returns true if the layer is a condition, rather than something that can be added as a parameter
+export function addLayerParam(param, layer) {
+  // If a layer is defined that restricts patient list data, add it as a parameter for the search
+  switch (layer)
+  {
+    case "pct_male":
+      param['gender'] = "male";
+      return false;
+    case "pct_female":
+      param['gender'] = "female";
+      return false;
+    case "chr_diabetes":
+      param['code'] = conditionSystemUrl + '|' + codeDiabetes;
+      return true;
+    default:
+      break;
+  }
+  return false;
+}
+
+export function loadPatients({city = '', count = 20}, layer = '') {
+  var param = {};
+
+  if (addLayerParam(param, layer)) {
+    param['_count'] = count * 2;
+    param['patient.address-city'] = city;
+    param['_include'] = 'Condition:patient';
+
+    param = $.param( param );
+    const promise = $.ajax({
+      url :baseUrl + 'Condition',
+      type : 'get',
+      dataType:'json',
+      data : param});
+    return promise;
+  }
+  else {
+    param['_count'] = count;
+    param['address-city'] = city;
+
+    param = $.param( param );
+    const promise = $.ajax({
+      url :baseUrl + 'Patient',
+      type : 'get',
+      dataType:'json',
+      data : param});
+    return promise;
+  }
+}
+
+export function getPListDownloadUrl({city = '', count = 20}, format=FORMAT_JSON, layer="") {
+  var param = {};
+  if (addLayerParam(param, layer)) {
+    param['_count'] = count * 2;
+    param['patient.address-city'] = city;
+    param['_include'] = 'Condition:patient';
+
+    param = $.param( param );
+    return baseUrl + 'Condition?' + param;
+  }
+  else {
+    param['_count'] = count;
+    param['address-city'] = city;
+    param['_format'] = format;
+
+    param = $.param( param );
+    return baseUrl + 'Patient?' + param;
+  }
 }
 
 export function loadPatient(pid = '') {
@@ -24,6 +91,21 @@ export function loadPatient(pid = '') {
   return promise;
 }
 
+export function getPatientDownloadUrl({id = 0, revIncludeTables = ['*'], count = 20}, format=FORMAT_JSON) {
+  var paramObj = {_id : id, _count : count, _format = format};
+  var revIncludeStr = '';
+
+  for (var i = 0; i < revIncludeTables.length; i++) {
+    revIncludeStr += '&_revInclude=' + revIncludeTables[i];
+  }
+  const param = $.param( {_id : id, _count : count, _format = format } );
+  return baseUrl + 'Patient?' + param + revIncludeStr;
+}
+
+export function getPatientDownloadCcda(identifier) {
+  return baseUrlCcda + identifier;  
+}
+
 export function loadPaginationURL(url = '') {
   const promise = $.ajax({
     url: url,
@@ -33,22 +115,15 @@ export function loadPaginationURL(url = '') {
   return promise;
 }
 
-export function generatePatientsHTML(rawResponse, city = "") {
+export function generatePatientsHTML(rawResponse, city = "", dataLayer = "") {
   let nextUrl = "",
       prevUrl = "",
       currNodes;
   if (rawResponse.resourceType === "Bundle") {
     if (rawResponse.entry != undefined) {
-      if (city !== "") {
-        currNodes = rawResponse.entry.filter(function(rawNode) {
-          return rawNode.resource.resourceType == "Patient" && rawNode.resource.address[0].city == city;
-          });
-      }
-      else {
-        currNodes = rawResponse.entry.filter(function(rawNode) {
-          return rawNode.resource.resourceType == "Patient";
-          });
-      }
+      currNodes = rawResponse.entry.filter(function(rawNode) {
+        return rawNode.resource.resourceType == "Patient";
+      });
     }
     if (rawResponse.hasOwnProperty("link")) {
       for (const link of rawResponse.link) {
@@ -60,7 +135,8 @@ export function generatePatientsHTML(rawResponse, city = "") {
         }
       }
     }
-    return renderPatientsTable(currNodes, nextUrl, prevUrl);
+    var downloadUriJson = getPListDownloadUrl({city : city, count : 20}, FORMAT_JSON, dataLayer);
+    return renderPatientsTable(currNodes, nextUrl, prevUrl, downloadUriJson);
   }
   else {
     console.log("Something went wrong with the search response.");
@@ -69,7 +145,9 @@ export function generatePatientsHTML(rawResponse, city = "") {
 
 export function generatePatientDetail(json) {
   const {familyName,givenName} = _getPatientName(json);
-  return patient_detail_tmpl({familyName,givenName});
+  const jsonUri = getPatientDownloadUrl(_getPatientId(json));
+  const ccdaUri = getPatientDownloadCcda(_getPatientIdentifier(json));
+  return patient_detail_tmpl({familyName,givenName, jsonUri, ccdaUri});
 
 }
 
@@ -78,7 +156,7 @@ function compareByBirthDate(a, b) {
   return new Date(a.resource.birthDate) - new Date(b.resource.birthDate);
 }
 
-function renderPatientsTable(pNodes, nextUrl, prevUrl) {
+function renderPatientsTable(pNodes, nextUrl, prevUrl, downloadUriJson) {
   pNodes.sort(compareByBirthDate);
   let patients = [];
   for (let i = 0; i < pNodes.length; i++) {
@@ -92,7 +170,7 @@ function renderPatientsTable(pNodes, nextUrl, prevUrl) {
         dob : _getPatientDOB(resource)
        });
   }
-  return patients_list_tmpl({patients, prevUrl, nextUrl});
+  return patients_list_tmpl({patients, prevUrl, nextUrl, downloadUriJson});
 }
 
 
@@ -110,6 +188,19 @@ function _getPatientName(resource) {
   }
   return name;
 }
+
+function _getPatientId(resource) {
+  return resource.id
+}
+
+function _getPatientIdentifier(resource) {
+  if (resource.hasProperty("identifier"))
+  {
+    return resource.identifier[0].value;
+  }
+  return 0;
+}
+
 function _getPatientNameStr(resource) {
   return ((name) => {return `${name.family}, ${name.given}`;})(_getPatientName(resource));
 }

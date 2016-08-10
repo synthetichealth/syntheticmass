@@ -520,9 +520,10 @@ function renderFeatures(layerKey) {
         });
 
         $("#load_resident_list").on('click',function(){
-          const promise = Patients.loadPatients({city:props.name});
+          const promise = Patients.loadPatients({city:props.name}, App.dataSet.catalogKey);
           promise.done((data) => {
-            const html = Patients.generatePatientsHTML(data);
+            
+            const html = Patients.generatePatientsHTML(data, props.name, App.dataSet.catalogKey);
             $("#region_patients").html(html);
           });
         });
@@ -558,7 +559,7 @@ App.paginatePatientList = function(url = null) {
   if (url !== null) {
     const promise = Patients.loadPaginationURL(url);
     promise.done((data) => {
-      const html = Patients.generatePatientsHTML(data);
+      const html = Patients.generatePatientsHTML(data, App.selected_feature.name, App.dataSet.catalogKey);
       $("#region_patients").html(html);
     });
   }
