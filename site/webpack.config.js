@@ -91,7 +91,9 @@ module.exports = {
     publicPath: '',
     filename: '[name].min.js'
   },
-
+  devServer: {
+        outputPath: path.join(__dirname, 'build')
+  },
   devtool: '#cheap-module-eval-source-map',
 
   externals : {
