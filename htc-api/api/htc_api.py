@@ -1,5 +1,5 @@
 #!flask/bin/python
-from flask import Flask, jsonify, request, abort, g
+from flask import Flask, jsonify, request, abort, g, send_from_directory
 from flask_cors import CORS
 from flask.ext.autodoc import Autodoc
 from flask_cache import Cache
@@ -16,7 +16,6 @@ import psycopg2 as pg
 import psycopg2.pool as pgp
 import sys
 import time
-
 
 import postgis2geojson as p2g
 from psycopg2.extras import RealDictCursor
@@ -523,6 +522,16 @@ def get_block_window():
     return data
 
 ##TODO
+
+#return ccda
+@app.route('/htc/api/v1/synth/ccda/id/<string:patient_uuid>', methods=['GET'])
+@auto.doc()
+@cache.memoize(timeout=300) # cache this view for 5 minutes
+def get_synth_ccda_by_id(patient_uuid):
+    """Synthetic Patient in C-CDA, by id"""
+    log.debug("entering get_synth_ccda_by_id() IP=%s" % get_ip());
+    return send_from_directory('/ccda', patient_uuid + '.xml')
+
 
 #Specific requests for less typing
 #
