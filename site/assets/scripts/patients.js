@@ -3,14 +3,16 @@ import patient_detail_tmpl from './templates/patient_detail.hbs';
 
 import moment from 'moment';
 
-const FORMAT_JSON = symbol("json");
-const FORMAT_XML  = symbol("xml");
+const FORMAT_JSON = Symbol("json");
+const FORMAT_XML  = Symbol("xml");
 
 const baseUrl = `${FHIR_HOST}`;
 const baseUrlCcda = baseUrl + '/api/v1/synth/ccda/id/';
 const conditionSystemUrl = "http://snomed.info/sct";
 
 const codeDiabetes = 44054006;
+
+
 
 // Returns true if the layer is a condition, rather than something that can be added as a parameter
 export function addLayerParam(param, layer) {
@@ -62,8 +64,10 @@ export function loadPatients({city = '', count = 20}, layer = '') {
   }
 }
 
-export function getPListDownloadUrl({city = '', count = 20}, format=FORMAT_JSON, layer="") {
+export function getPListDownloadUrl({city = '', revIncludeTables = ['*'], count = 20}, format=FORMAT_JSON, layer="") {
   var param = {};
+  var revIncludeStr = '';
+
   if (addLayerParam(param, layer)) {
     param['_count'] = count * 2;
     param['patient.address-city'] = city;
@@ -76,9 +80,12 @@ export function getPListDownloadUrl({city = '', count = 20}, format=FORMAT_JSON,
     param['_count'] = count;
     param['address-city'] = city;
     param['_format'] = format;
+    for (var i = 0; i < revIncludeTables.length; i++) {
+      revIncludeStr += '&_revInclude=' + revIncludeTables[i];
+    }
 
     param = $.param( param );
-    return baseUrl + 'Patient?' + param;
+    return baseUrl + 'Patient?' + param + revIncludeStr;
   }
 }
 
@@ -92,13 +99,13 @@ export function loadPatient(pid = '') {
 }
 
 export function getPatientDownloadUrl({id = 0, revIncludeTables = ['*'], count = 20}, format=FORMAT_JSON) {
-  var paramObj = {_id : id, _count : count, _format = format};
+  var paramObj = {_id : id, _count : count, _format : format};
   var revIncludeStr = '';
 
   for (var i = 0; i < revIncludeTables.length; i++) {
     revIncludeStr += '&_revInclude=' + revIncludeTables[i];
   }
-  const param = $.param( {_id : id, _count : count, _format = format } );
+  const param = $.param( {_id : id, _count : count, _format : format } );
   return baseUrl + 'Patient?' + param + revIncludeStr;
 }
 

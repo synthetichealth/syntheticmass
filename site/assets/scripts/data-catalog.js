@@ -117,8 +117,21 @@ demographics : {
   "legend_label" : "Unemployed",
   "format_specifier" : ".1%",
   "active" : true
+},
+"chr_diabetes" : {
+  "name":"Diabetic",
+  "description":"Projected percentage of the population diabetic",
+  "data_set_name" : "stats",
+  "data_source_name" : "US Census American Community Survey (ACS) Data",
+  "data_source_url" : "http://www2.census.gov/acs2012_5yr/summaryfile/",
+  "key" : "chr_diabetes",
+  "value_key" : "chr_diabetes",
+  "legend" : "Diabetic Population",
+  "legend_title":"Diabetic",
+  "legend_label" : "Diabetic",
+  "format_specifier" : ".1%",
+  "active" : true
 }
-
 },
 
 geoLayers : {
@@ -193,6 +206,7 @@ dataSets : {
   parent_key: null,
   name_key: "ct_name",
   properties : [
+    {key:"chr_diabetic",name:"Diabetic",unit:"%"},
     {key:"chr_unemployed",name:"Unemployed",unit:"%"},
     {key:"chr_college",name:"College Graduates",unit:"%"},
     {key:"chr_hs_grad",name:"High School Graduates",unit:"%"},
