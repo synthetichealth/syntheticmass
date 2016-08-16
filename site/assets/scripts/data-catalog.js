@@ -13,7 +13,7 @@ demographics : {
   "legend" : "Population",
   "legend_title" : "Population",
   "legend_label" : "Population",
-  "palette" : "PuRd",
+  "palette" : "YlOrRd",
   "format_specifier" : ",.0f",
   "value_format_specifier" : ",.0f",
   "active" : true
@@ -29,6 +29,7 @@ demographics : {
   "legend" : "Pop. Density",
   "legend_title" : "Population Density",
   "legend_label" : "Pop. Density",
+  "palette" : "YlOrRd",
   "format_specifier" : ".1f",
   "unit_label" : " (per mi²)",
   "active" : true
@@ -44,6 +45,7 @@ demographics : {
   "legend" : "Area",
   "legend_title" : "Area",
   "legend_label" : "Area (sq mi)",
+  "palette" : "YlOrRd",
   "format_specifier" : ",f",
   "unit_label" : " sq. mi.",
   "active" : false
@@ -59,6 +61,7 @@ demographics : {
   "legend" : "Pct. Female",
   "legend_title" : "Female Population",
   "legend_label" : "Female",
+  "palette" : "YlOrRd",
   "format_specifier" : ".1%",
   "active" : true
 },
@@ -73,6 +76,7 @@ demographics : {
   "legend" : "Pct. Male",
   "legend_title" : "Male Population",
   "legend_label" : "Male",
+  "palette" : "YlOrRd",
   "format_specifier" : ".1%",
   "active" : true
 },
@@ -87,6 +91,7 @@ demographics : {
   "legend" : "Pct. HS Graduates",
   "legend_title":"Population of High School Graduates",
   "legend_label" : "HS",
+  "palette" : "YlOrRd",
   "format_specifier" : ".1%",
   "active" : true
 },
@@ -101,6 +106,7 @@ demographics : {
   "legend" : "Pct. College Graduates",
   "legend_title":"Population of College Graduates",
   "legend_label" : "College",
+  "palette" : "YlOrRd",
   "format_specifier" : ".1%",
   "active" : true
 },
@@ -115,6 +121,7 @@ demographics : {
   "legend" : "Unemployed Population",
   "legend_title":"Unemployed",
   "legend_label" : "Unemployed",
+  "palette" : "YlOrRd",
   "format_specifier" : ".1%",
   "active" : true
 }

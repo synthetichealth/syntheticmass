@@ -1,206 +1,168 @@
 <div id="p_record">
-  <div id="p_brief" class="p_record_block row">
-    <div id="p_brief_photo" class="col-xs-4">
-        <img src="assets/img/sil-batman.jpg" alt="Patient Photo" style="width:100%;">
-        </div>
-        <div id="p_brief_records" class="col-xs-8">
-            <div id="p_brief_name_address row" class="p_block">
-                <div>{{familyName}}</div>
-                <div>{{givenName}}</div>
-                <div>{{address}}</div>
-                <div>{{city}}, {{state}}</div>
-                <div>{{zip}}</div>
-            </div>
-            <div id="p_brief_stats">
-                <div class="row">
-                    <div id="p_brief_hgt" class="p_block col-xs-3">
-                        <div class="p_block_subtitle">HGT</div>
-                        <div id="p_brief_hgt_val" class="p_block_val"><div class="p_incomplete">N/A</div></div>
-                    </div>
-                    <div id="p_brief_wgt" class="p_block col-xs-3">
-                        <div class="p_block_subtitle">WGT</div>
-                        <div id="p_brief_wgt_val" class="p_block_val"><div class="p_incomplete">N/A</div></div>
-                    </div>
-                    <div id="p_brief_btype" class="p_block col-xs-3">
-                        <div class="p_block_subtitle">BTYPE</div>
-                        <div id="p_brief_btype_val" class="p_block_val p_brief_block_val"><div class="p_incomplete">N/A</div></div>
-                    </div>
-                    <div id="p_brief_vision" class="p_block col-xs-3">
-                        <div class="p_block_subtitle">VISION</div>
-                        <div id="p_brief_vision_val" class="p_block_val p_brief_block_val"><div class="p_incomplete">N/A</div></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div id="p_brief_dob" class="p_block col-xs-12">
-                        <div class="p_block_subtitle">DOB</div>
-                        <div class = "row">
-                            <div id="p_brief_dob_val" class="p_block_val p_brief_block_val col-xs-6"><div class="p_incomplete">N/A</div></div>
-                            <div id="p_brief_age_val" class="p_brief_block_val col-xs-6"><div class="p_incomplete">N/A</div></div>
-                        </div>
-                    </div>
-                    <div id="p_brief_gender" class="p_block col-xs-6">
-                        <div class="p_block_subtitle">GENDER</div>
-                        <div id="p_brief_gender_val" class="p_block_val p_brief_block_val"><div class="p_incomplete">N/A</div></div>
-                    </div>
-                    <div id="p_brief_language" class="p_block col-xs-6">
-                        <div class="p_block_subtitle">SPOKEN LANGUAGE</div>
-                        <div id="p_brief_language_val" class="p_block_val p_brief_block_val"><div class="p_incomplete">N/A</div></div>
-                    </div>
-                    <div id="p_brief_race" class="p_block col-xs-6">
-                        <div class="p_block_subtitle">RACE</div>
-                        <div id="p_brief_race_val" class="p_block_val p_brief_block_val"><div class="p_incomplete">N/A</div></div>
-                    </div>
-                    <div id="p_brief_ethnicity" class="p_block col-xs-6">
-                        <div class="p_block_subtitle">ETHNICITY</div>
-                        <div id="p_brief_ethnicity_val" class="p_block_val p_brief_block_val"><div class="p_incomplete">N/A</div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <h2>Patient Record<button type="button" class="close" aria-label="Close"> <span aria-hidden="true">&times;</span> Close</button></h2>
+  <div id="p_brief" class="row">
+    <div id="p_brief_photo" class="col-xs-4 col-sm-3">
+      <img src="assets/img/profile_placeholder.png" alt="Patient Photo" style="width:100%;">
     </div>
-    <hr>
-    <div id="p_allergies" class="p_record_block row">
-        <!--<div class="row">
-            <div class="col-xs-6"><div class="p_block_title">ALLERGIES</div></div>
-            <div class="col-xs-6"><div class="p_block_subtitle">DATE RECORDED</div></div>
+    <div id="p_brief_records" class="col-xs-8 col-sm-9">
+      <div id="p_brief_name_address" class="p_block">
+        <dl class='dl-horizontal p_brief_family'>
+          <dt>Family name</dt>
+          <dd>{{familyName}}</dd>
+          <dt>Given name</dt>
+          <dd>{{givenName}}</dd>
+          <dt>Address</dt>
+          {{#each address.address}}
+            <dd>{{this}}</dd>
+            {{else}}
+              <dd class='incomplete'>n/a</dd>
+          {{/each}}
+          <dt>City, State</dt>
+          <dd>{{address.city}}, {{address.state}}</dd>
+          <dt>Postal Code</dt>
+          <dd>{{address.postalCode}}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  
+      <div id="p_brief_stats">
+        <div class="row">
+          <div class="p_block col-sm-6">
+            <dl class='dl-horizontal'>
+              <dt>Height</dt>
+              <dd id="p_brief_hgt_val"><span class="incomplete">n/a</span></dd>
+              <dt>Weight</dt>
+              <dd id="p_brief_wgt_val"><span class="incomplete">n/a</span></dd>
+              <dt>Blood Type</dt>
+              <dd><span class="incomplete">n/a</span></dd>
+              <dt>Vision</dt>
+              <dd><span class="incomplete">n/a</span></dd>
+            </dl>
+          </div>
+          <div class="p_block col-sm-6">
+            <dl class='dl-horizontal'>
+              <dt>DOB</dt>
+              <dd id="p_brief_dob_val">{{dob}}</dd>
+              <dt>Age</dt>
+              <dd id="p_brief_age_val">{{age}}</dd>
+              <dt>Gender</dt>
+              <dd>{{gender}}</dd>
+              <dt>Race</dt>
+              <dd>{{race}}</dd>
+              <dt>Ethnicity</dt>
+              <dd>{{ethnicity}}</dd>
+              <dt>Spoken language</dt>
+              <dd>{{communication}}</dd>
+            </dl>
+          </div>
+
         </div>
-        <div id="p_allergies_list">
-            <div class="row">
-                <div class="p_allergies_val col-xs-6">None</div>
-                <div class="p_allergies_date col-xs-6">--</div>
-            </div>
-        </div>-->
+      </div>
+    </div>
+
+<!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist" id="patient_tab_nav">
+    <li role="presentation" class="active"><a href="#p_observations" aria-controls="p_observations" role="tab" data-toggle="tab">Observations</a></li>
+    <li role="presentation"><a href="#p_allergies" aria-controls="p_allergies" role="tab" data-toggle="tab">Allergies</a></li>
+    <li role="presentation"><a href="#p_medications" aria-controls="p_medications" role="tab" data-toggle="tab">Medications</a></li>
+    <li role="presentation"><a href="#p_conditions" aria-controls="p_conditions" role="tab" data-toggle="tab">Conditions</a></li>
+    <li role="presentation"><a href="#p_vaccinations" aria-controls="p_vaccinations" role="tab" data-toggle="tab">Vaccinations</a></li>
+  </ul>
+  <div class="tab-content" id="patient_tab_content">
+    <div role="tabpanel" class="tab-pane active" id="p_observations">
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">ALLERGIES</th>
-                    <th scope="col">DATE RECORDED</th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Observation</th>
+                    <th scope="col">Value</th>
+                    <th scope="col"></th>
+                    <th scope="col">Date Recorded</th>
+                </tr>
+            </thead>
+            <tbody id="p_observations_list">
+                <tr>
+                <td><div data-loader="circle" class="loader"></div></td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                <td>--</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div role="tabpanel" class="tab-pane"  id="p_allergies">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Allergies</th>
+                    <th scope="col">Date Recorded</th>
                 </tr>
             </thead>
             <tbody id="p_allergies_list">
                 <tr>
-                    <td>None</td>
+                    <td><div data-loader="circle" class="loader"></div></td>
                     <td>--</td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <hr>
-    <div id="p_medications" class="p_record_block row">
-        <!--<div class="row">
-            <div class="col-xs-6"><div class="p_block_title">MEDICATIONS</div></div>
-            <div class="col-xs-3"><div class="p_block_subtitle">DOSAGE</div></div>
-            <div class="col-xs-3"><div class="p_block_subtitle">DATE OF Rx</div></div>
-        </div>
-        <div id="p_medications_list">
-            <div class="row">
-                <div class="p_medications_val col-xs-6">None</div>
-                <div class="p_medications_dosage col-xs-3">--</div>
-                <div class="p_medications_date col-xs-3">--</div>
-            </div>
-        </div>-->
+
+    <div role="tabpanel" class="tab-pane"  id="p_medications">
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">MEDICATIONS</th>
-                    <th scope="col">DATE DOSAGE</th>
-                    <th scope="col">DATE OF Rx</th>
+                    <th scope="col">Medication</th>
+                    <th scope="col">Dosage</th>
+                    <th scope="col">Date of Rx</th>
                 </tr>
             </thead>
             <tbody id="p_medications_list">
                  <tr>
-                    <td>None</td>
+                    <td><div data-loader="circle" class="loader"></div></td>
                     <td>--</td>
                     <td>--</td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <hr>
-    <div id="p_conditions" class="p_record_block row">
-        <!--<div class="row">
-            <div class="col-xs-6"><div class="p_block_title">CONDITIONS</div></div>
-            <div class="col-xs-3"><div class="p_block_subtitle">DATE OF ONSET</div></div>
-            <div class="col-xs-3"><div class="p_block_subtitle">DATE RESOLVED</div></div>
-        </div>
-        <div id="p_conditions_list">
-            <div class="row">
-                <div class="p_conditions_val col-xs-6">None</div>
-                <div class="p_conditions_onset col-xs-3">--</div>
-                <div class="p_conditions_resolved col-xs-3">--</div>
-            </div>
-        </div>-->
+
+    <div role="tabpanel" class="tab-pane"  id="p_conditions">
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">CONDITIONS</th>
-                    <th scope="col">DATE OF ONSET</th>
-                    <th scope="col">DATE RESOLVED</th>
+                    <th scope="col">Condition</th>
+                    <th scope="col">Date of Onset</th>
+                    <th scope="col">Date Resolved</th>
                 </tr>
             </thead>
             <tbody id="p_conditions_list">
                  <tr>
-                    <td>None</td>
+                    <td><div data-loader="circle" class="loader"></div></td>
                     <td>--</td>
                     <td>--</td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <hr>
-    <div id="p_vaccinations" class="p_record_block row">
-        <!--<div class="row">
-            <div class="col-xs-6"><div class="p_block_title">VACCINATIONS</div></div>
-            <div class="col-xs-6"><div class="p_block_subtitle">DATE LAST GIVEN</div></div>
-        </div>
-        <div id="p_vaccinations_list">
-            <div class="row">
-                <div class="p_vaccinations_val col-xs-6">None</div>
-                <div class="p_vaccinations_date col-xs-6">--</div>
-            </div>
-        </div>-->
+
+    <div role="tabpanel" class="tab-pane"  id="p_vaccinations">
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">VACCINATIONS</th>
-                    <th scope="col">DATE LAST GIVEN</th>
+                    <th scope="col">Vaccinations</th>
+                    <th scope="col">Date Last Given</th>
                 </tr>
             </thead>
             <tbody id="p_vaccinations_list">
                  <tr>
-                    <td>None</td>
+                    <td><div data-loader="circle" class="loader"></div></td>
                     <td>--</td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <hr>
-    <div id="p_social" class="p_record_block row">
-            <div class="p_block_title row col-xs-12">SOCIAL HISTORY</div>
-            <div id="p_social_alcohol" class="p_block col-xs-4">
-                <div class="p_block_subtitle">ALCOHOL</div>
-                <div id="p_alcohol_val" class="p_block_val"><div class="p_incomplete">N/A</div></div>
-            </div>
-            <div id="p_social_tobacco" class="p_block col-xs-4">
-                <div class="p_block_subtitle">TOBACCO</div>
-                <div id="p_tobacco_val" class="p_block_val"><div class="p_incomplete">N/A</div></div>
-            </div>
-            <div id="p_social_drugs" class="p_block col-xs-4">
-                <div class="p_block_subtitle">ILLICIT DRUGS</div>
-                <div id="p_drugs_val" class="p_block_val"><div class="p_incomplete">N/A</div></div>
-            </div>
-            <div id="p_social_advdirective" class="p_block col-xs-4">
-                <div class="p_block_subtitle">ADVANCED DIRECTIVE</div>
-                <div id="p_advdirective_val" class="p_block_val"><div class="p_incomplete">N/A</div></div>
-            </div>
-            <div id="p_social_healthproxy" class="p_block col-xs-4">
-                <div class="p_block_subtitle">HEALTHCARE PROXY</div>
-                <div id="p_healthproxy_val" class="p_block_val"><div class="p_incomplete">N/A</div></div>
-            </div>
-    </div>
-    <hr>
-    <div id="p_vitals" class="p_record_block row">
-        <div class="p_block_title">VITALS</div>
-        <div id="not_sure_what_yet">I don't know about these fields yet</div>
-    </div>
+  </div>
 </div>

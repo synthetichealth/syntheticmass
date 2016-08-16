@@ -44,7 +44,8 @@ var plugins = [
     new CopyWebpackPlugin([
       {from:'favicon-16x16.png'},
       {from:'favicon-32x32.png'},
-      {from:'favicon.ico'}
+      {from:'favicon.ico'},
+      {from:'assets/img/profile_placeholder.png',to:'assets/img/profile_placeholder.png'}
     ])
   ];
 /*     new CopyWebpackPlugin([

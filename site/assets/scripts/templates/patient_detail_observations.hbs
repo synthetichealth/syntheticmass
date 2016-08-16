@@ -1,0 +1,26 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Code</th>
+      <th scope="col">Observation</th>
+      <th scope="col">Value</th>
+      <th scope="col">Unit</th>
+      <th scope="col">Date Recorded</th>
+    </tr>
+  </thead>
+  <tbody id="p_observations_list">
+  {{#each observations}}
+    <tr>
+      <td>{{code}}</td>
+      <td>{{name}}</td>
+      <td>{{obsValue}}</td>
+      <td>{{obsUnit}}</td>
+      <td>{{effDate}}</td>
+    </tr>
+    {{else}}
+      <tr>
+        <td colspan="3">No Observations Recorded</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

@@ -22,15 +22,16 @@ var App = window.App = {
   infoBox:{},
   legend:{},
   map:{},
+  mapView: {},
   overlayPts:{},
-  selectedFeature:{},
+  selected_feature:{},
   selected_layer: {}
 };
 
 $(document).ready(function() {
   App.map = L.map("main_map",{doubleClickZoom:false,scrollWheelZoom:false}).setView([42.380349,-71.533836],8);
   const original_bounds = App.map.getBounds();
-  
+  App.mapView = $("#map_view");
   const tiles = new L.TileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}
   );
@@ -129,6 +130,7 @@ function showLayerDetails(layerKey) {
   App.dataSet.valueKey = valueKey;
   _.extend(layer,{region:App.dataSet.valueSet.geometry_label});
 
+  $("#patient_detail_view button.close").trigger('click');
   $("#layer_details").empty().append(layer_details_tmpl(layer));
   $("#region_details").hide();
   $("#layer_details").show();
@@ -531,6 +533,7 @@ function renderFeatures(layerKey) {
           if (App.selected_layer) {
             App.map.removeLayer(App.selected_layer);
           }
+          $("#patient_detail_view button.close").trigger('click');
           App.chart.unselect();
           $("#region_details").hide();
           $("#layer_details").show();
@@ -547,9 +550,7 @@ function renderFeatures(layerKey) {
       [valueKey] : layer.feature.properties[valueKey]
     };
     const obj = App.dataSet.index[layer.feature.properties[valueKey]];
-//    if (obj) {
       _.extend(layer.feature.properties,obj);
-//    }
   });
   App.geoFeatureLayer = L.geoJson(App.geoLayer.geoJson, {style:styleFn,onEachFeature:onEachFeature}).addTo(App.map);
 }
@@ -564,12 +565,22 @@ App.paginatePatientList = function(url = null) {
   }
   return false;
 }
-App.showPatientDetail = function(pid) {
-  console.log(`PID=${pid}`);
+App.showPatientDetail = function(pid,elem) {
+  $("#region_patients table tr").removeClass("selected");
+  $(elem).parents("tr").addClass("selected");
   const promise = Patients.loadPatient(pid);
   promise.done((data) => {
-    const html = Patients.generatePatientDetail(data);
-    $("#patient_detail_view").html(html);
+    App.mapView.hide();
+    Patients.displayPatientDetail(data,$("#patient_detail_view"));
+    $('#patient_tab_nav a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+    });
+    $("#patient_detail_view button.close").on('click',function() {
+      $("#patient_detail_view").hide();
+      $("#region_patients table tr").removeClass("selected");
+      App.mapView.show();
+    });
   });
 }
 /* Utility methods */
