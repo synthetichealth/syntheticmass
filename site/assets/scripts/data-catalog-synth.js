@@ -124,7 +124,6 @@ demographics : {
   "format_specifier" : ".1%",
   "active" : true
 }
-
 },
 
 geoLayers : {

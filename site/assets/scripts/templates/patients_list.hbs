@@ -13,6 +13,10 @@
       <td>{{gender}}</td>
       <td>{{dob}}</td>
     </tr>
+  {{else}}
+    <tr>
+      <td colspan="3">No Residents Found</td>
+    </tr>
   {{/each}}
   </tbody>
 </table>
@@ -23,3 +27,5 @@
 {{#if nextUrl}}
   {{#if prevUrl}}|{{/if}} {{paginationButton 'Next' nextUrl}}
 {{/if}}
+
+<a download href="{{downloadUriJson}}">Download Patient List Data (JSON)</a>
