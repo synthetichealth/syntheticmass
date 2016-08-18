@@ -357,7 +357,7 @@ function addDataLegend() {
     if (props) {
       filterObj[App.dataSet.valueSet.primary_key] = props[App.dataSet.valueSet.primary_key];
       const currItem = _.where(App.dataSet.json,filterObj)[0];
-      if (App.dataSet.valueSet.parent_name_key) {
+      if (currItem != undefined && App.dataSet.valueSet.parent_name_key) {
         parentStr = " - " + currItem[App.dataSet.valueSet.parent_name_key] + " " + App.geoLayer.parent_geometry_label;
       }
       this._div.innerHTML =  html +
@@ -522,9 +522,9 @@ function renderFeatures(layerKey) {
         });
 
         $("#load_resident_list").on('click',function(){
-          const promise = Patients.loadPatients({city:props.name});
+          const promise = Patients.loadPatients({city:props.name}, App.dataSet.catalogKey);
           promise.done((data) => {
-            const html = Patients.generatePatientsHTML(data);
+            const html = Patients.generatePatientsHTML(data, props.name, App.dataSet.catalogKey);
             $("#region_patients").html(html);
           });
         });
@@ -559,7 +559,7 @@ App.paginatePatientList = function(url = null) {
   if (url !== null) {
     const promise = Patients.loadPaginationURL(url);
     promise.done((data) => {
-      const html = Patients.generatePatientsHTML(data);
+      const html = Patients.generatePatientsHTML(data, App.selected_feature.name, App.dataSet.catalogKey);
       $("#region_patients").html(html);
     });
   }
