@@ -153,10 +153,8 @@ def get_synth_counties_all():
     log.debug("entering get_synth_counties_all() IP=%s" % get_ip());
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
-        "f_diabetes.rate as facts_diabetes, " \
         "ST_AsGeoJSON(g.the_geom) AS geometry " \
       "FROM synth_ma.synth_county_stats s " \
-      "JOIN synth_ma.synth_county_facts f_diabetes ON f_diabetes.diseasefp = '1' AND f_diabetes.cntyidfp = ('25' || s.ctfips) " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips"
     data = p2g.getData(con, sql)
     log.debug("leaving get_synth_counties_all()");
@@ -213,7 +211,7 @@ def get_counties_stats():
     log.debug("entering get_counties_stats() IP=%s" % get_ip());
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
-        "chr.hs_graduate / 100 as chr_hs_grad, chr.college / 100 as chr_college, chr.unemployed / 100 as chr_unemployed, chr.diabetes_rate / 100 as chr_diabetes " \
+        "chr.hs_graduate / 100 as chr_hs_grad, chr.college / 100 as chr_college, chr.unemployed / 100 as chr_unemployed, chr.diabetes_rate as chr_diabetes " \
       "FROM synth_ma.county_stats s " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips"
     data = getData(con, sql)
@@ -228,10 +226,8 @@ def get_synth_counties_stats():
     """Counties in JSON, statistics only synthetic"""
     log.debug("entering get_synth_counties_stats() IP=%s" % get_ip());
     con = get_db_con()
-    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
-        "f_diabetes.rate / 100 as facts_diabetes " \
-      "FROM synth_ma.synth_county_stats s "
-      "JOIN synth_ma.synth_county_facts f_diabetes ON f_diabetes.diseasefp = '1' AND f_diabetes.cntyidfp = ('25' || s.ctfips)" \
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm " \
+      "FROM synth_ma.synth_county_stats s"
     data = getData(con, sql)
     log.debug("leaving get_synth_counties_stats()");
     return data
@@ -267,10 +263,8 @@ def get_synth_county_by_name(ct_name):
     log.debug("entering get_synth_county_by_name() IP=%s" % get_ip());
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
-        "f_diabetes.rate as facts_diabetes, " \
         "ST_AsGeoJSON(s.ct_poly) AS geometry " \
       "FROM synth_ma.synth_county_stats s " \
-      "JOIN synth_ma.synth_county_facts f_diabetes ON f_diabetes.diseasefp = '1' AND f_diabetes.cntyidfp = ('25' || s.ctfips) " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
       "WHERE ct_name=%s"
     sql_params = (ct_name.title(),)
@@ -320,10 +314,8 @@ def get_synth_county_by_name_stats(ct_name):
     """County in JSON, by name, statistics only (synthetic)"""
     log.debug("entering get_synth_county_by_name_stats() IP=%s" % get_ip());
     con = get_db_con()
-    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
-        "f_diabetes.rate as facts_diabetes " \
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm " \
       "FROM synth_ma.synth_county_stats s " \
-      "JOIN synth_ma.synth_county_facts f_diabetes ON f_diabetes.diseasefp = '1' AND f_diabetes.cntyidfp = ('25' || s.ctfips) " \
       "WHERE s.ct_name=%s"
     sql_params = (ct_name.title(),)
     data = getData(con, sql, sql_params)
@@ -359,10 +351,8 @@ def get_synth_county_by_id(ct_fips):
     log.debug("entering get_synth_county_by_id() IP=%s" % get_ip());
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
-        "f_diabetes.rate as facts_diabetes, " \
         "ST_AsGeoJSON(the_geom) AS geometry " \
       "FROM synth_ma.synth_county_stats s " \
-      "JOIN synth_ma.synth_county_facts f_diabetes ON f_diabetes.diseasefp = '1' AND f_diabetes.cntyidfp = ('25' || s.ctfips) " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
       "WHERE ct_fips=%s"
     sql_params = (ct_fips,)
@@ -412,10 +402,8 @@ def get_synth_county_by_id_stats(ct_fips):
     """County in JSON, by id, statistics only (synthetic)"""
     log.debug("entering get_synth_county_by_id_stats() IP=%s" % get_ip());
     con = get_db_con()
-    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
-        "f_diabetes.rate as facts_diabetes " \
+    sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm " \
       "FROM synth_ma.synth_county_stats s " \
-      "JOIN synth_ma.synth_county_facts f_diabetes ON f_diabetes.diseasefp = '1' AND f_diabetes.cntyidfp = ('25' || s.ctfips) " \
       "WHERE ct_fips=%s"
     sql_params = (ct_fips,)
     data = getData(con, sql, sql_params)
@@ -454,10 +442,8 @@ def get_synth_cousub_all():
     sql = "SELECT s.ct_fips, s.ct_name, s.cs_fips, s.cs_name, s.sq_mi, s.pop, s.pop_sm, " \
         "CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, " \
         "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, " \
-        "f_diabetes.rate as facts_diabetes, " \
         "ST_AsGeoJSON(g.the_geom) AS geometry " \
         "FROM synth_ma.synth_cousub_stats s, tiger_cb14_500k.cousub g " \
-        "JOIN synth_ma.synth_cousub_facts f_diabetes ON f_diabetes.diseasefp = '1' AND f_diabetes.cosbidfp = ('25' || s.ctfips || s.csfips) " \
       "WHERE  g.statefp = '25' AND g.countyfp = s.ct_fips AND g.cousubfp = s.cs_fips AND s.cs_fips != '00000'"
     data = p2g.getData(con, sql)
     log.debug("leaving get_synth_cousub_all()");
@@ -494,9 +480,7 @@ def get_cousub_stats():
     data = getData(con, sql)
     log.debug("leaving get_cousub_stats()");
     return data
-#
-#
-#
+
 #Request only the statistics of all cousubs (synthetic)
 @app.route('/htc/api/v1/synth/cousubs/stats', methods=['GET'])
 @auto.doc()
@@ -507,10 +491,8 @@ def get_synth_cousub_stats():
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.cs_fips, s.cs_name, s.sq_mi, s.pop, s.pop_sm, " \
         "CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, " \
-        "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, " \
-        "f_diabetes.rate as facts_diabetes " \
+        "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female " \
       "FROM synth_ma.synth_cousub_stats s " \
-      "JOIN synth_ma.synth_cousub_facts f_diabetes ON f_diabetes.diseasefp = '1' AND f_diabetes.cosbidfp = ('25' || s.ctfips || s.csfips) " \
       "WHERE s.cs_fips != '00000'"
     data = getData(con, sql)
     log.debug("leaving get_synth_cousub_stats()");

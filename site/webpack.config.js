@@ -63,15 +63,19 @@ if (production) {
       }
     }),
     new webpack.DefinePlugin({
-      'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org/'),
-      'FHIR_HOST' : JSON.stringify('https://syntheticmass.mitre.org/fhir/baseDstu3/')
+      'API_HOST' : JSON.stringify('localhost:8080'),
+      'FHIR_HOST' : JSON.stringify('localhost:3001/')
+      //'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org/'),
+      //'FHIR_HOST' : JSON.stringify('https://syntheticmass.mitre.org/fhir/baseDstu3/')
     })
   ]);
 } else {
     plugins = plugins.concat([
     new webpack.DefinePlugin({
-      'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org/'),
-      'FHIR_HOST' : JSON.stringify('https://syntheticmass.mitre.org/fhir/baseDstu3/')
+      'API_HOST' : JSON.stringify('localhost:8080'),
+      'FHIR_HOST' : JSON.stringify('localhost:3001/')
+      //'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org/'),
+      //'FHIR_HOST' : JSON.stringify('https://syntheticmass.mitre.org/fhir/baseDstu3/')
     })
     ]);
 }
