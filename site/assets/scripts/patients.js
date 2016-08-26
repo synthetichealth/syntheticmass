@@ -82,9 +82,10 @@ function getPListDownloadUrl({city = '', revIncludeTables = ['*'], count = 20}, 
     param['_count'] = count;
     param['address-city'] = city;
     param['_format'] = format;
-    for (var i = 0; i < revIncludeTables.length; i++) {
+    /* Temporarily remove the reverse includes for use with the GO FHIR server */
+    /* for (var i = 0; i < revIncludeTables.length; i++) {
       revIncludeStr += '&_revInclude=' + revIncludeTables[i];
-    }
+    } */
 
     param = $.param( param );
     return BASE_URL + 'Patient?' + param + revIncludeStr;
@@ -107,7 +108,8 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
   switch (attrType) {
     case ATTR_OBSERVATION : 
       //  ajaxRecordSet("Observation?_format=json&_count=500&patient=" + pId + "&date=>=" + tenYearsAgoString + "&_sort:desc=date", oIndex);
-      params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'date',date:">=2006-08-01"});
+      const tenYearsAgo = moment(new Date()).subtract(10,'years').format("YYYY-MM-DD");
+      params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'date',date:`>=${tenYearsAgo}`});
       attrUrl += "Observation";
       break;
     case ATTR_ALLERGY :

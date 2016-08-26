@@ -64,14 +64,14 @@ if (production) {
       }
     }),
     new webpack.DefinePlugin({
-      'API_HOST' : JSON.stringify('https://syntheticmass-dev.mitre.org/'),
+      'API_HOST' : JSON.stringify('https://syntheticmass-dev.mitre.org'),
       'FHIR_HOST' : JSON.stringify('http://syntheticmass-dev.mitre.org:3001/')
     })
   ]);
 } else {
     plugins = plugins.concat([
     new webpack.DefinePlugin({
-      'API_HOST' : JSON.stringify('https://syntheticmass-dev.mitre.org/'),
+      'API_HOST' : JSON.stringify('https://syntheticmass-dev.mitre.org'),
       'FHIR_HOST' : JSON.stringify('http://syntheticmass-dev.mitre.org:3001/')
     })
     ]);

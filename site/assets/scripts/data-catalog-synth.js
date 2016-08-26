@@ -1,5 +1,5 @@
 module.exports = {
-// Synthetic exports
+source : 'Synthea',
 demographics : {
 "pop" : {
   "name":"Population",
@@ -110,15 +110,15 @@ demographics : {
   "active" : true
 },
 "chr_unemployed" : {
-  "name":"Unemployed",
-  "description":"Percentage of the population unemployed",
+  "name":"Unemployed Population",
+  "description":"Percentage of the population that is unemployed",
   "data_set_name" : "stats",
   "data_source_name" : "US Census American Community Survey (ACS) Data",
   "data_source_url" : "http://www2.census.gov/acs2012_5yr/summaryfile/",
   "key" : "chr_unemployed",
   "value_key" : "chr_unemployed",
-  "legend" : "Unemployed Population",
-  "legend_title":"Unemployed",
+  "legend" : "Pct. Unemployed",
+  "legend_title":"Unemployed Population",
   "legend_label" : "Unemployed",
   "palette" : "PuRd",
   "format_specifier" : ".1%",
@@ -185,7 +185,7 @@ geoLayers : {
 }
 },
 
-dataSets : {
+valueSets : {
 "county_stats" :{
   id:"county_stats",
   data_name:'stats',
@@ -197,10 +197,13 @@ dataSets : {
   primary_key:"ct_fips",
   parent_key: null,
   name_key: "ct_name",
+  demographics :[
+    "pop",
+    "pop_sm",
+    "pct_female",
+    "pct_male"
+  ], 
   properties : [
-    {key:"chr_unemployed",name:"Unemployed",unit:"%"},
-    {key:"chr_college",name:"College Graduates",unit:"%"},
-    {key:"chr_hs_grad",name:"High School Graduates",unit:"%"},
     {key:"pct_female",name:"Female Population"},
     {key:"pct_male",name:"Male Population"},
     {key:"pop",name:"Population",unit:""},
@@ -220,6 +223,12 @@ dataSets : {
   parent_key: "ct_fips",
   parent_name_key: "ct_name",
   name_key: "cs_name",
+  demographics :[
+    "pop",
+    "pop_sm",
+    "pct_female",
+    "pct_male"
+  ], 
   properties : [
     {key:"pct_female",name:"Female Population"},
     {key:"pct_male",name:"Male Population"},
