@@ -44,7 +44,8 @@ var plugins = [
     new CopyWebpackPlugin([
       {from:'favicon-16x16.png'},
       {from:'favicon-32x32.png'},
-      {from:'favicon.ico'}
+      {from:'favicon.ico'},
+      {from:'assets/img/profile_placeholder.png',to:'assets/img/profile_placeholder.png'}
     ])
   ];
 /*     new CopyWebpackPlugin([
@@ -63,15 +64,15 @@ if (production) {
       }
     }),
     new webpack.DefinePlugin({
-      'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org/'),
-      'FHIR_HOST' : JSON.stringify('https://syntheticmass.mitre.org/fhir/baseDstu3/')
+      'API_HOST' : JSON.stringify('https://syntheticmass-dev.mitre.org'),
+      'FHIR_HOST' : JSON.stringify('http://syntheticmass-dev.mitre.org:3001/')
     })
   ]);
 } else {
     plugins = plugins.concat([
     new webpack.DefinePlugin({
-      'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org/'),
-      'FHIR_HOST' : JSON.stringify('https://syntheticmass.mitre.org/fhir/baseDstu3/')
+      'API_HOST' : JSON.stringify('https://syntheticmass-dev.mitre.org'),
+      'FHIR_HOST' : JSON.stringify('http://syntheticmass-dev.mitre.org:3001/')
     })
     ]);
 }

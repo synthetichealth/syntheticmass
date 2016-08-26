@@ -15,124 +15,129 @@ import * as Patients from './patients';
 var DataCatalog = DataCatalogCensus;
 
 var App = window.App = {
-  dataSet:{},
   baseRegions:{},
   baseRegionIndex:{},
+  dataSet:{},
+  geoLayer: {},
+  geoId: null,
   hover_layer: {},
   infoBox:{},
   legend:{},
   map:{},
+  mapView: {},
   overlayPts:{},
-  selectedFeature:{},
+  selected_feature:{},
   selected_layer: {}
 };
 
 $(document).ready(function() {
   App.map = L.map("main_map",{doubleClickZoom:false,scrollWheelZoom:false}).setView([42.380349,-71.533836],8);
   const original_bounds = App.map.getBounds();
-  
+  App.mapView = $("#map_view");
   const tiles = new L.TileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}
   );
   App.map.addLayer(tiles);
   App.map.on("mouseout",() => App.map.removeLayer(App.hover_layer));
   // pre-fetch the geometry layers
-  
-  loadGeoLayer("cousub", DataCatalogSynth);
-  loadGeoLayer("county", DataCatalogSynth);
-  loadGeoLayer("cousub", DataCatalogCensus);
-  loadGeoLayer("county", DataCatalogCensus)
-    .done(function(data) {
-      App.baseRegions = L.geoJson(data,{style:AppStyles.baseStyle}).addTo(App.map);
-      _.each(App.baseRegions.getLayers(),function(layer) {
-        App.baseRegionIndex[layer.feature.properties.ct_fips] = layer;
-      });
-      loadDataSet("county_stats")
-        .done(function(data) {
-          App.dataSet.catalogKey = "pop";
-          addDataLegend();
-          showLayerDetails("pop");
-          $("#sort_chart").text("Sort by " + DataCatalog.demographics["pop"].name);
+  // loadGeoLayer("cousub", DataCatalogSynth);
+  // loadGeoLayer("county", DataCatalogSynth);
+  loadGeoLayer("cousub", DataCatalogCensus)
+    .done(function() {
+      loadGeoLayer("county", DataCatalogCensus)
+      .done(function(data) {
+        App.baseRegions = L.geoJson(data,{style:AppStyles.baseStyle}).addTo(App.map);
+        _.each(App.baseRegions.getLayers(),function(layer) {
+          App.baseRegionIndex[layer.feature.properties.ct_fips] = layer;
         });
+        loadValueSet("county_stats")
+          .done(function(data) {
+            populateDemographicsDropdown(App.dataSet.valueSet,DataCatalog);
+            App.dataSet.catalogKey = "pop";
+            addDataLegend();
+            showLayerDetails("pop");
+          });
+      });
     });
   
-  // populate the layers dropdown
-  $("#data_form").append(layers_dropdown_tmpl({layers:_.where(DataCatalog.demographics,{active:true})}));
-
-  $("#layer_select").change(function(e){
-    const datasetId = $(e.target).val();
-    App.dataSet.catalogKey = datasetId;
-    const fn = function() {
-      showLayerDetails(datasetId);
-      $("#sort_chart").text("Sort by " + DataCatalog.demographics[datasetId].name);
-    } 
-    if (datasetId) {
-      if (_.findWhere(App.dataSet.valueSet.properties,{key:datasetId})) {
-        fn();  
-      } else {
-        const currCatalogKey = DataCatalog.demographics[datasetId];
-        if (currCatalogKey) {
-          const setName = App.geoLayer.geometry + "_" + currCatalogKey.data_set_name;
-          if (DataCatalog.dataSets[setName]) {
-            var promise = loadDataSet(setName);
-          } else {
-            alert(`Dataset ${setName} not available`);
-          }
-        }
-        promise.done(fn);
-      }
-    }
-  });
-  
-  $("#geo_layers").change(function(e, datasourceChanged = false) {
-    const layer = $(e.target).val()
-    const geopromise = loadGeoLayer(layer);
+  $("#geo_layers_switch").change(function(e) {
+    const geoLayerKey = $(e.target).val()
     App.map.removeLayer(App.selected_layer);
-
-    // temp hack to force CCD data to load:
-    if (App.dataSet.valueSet.geometry != App.geoLayer.geometry || datasourceChanged) {
-      // we've changed geometry, so we need to refetch a dataSet for this new geometry
-      App.dataSet.json = null;
-      const currCatalogKey = DataCatalog.demographics[App.dataSet.catalogKey];
-      if (currCatalogKey) {
-        var promise = loadDataSet(App.geoLayer.geometry + "_" + currCatalogKey.data_set_name);
-      }
-      promise.done(function(){
-        showLayerDetails(App.dataSet.catalogKey);
-      });
-    }
+    const geopromise = loadGeoLayer(geoLayerKey)
+    .done(function(data) {
+      refreshDataLayer(DataCatalog);
+    });
   }); 
 
   $("#data_source_switch").change(function(e) {
     const datasource = $(e.target).val();
-
     if (datasource === "census") {
       DataCatalog = DataCatalogCensus;
-    } 
-    else if (datasource === "synthea") {
+    } else if (datasource === "synthea") {
       DataCatalog = DataCatalogSynth;
     }
     // Reset everything so the map is regenerated
-    $("#geo_layers").trigger("change", true);
+    refreshDataLayer(DataCatalog);
   });
+  
+  $("#layer_select").change(function(e){
+    const datasetId = $(e.target).val();
+    showLayerDetails(datasetId);
+  });  
   
   $("#sort_chart").click(sortChart);
   $("#sort_chart_name").click(sortChartByName);
   $("#zoom_to_all").click((e) => {e.stopPropogation;App.map.fitBounds(original_bounds);return false;});
 });
 
+/** Lookup the value set to use in the current DataCatalog given a geometryId and a demographics key
+**/
+function findValueSet(geometry,demographicsKey) {
+  return DataCatalog.valueSets[geometry + "_" + 'stats']; //DataCatalog.demographics[demographicsKey].data_set_name];
+}
+function refreshDataLayer(catalog) {
+/* determine what needs to be done with the current data layer
+ - it might need to change because the current selected demographic is not in the 
+ geoLayer or datasource.
+ */
+  App.dataSet.valueSet = findValueSet(App.geoId,App.dataSet.catalogKey);
+
+  // we might need to switch the current value in the dropdown because it isn't avail in the new dataSet
+  const layerKey = populateDemographicsDropdown(App.dataSet.valueSet,DataCatalog);
+  App.dataSet.catalogKey = layerKey;
+  loadValueSet(App.dataSet.valueSet.id)
+    .done(function(){
+      showLayerDetails(App.dataSet.catalogKey);
+    });
+}
+
+
+
+function populateDemographicsDropdown(valueSet,catalog) {
+  // populate the layers dropdown
+  let demographics = _.where(_.pick(catalog.demographics,valueSet.demographics),{active:true});
+  $("#layer_select").html(layers_dropdown_tmpl({layers:demographics}));
+
+  const isKeyAvail = _.findWhere(demographics,{key:App.dataSet.catalogKey});
+  const currentKey = isKeyAvail ? App.dataSet.catalogKey : $("#layer_select").val();
+  $("#layer_select").val(currentKey);
+  return currentKey;
+}
 
 function showLayerDetails(layerKey) {
   let layer = DataCatalog.demographics[layerKey];
+  App.dataSet.catalogKey = layerKey;
   App.dataSet.layer = layer;
   let valueKey = layer.value_key;
   App.dataSet.valueKey = valueKey;
   _.extend(layer,{region:App.dataSet.valueSet.geometry_label});
 
+  $("#patient_detail_view button.close").trigger('click');
   $("#layer_details").empty().append(layer_details_tmpl(layer));
   $("#region_details").hide();
   $("#layer_details").show();
-  
+  $("#sort_chart").text("Sort by " + layer.name);
+
   App.dataSet.values = _.pluck(App.dataSet.json,valueKey);
   const maxObj = _.max(App.dataSet.json,(d)=>{return d[valueKey]});
   const minObj = _.min(App.dataSet.json,(d)=>{return d[valueKey]});
@@ -291,49 +296,40 @@ function _updateChart(sorted) {
   return false;
 }
 
-// Edited by Louis--added extra function argument so that both data sources can be loaded manually.
+/** Load a geoLayer from a DataCatalog. This layer is expected to have only geo Features
+ * and provide only the basic properties for each feature.
+ */
+ 
 function loadGeoLayer(layerKey, loadedCatalog = DataCatalog) {
-  var layer = loadedCatalog.geoLayers[layerKey];
+  const layer = loadedCatalog.geoLayers[layerKey];
   App.geoLayer = layer;
   App.geoId = layerKey;
-
-  var promise = $.getJSON(layer.url)
-    .done(function(data) {
-      if (App.geoFeatureLayer) {
-        // leave the county borders on when we display the ccd's
-        // App.geoFeatureLayer.clearLayers();
-      }
-      loadedCatalog.geoLayers[layerKey].geoJson = data;
-
-    })
-    .fail(function(e) {
-      console.log("Fail",e);
-    });
-  return promise;
+  if (layer.geoJson && layer.geoJson.features && (layer.geoJson.features.length > 0) ) {
+    return new jQuery.Deferred().resolve();
+  } else {
+    const promise = $.getJSON(layer.url)
+      .done(function(data) {
+        App.geoLayer.geoJson = data;
+      })
+      .fail(function(e) {
+        console.log("Failure loading geography layer",e);
+      });
+    return promise;
+  }
 }
 
-function loadDataSet(layerKey) {
-  var dataSet = _.findWhere(DataCatalog.dataSets,{id:layerKey});
-  App.dataSet.valueSet = dataSet;
-  App.dataSet.dataId = layerKey;
-  var promise = $.getJSON(dataSet.url);
-  promise.done(function(data) {
-    // if we have loaded a data layer that is in the same geometry as the current geo layer,
-    // then we can merge in the values
-    // save the data back into the dataset entry in the data catalog, so we can access it later
-    DataCatalog.dataSets[layerKey].json = data;
-    if (App.dataSet.json && (App.dataSet.valueSet.geometry == App.geoLayer.geometry)) {
-      var dataIndex = _.indexBy(data,App.dataSet.valueSet.primary_key);
-      
-      _.each(App.dataSet.index,function(e){
-        _.extend(e,dataIndex[e[App.dataSet.valueSet.primary_key]]);
-      });
-    } else {
-      // we've switched geometry so we need to clear out the data 
+/** Load one of the valueSets in the DataCatalog. The layerKey should be 
+ *  one of 'county_stats' or 'cousub_stats' 
+ */
+function loadValueSet(layerKey) {
+  const valueSet = _.findWhere(DataCatalog.valueSets,{id:layerKey});
+  App.dataSet.valueSet = valueSet;
+  const promise = $.getJSON(valueSet.url)
+    .done(function(data) {
+      DataCatalog.valueSets[layerKey].json = data;
       App.dataSet.json = data;
       App.dataSet.index = _.indexBy(App.dataSet.json,App.dataSet.valueSet.primary_key);
-    }
-  });
+    });
  return promise;
 }
 
@@ -355,7 +351,7 @@ function addDataLegend() {
     if (props) {
       filterObj[App.dataSet.valueSet.primary_key] = props[App.dataSet.valueSet.primary_key];
       const currItem = _.where(App.dataSet.json,filterObj)[0];
-      if (App.dataSet.valueSet.parent_name_key) {
+      if (currItem != undefined && App.dataSet.valueSet.parent_name_key) {
         parentStr = " - " + currItem[App.dataSet.valueSet.parent_name_key] + " " + App.geoLayer.parent_geometry_label;
       }
       this._div.innerHTML =  html +
@@ -418,7 +414,6 @@ function addDataLegend() {
 }
   
 function renderFeatures(layerKey) {
-  App.dataSet.catalogKey = layerKey;
   const palette = DataCatalog.demographics[App.dataSet.catalogKey].palette || 'YlOrRd';
   let colors = colorbrewer[palette][5];
   let minVal = App.dataSet.minValue;
@@ -484,27 +479,41 @@ function renderFeatures(layerKey) {
     
       // check to see if this is the current selected feature
       
-      if (App.selected_feature && App.selected_feature[App.dataSet.valueSet.primary_key] == props[App.dataSet.valueSet.primary_key]) {
+      if (false && App.selected_feature && App.selected_feature[App.dataSet.valueSet.primary_key] == props[App.dataSet.valueSet.primary_key]) {
         $("#region_details").show();
         return;
       } else {
         App.selected_feature = props;
         App.map.removeLayer(App.selected_layer);
 
-        let layer = e.target;
+        const layer = e.target;
         let newLayer = L.multiPolygon(layer.getLatLngs(),layer.options);
         newLayer.setStyle(AppStyles.selectedFeature);
         newLayer.addTo(App.map);
         App.selected_layer = newLayer;
         App.map.removeLayer(App.hover_layer);
 
-        let pop_fmt = _getFormatter(DataCatalog.demographics.pop);
-        let pop_sm_fmt = _getFormatter(DataCatalog.demographics.pop_sm);
+        const pop_fmt = _getFormatter(DataCatalog.demographics.pop);
+        const pop_sm_fmt = _getFormatter(DataCatalog.demographics.pop_sm);
         props.name = e.target.feature.properties[App.dataSet.valueSet.name_key];
         props.pop = pop_fmt(props.pop);
-        props.pop_sm = pop_sm_fmt(props.pop_sm) + " people per sq. mi.";
+        props.pop_sm = pop_sm_fmt(props.pop_sm);
         props.sq_mi = _getFormatter(DataCatalog.demographics.sq_mi)(props.sq_mi);
-
+        props.showResidents = (App.geoLayer.geometry == "cousub");
+        const demos = _.without(App.dataSet.valueSet.demographics,"pop","pop_sm");
+        props.demographics = _.map(demos,function(key){
+        
+          const fmt = _getFormatter(DataCatalog.demographics[key]);
+          
+          return {name:DataCatalog.demographics[key].name,val:fmt(props[key])}
+        });
+        const foo = [
+          {name:"Percent Male",val:"51.2%"},
+          {name:"Percent Female",val:"48.8%"},
+          {name:"Pct. HS Graduates",val:"77.8%"},
+          {name:"Pct. College Graduates",val:"41.0%"}
+        ];
+          
         const html = $("#region_details").empty().append(region_details_tmpl(props)).show();
       
         /* select the corresponding bar in the chart */
@@ -520,9 +529,9 @@ function renderFeatures(layerKey) {
         });
 
         $("#load_resident_list").on('click',function(){
-          const promise = Patients.loadPatients({city:props.name});
+          const promise = Patients.loadPatients({city:props.name}, App.dataSet.catalogKey);
           promise.done((data) => {
-            const html = Patients.generatePatientsHTML(data);
+            const html = Patients.generatePatientsHTML(data, props.name, App.dataSet.catalogKey);
             $("#region_patients").html(html);
           });
         });
@@ -531,6 +540,7 @@ function renderFeatures(layerKey) {
           if (App.selected_layer) {
             App.map.removeLayer(App.selected_layer);
           }
+          $("#patient_detail_view button.close").trigger('click');
           App.chart.unselect();
           $("#region_details").hide();
           $("#layer_details").show();
@@ -547,9 +557,7 @@ function renderFeatures(layerKey) {
       [valueKey] : layer.feature.properties[valueKey]
     };
     const obj = App.dataSet.index[layer.feature.properties[valueKey]];
-//    if (obj) {
       _.extend(layer.feature.properties,obj);
-//    }
   });
   App.geoFeatureLayer = L.geoJson(App.geoLayer.geoJson, {style:styleFn,onEachFeature:onEachFeature}).addTo(App.map);
 }
@@ -558,18 +566,28 @@ App.paginatePatientList = function(url = null) {
   if (url !== null) {
     const promise = Patients.loadPaginationURL(url);
     promise.done((data) => {
-      const html = Patients.generatePatientsHTML(data);
+      const html = Patients.generatePatientsHTML(data, App.selected_feature.name, App.dataSet.catalogKey);
       $("#region_patients").html(html);
     });
   }
   return false;
 }
-App.showPatientDetail = function(pid) {
-  console.log(`PID=${pid}`);
+App.showPatientDetail = function(pid,elem) {
+  $("#region_patients table tr").removeClass("selected");
+  $(elem).parents("tr").addClass("selected");
   const promise = Patients.loadPatient(pid);
   promise.done((data) => {
-    const html = Patients.generatePatientDetail(data);
-    $("#patient_detail_view").html(html);
+    App.mapView.hide();
+    Patients.displayPatientDetail(data,$("#patient_detail_view"));
+    $('#patient_tab_nav a').click(function (e) {
+      e.preventDefault()
+      $(this).tab('show')
+    });
+    $("#patient_detail_view button.close").on('click',function() {
+      $("#patient_detail_view").hide();
+      $("#region_patients table tr").removeClass("selected");
+      App.mapView.show();
+    });
   });
 }
 /* Utility methods */

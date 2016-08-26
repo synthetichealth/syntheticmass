@@ -1,0 +1,20 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Vaccinations</th>
+      <th scope="col">Date Last Given</th>
+    </tr>
+  </thead>
+  <tbody id="p_vaccinations_list">
+    {{#each immunizations}}
+     <tr>
+      <td>{{name}}</td>
+      <td>{{date}}</td>
+    </tr>
+    {{else}}
+      <tr>
+        <td colspan="3">No Immunizations Recorded</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

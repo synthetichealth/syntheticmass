@@ -1,0 +1,22 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Conditions</th>
+      <th scope="col">Date of Onset</th>
+      <th scope="col">Date Resolved</th>
+    </tr>
+  </thead>
+  <tbody id="p_conditions_list">
+  {{#each conditions}}
+    <tr>
+      <td>{{name}}</td>
+      <td>{{onsetDate}}</td>
+      <td>{{resolveDate}}</td>
+    </tr>
+  {{else}}
+    <tr>
+      <td colspan="3">No Conditions Recorded</td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>

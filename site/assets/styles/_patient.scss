@@ -1,0 +1,18 @@
+#patient_detail_view {
+  background-color:#fff;
+  padding:0 15px;
+}
+
+#region_patients { 
+  table tr.selected td {background-color:#fea;}
+}
+.p_brief_family {
+  font-size: $font-size-h4;
+}
+
+#p_brief {margin-bottom:20px}
+dl.dl-horizontal {
+  
+  dt {text-align:left;width:140px;}
+  dd {margin-left:160px;}
+}
