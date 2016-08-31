@@ -1,8 +1,3 @@
-<div class="form-group">
-<label for="layer_select">Data Value:</label>
-<select id="layer_select">
-  {{#each layers}}
-    <option value="{{key}}">{{name}}</option>
-  {{/each}}
-</select>
-</div>
+{{#each layers}}
+  <option value="{{key}}">{{name}}</option>
+{{/each}}

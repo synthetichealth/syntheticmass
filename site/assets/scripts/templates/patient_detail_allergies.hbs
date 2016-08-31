@@ -1,0 +1,20 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Allergies</th>
+      <th scope="col">Date Recorded</th>
+    </tr>
+  </thead>
+  <tbody id="p_allergies_list">
+  {{#each allergies}}
+    <tr>
+      <td>{{name}}</td>
+      <td>{{recordedDate}}</td>
+    </tr>
+  {{else}}
+    <tr>
+      <td colspan="2">No Allergies Recorded</td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>

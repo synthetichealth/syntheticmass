@@ -1,5 +1,5 @@
 module.exports = {
-// Synthetic exports
+source : 'Synthea',
 demographics : {
 "pop" : {
   "name":"Population",
@@ -28,6 +28,7 @@ demographics : {
   "legend" : "Pop. Density",
   "legend_title" : "Population Density",
   "legend_label" : "Pop. Density",
+  "palette" : "PuRd",
   "format_specifier" : ".1f",
   "unit_label" : " (per mi²)",
   "active" : true
@@ -43,6 +44,7 @@ demographics : {
   "legend" : "Area",
   "legend_title" : "Area",
   "legend_label" : "Area (sq mi)",
+  "palette" : "PuRd",
   "format_specifier" : ",f",
   "unit_label" : " sq. mi.",
   "active" : false
@@ -58,6 +60,7 @@ demographics : {
   "legend" : "Pct. Female",
   "legend_title" : "Female Population",
   "legend_label" : "Female",
+  "palette" : "PuRd",
   "format_specifier" : ".1%",
   "active" : true
 },
@@ -72,6 +75,7 @@ demographics : {
   "legend" : "Pct. Male",
   "legend_title" : "Male Population",
   "legend_label" : "Male",
+  "palette" : "PuRd",
   "format_specifier" : ".1%",
   "active" : true
 },
@@ -86,6 +90,7 @@ demographics : {
   "legend" : "Pct. HS Graduates",
   "legend_title":"Population of High School Graduates",
   "legend_label" : "HS",
+  "palette" : "PuRd",
   "format_specifier" : ".1%",
   "active" : true
 },
@@ -100,24 +105,25 @@ demographics : {
   "legend" : "Pct. College Graduates",
   "legend_title":"Population of College Graduates",
   "legend_label" : "College",
+  "palette" : "PuRd",
   "format_specifier" : ".1%",
   "active" : true
 },
 "chr_unemployed" : {
-  "name":"Unemployed",
-  "description":"Percentage of the population unemployed",
+  "name":"Unemployed Population",
+  "description":"Percentage of the population that is unemployed",
   "data_set_name" : "stats",
   "data_source_name" : "US Census American Community Survey (ACS) Data",
   "data_source_url" : "http://www2.census.gov/acs2012_5yr/summaryfile/",
   "key" : "chr_unemployed",
   "value_key" : "chr_unemployed",
-  "legend" : "Unemployed Population",
-  "legend_title":"Unemployed",
+  "legend" : "Pct. Unemployed",
+  "legend_title":"Unemployed Population",
   "legend_label" : "Unemployed",
+  "palette" : "PuRd",
   "format_specifier" : ".1%",
   "active" : true
 }
-
 },
 
 geoLayers : {
@@ -179,7 +185,7 @@ geoLayers : {
 }
 },
 
-dataSets : {
+valueSets : {
 "county_stats" :{
   id:"county_stats",
   data_name:'stats',
@@ -191,10 +197,13 @@ dataSets : {
   primary_key:"ct_fips",
   parent_key: null,
   name_key: "ct_name",
+  demographics :[
+    "pop",
+    "pop_sm",
+    "pct_female",
+    "pct_male"
+  ], 
   properties : [
-    {key:"chr_unemployed",name:"Unemployed",unit:"%"},
-    {key:"chr_college",name:"College Graduates",unit:"%"},
-    {key:"chr_hs_grad",name:"High School Graduates",unit:"%"},
     {key:"pct_female",name:"Female Population"},
     {key:"pct_male",name:"Male Population"},
     {key:"pop",name:"Population",unit:""},
@@ -214,6 +223,12 @@ dataSets : {
   parent_key: "ct_fips",
   parent_name_key: "ct_name",
   name_key: "cs_name",
+  demographics :[
+    "pop",
+    "pop_sm",
+    "pct_female",
+    "pct_male"
+  ], 
   properties : [
     {key:"pct_female",name:"Female Population"},
     {key:"pct_male",name:"Male Population"},

@@ -20,8 +20,19 @@
         <th>Area</th>
         <td><a class="pull-right" href="#" id="zoom_to_feature_btn">Zoom</a>{{sq_mi}}</td>
       </tr>
+      <tr>
+        <th colspan="2">Demographics</th>
+      </tr>
+      {{#each demographics}}
+        <tr class="demographics">
+          <th>{{name}}</th>
+          <td>{{val}}</td>
+        </tr>
+      {{/each}}
   </tbody>
-</table>        
+</table>
+{{#if showResidents }}
 <div id="region_patients">
   <button class="btn btn-default" id="load_resident_list">Load Resident List</button>
 </div>
+{{/if}}
