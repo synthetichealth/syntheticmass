@@ -22,10 +22,15 @@
 </table>
 {{#if prevUrl}}
   {{paginationButton 'Prev' prevUrl}}
+{{else}}
+  <span class="na">Prev</span>
 {{/if}}
-  
+  |
 {{#if nextUrl}}
-  {{#if prevUrl}}|{{/if}} {{paginationButton 'Next' nextUrl}}
+  {{paginationButton 'Next' nextUrl}}
+{{else}}
+  <span class="na">Next</span>
 {{/if}}
-
+<p class="pull-right">
 <a download href="{{downloadUriJson}}">Download Patient List Data (JSON)</a>
+</p>

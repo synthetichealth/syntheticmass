@@ -22,7 +22,7 @@ var App = window.App = {
   geoId: null,
   hover_layer: {},
   infoBox:{},
-  legend:{},
+  legend:null,
   map:{},
   mapView: {},
   overlayPts:{},
@@ -54,7 +54,6 @@ $(document).ready(function() {
           .done(function(data) {
             populateDemographicsDropdown(App.dataSet.valueSet,DataCatalog);
             App.dataSet.catalogKey = "pop";
-            addDataLegend();
             showLayerDetails("pop");
           });
       });
@@ -138,7 +137,7 @@ function showLayerDetails(layerKey) {
   $("#layer_details").show();
   $("#sort_chart").text("Sort by " + layer.name);
 
-  App.dataSet.values = _.pluck(App.dataSet.json,valueKey);
+  App.dataSet.values = _.map(_.pluck(App.dataSet.json,valueKey),(x)=>x===undefined?0:x);
   const maxObj = _.max(App.dataSet.json,(d)=>{return d[valueKey]});
   const minObj = _.min(App.dataSet.json,(d)=>{return d[valueKey]});
 
@@ -177,7 +176,11 @@ function showLayerDetails(layerKey) {
       App.map.fitBounds(minFeature.getBounds());
       minFeature.fireEvent("click",minFeature);
     });
-    App.legend.update();
+    if (App.legend) {
+      App.legend.update();
+    } else {
+      addDataLegend();
+    }
     App.infoBox.update();
     renderChart();
     
@@ -253,15 +256,14 @@ function renderChart() {
   };
   var chart = c3.generate(chart_data);
   App.chart = chart;
-  var mean = d3.mean(_.pluck(App.dataSet.json,App.dataSet.valueKey));
-  App.chart.ygrids.add([{value: mean,text:'Mean'}]);
+  var median = d3.median(_.pluck(App.dataSet.json,App.dataSet.valueKey));
+  App.chart.ygrids.add([{value: median,text:'Median'}]);
 }
 
 function bringToCenter(feature) {
   const bounds = feature.getBounds();
   App.map.panInsideBounds(bounds);
 }
-
 
 function _sortByKey(array_data,key) {
   return _.sortBy(array_data,function(item){return item[key]});
@@ -291,8 +293,8 @@ function _updateChart(sorted) {
     columns:columns
   });
 
-  var mean = d3.mean(_.pluck(sorted,App.dataSet.valueKey));
-  App.chart.ygrids.add([{value: mean,text:'Mean'}]);
+//  var mean = d3.median(_.pluck(sorted,App.dataSet.valueKey));
+//  App.chart.ygrids.add([{value: mean,text:'Median'}]);
   return false;
 }
 
@@ -354,8 +356,9 @@ function addDataLegend() {
       if (currItem != undefined && App.dataSet.valueSet.parent_name_key) {
         parentStr = " - " + currItem[App.dataSet.valueSet.parent_name_key] + " " + App.geoLayer.parent_geometry_label;
       }
+      const dataVal = currItem[App.dataSet.valueKey] === undefined ? "n/a" : fmt(currItem[App.dataSet.valueKey]);
       this._div.innerHTML =  html +
-       '<b>' + currItem[App.dataSet.valueSet.name_key] + parentStr + '</b><br>' + fmt(currItem[App.dataSet.valueKey]);
+       '<b>' + currItem[App.dataSet.valueSet.name_key] + parentStr + '</b><br>' + dataVal;
     } else {
       this._div.innerHTML = html + 
           '<br>Hover over a ' + App.dataSet.valueSet.geometry_label;  // will need to update this based on county/ccd geometry
@@ -399,7 +402,8 @@ function addDataLegend() {
       minVal = 100;
     }
     
-    const q = d3.scale.quantile().domain([minVal,maxVal]).range(colors);
+//    const q = d3.scale.quantile().domain([minVal,maxVal]).range(colors);
+    const q = d3.scale.quantile().domain(App.dataSet.values).range(colors);
     const range = [Math.min(App.dataSet.minValue,minVal)].concat(q.quantiles());
     range.push(Math.max(App.dataSet.maxValue,maxVal));
     this._div.innerHTML = '<p>' + DataCatalog.demographics[App.dataSet.catalogKey].legend + '</p>';
@@ -437,7 +441,8 @@ function renderFeatures(layerKey) {
     maxVal = 320;
     minVal = 100;
   }
-  const q = d3.scale.quantile().domain([minVal,maxVal]).range(colors);
+//  const q = d3.scale.quantile().domain([minVal,maxVal]).range(colors);
+  const q = d3.scale.quantile().domain(App.dataSet.values).range(colors);
   const styleFn = function(feature) {
     return {weight:2, fillOpacity:AppStyles.fillOpacity, opacity:AppStyles.borderOpacity, color:AppStyles.borderColor, fillColor : q(feature.properties[App.dataSet.valueKey])}
  }
@@ -499,20 +504,14 @@ function renderFeatures(layerKey) {
         props.pop = pop_fmt(props.pop);
         props.pop_sm = pop_sm_fmt(props.pop_sm);
         props.sq_mi = _getFormatter(DataCatalog.demographics.sq_mi)(props.sq_mi);
-        props.showResidents = (App.geoLayer.geometry == "cousub");
+        props.showResidents = (App.geoLayer.geometry == "cousub") && DataCatalog.source == 'Synthea';
         const demos = _.without(App.dataSet.valueSet.demographics,"pop","pop_sm");
         props.demographics = _.map(demos,function(key){
         
           const fmt = _getFormatter(DataCatalog.demographics[key]);
-          
-          return {name:DataCatalog.demographics[key].name,val:fmt(props[key])}
+          const dataVal = props[key] === undefined ? "n/a" : fmt(props[key]);
+          return {name:DataCatalog.demographics[key].name,val:dataVal}
         });
-        const foo = [
-          {name:"Percent Male",val:"51.2%"},
-          {name:"Percent Female",val:"48.8%"},
-          {name:"Pct. HS Graduates",val:"77.8%"},
-          {name:"Pct. College Graduates",val:"41.0%"}
-        ];
           
         const html = $("#region_details").empty().append(region_details_tmpl(props)).show();
       
@@ -530,6 +529,7 @@ function renderFeatures(layerKey) {
 
         $("#load_resident_list").on('click',function(){
           const promise = Patients.loadPatients({city:props.name}, App.dataSet.catalogKey);
+          $("#region_patients").append('<div data-loader="circle" class="loader"></div>');
           promise.done((data) => {
             const html = Patients.generatePatientsHTML(data, props.name, App.dataSet.catalogKey);
             $("#region_patients").html(html);
@@ -553,9 +553,10 @@ function renderFeatures(layerKey) {
 
   App.geoFeatureLayer.eachLayer(function(layer) {  
     var valueKey = App.dataSet.valueSet.primary_key;
-    let filterObj = {
+/*    let filterObj = {
       [valueKey] : layer.feature.properties[valueKey]
     };
+    */
     const obj = App.dataSet.index[layer.feature.properties[valueKey]];
       _.extend(layer.feature.properties,obj);
   });

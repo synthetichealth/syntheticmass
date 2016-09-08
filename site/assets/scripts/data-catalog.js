@@ -221,17 +221,6 @@ valueSets : {
     "chr_college",
     "chr_diabetes",
     "chr_unemployed"
-  ], 
-  properties : [
-    {key:"chr_diabetic",name:"Diabetic",unit:"%"},
-    {key:"chr_unemployed",name:"Unemployed",unit:"%"},
-    {key:"chr_college",name:"College Graduates",unit:"%"},
-    {key:"chr_hs_grad",name:"High School Graduates",unit:"%"},
-    {key:"pct_female",name:"Female Population"},
-    {key:"pct_male",name:"Male Population"},
-    {key:"pop",name:"Population",unit:""},
-    {key:"pop_sm",name:"Pop. Density",unit:"people per sq. mi."},
-    {key:"sq_mi",name:"Area",unit:"Sq. Miles"}
   ]
 },
 "cousub_stats" : {
@@ -251,13 +240,6 @@ valueSets : {
     "pop_sm",
     "pct_female",
     "pct_male"
-  ], 
-  properties : [
-    {key:"pct_female",name:"Female Population"},
-    {key:"pct_male",name:"Male Population"},
-    {key:"pop",name:"Population",unit:""},
-    {key:"pop_sm",name:"Pop. Density",unit:"people per sq. mi."},
-    {key:"sq_mi",name:"Area",unit:"Sq. Miles"}
   ]
 }
 }
