@@ -7,7 +7,6 @@ from flask_cache import Cache
 import logging
 import re
 
-
 #need simplejson to deal with Postgres Decimal types
 import simplejson as json
 
@@ -20,14 +19,18 @@ import time
 import postgis2geojson as p2g
 from psycopg2.extras import RealDictCursor
 
-app = Flask(__name__)
+class MyFlask(Flask):
+    def get_send_file_max_age(self, name):
+        if name.lower().endswith('.xml'):
+            return 0
+        return Flask.get_send_file_max_age(self, name)
+app = MyFlask(__name__)
 
 # define the cache config, register the cache instance, and bind it to the app 
 cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 
 CORS(app)
 auto = Autodoc(app)
-
 
 global pool
 global log
@@ -553,10 +556,11 @@ def get_block_window():
 #return ccda
 @app.route('/htc/api/v1/synth/ccda/id/<string:patient_uuid>', methods=['GET'])
 @auto.doc()
-@cache.memoize(timeout=300) # cache this view for 5 minutes
+#@cache.memoize(timeout=0) # don't cache this view
 def get_synth_ccda_by_id(patient_uuid):
     """Synthetic Patient in C-CDA, by id"""
     log.debug("entering get_synth_ccda_by_id() IP=%s" % get_ip());
+    log.debug("timeout per message should be %s" % app.get_send_file_max_age(patient_uuid + '.xml'))
     return send_from_directory('/ccda', patient_uuid + '.xml')
 
 
