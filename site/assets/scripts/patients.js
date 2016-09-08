@@ -150,7 +150,8 @@ function getPatientDownloadUrl({id = 0, revIncludeTables = ['*'], count = 20}, f
     revIncludeStr += '&_revInclude=' + revIncludeTables[i];
   }
   const param = $.param( {_id : id, _count : count, _format : format } );
-  return BASE_URL + 'Patient?' + param + revIncludeStr;
+  // temporarily remove the revInclude string for the Go FHIR server
+  return BASE_URL + 'Patient?' + param; // + revIncludeStr;
 }
 
 function getPatientDownloadCcda(identifier) {

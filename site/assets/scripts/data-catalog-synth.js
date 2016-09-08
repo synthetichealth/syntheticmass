@@ -123,6 +123,21 @@ demographics : {
   "palette" : "PuRd",
   "format_specifier" : ".1%",
   "active" : true
+},
+"pct_diabetes" : {
+  "name":"Diabetes Prevalence",
+  "description":"Percentage of the population with diabetes",
+  "data_set_name" : "stats",
+  "data_source_name" : "Synthetic data generated from Synthea",
+  "data_source_url" : "https://github.com/synthetichealth/synthea",
+  "key" : "pct_diabetes",
+  "value_key" : "pct_diabetes",
+  "legend" : "Diabetes %",
+  "legend_title":"Diabetes Prevalence",
+  "legend_label" : "Diabetes",
+  "palette" : "PuRd",
+  "format_specifier" : ".1%",
+  "active" : true
 }
 },
 
@@ -201,7 +216,8 @@ valueSets : {
     "pop",
     "pop_sm",
     "pct_female",
-    "pct_male"
+    "pct_male",
+    "pct_diabetes"
   ], 
   properties : [
     {key:"pct_female",name:"Female Population"},
@@ -227,7 +243,8 @@ valueSets : {
     "pop",
     "pop_sm",
     "pct_female",
-    "pct_male"
+    "pct_male",
+    "pct_diabetes"
   ], 
   properties : [
     {key:"pct_female",name:"Female Population"},
