@@ -248,8 +248,11 @@ class Patient {
     this.gender = obj.gender || _NA;
     this.dob = this._extractPatientDOB(obj);
     this.age = this._computeAge(obj);
+    const {isDeceased,deathDate} = this._extractDeceased(obj);
+    this.isDeceased = isDeceased;
+    this.deathDate = deathDate;
     this.address = this._extractAddress(obj);
-    
+
     this.communication = this._extractCommunication(obj);
     const {race,ethnicity} = this._extractRaceAndEthnicity(obj);
     this.race = race;
@@ -312,6 +315,20 @@ class Patient {
         break;
     }
   }
+  _extractDeceased(patient) {
+    const now = new Date();
+    let isDeceased = false;
+    let deathDate = null;
+    if (patient.hasOwnProperty("deceasedDateTime")) {
+      
+      deathDate = moment(patient.deceasedDateTime).format("DD.MMM.YYYY");
+      if (moment(deathDate).isBefore(moment(now))) {
+        isDeceased = true;
+      }
+    }
+    return {isDeceased,deathDate}
+  }
+      
   _extractObservations(observations) {
     if (this.observations === undefined) {
       this.observations = [];
@@ -403,7 +420,8 @@ class Patient {
         address = [],
         postalCode = _NA;
     if (resource.address.length) {
-      return {city,state,line:address,postalCode} = resource.address[resource.address.length - 1];
+      const {city,state,line,postalCode} = resource.address[resource.address.length - 1];
+      return {city, state, address:line,postalCode};
     }
     return {city,state,address,postalCode}
   }
@@ -411,16 +429,15 @@ class Patient {
     let race=_NA,
         ethnicity = _NA;
     for (const ext of resource.extension) {
-      if (ext.valueCodeableConcept.coding.length) {
-        if (ext.url == 'http://hl7.org/fhir/StructureDefinition/us-core-race') {
-          race = ext.valueCodeableConcept.coding[ext.valueCodeableConcept.coding.length - 1].display;
+      const {url,valueCodeableConcept:{coding}={}} = ext;
+        if (url === 'http://hl7.org/fhir/StructureDefinition/us-core-race') {
+          race = coding[coding.length - 1].display;
         }
-        if (ext.url = 'http://hl7.org/fhir/StructureDefinition/us-core-ethnicity') {
-          ethnicity = ext.valueCodeableConcept.coding[ext.valueCodeableConcept.coding.length - 1].display;
+        if (url === 'http://hl7.org/fhir/StructureDefinition/us-core-ethnicity') {
+          ethnicity = coding[coding.length - 1].display;
         }
      }
-    return {race,ethnicity}
-  }
+  return {race,ethnicity}
 }
   
   _extractCommunication(resource) {
