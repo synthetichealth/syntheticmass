@@ -7,7 +7,6 @@ from flask_cache import Cache
 import logging
 import re
 
-
 #need simplejson to deal with Postgres Decimal types
 import simplejson as json
 
@@ -27,7 +26,6 @@ cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 
 CORS(app)
 auto = Autodoc(app)
-
 
 global pool
 global log
@@ -553,7 +551,7 @@ def get_block_window():
 #return ccda
 @app.route('/htc/api/v1/synth/ccda/id/<string:patient_uuid>', methods=['GET'])
 @auto.doc()
-@cache.memoize(timeout=300) # cache this view for 5 minutes
+# this view should not be cached
 def get_synth_ccda_by_id(patient_uuid):
     """Synthetic Patient in C-CDA, by id"""
     log.debug("entering get_synth_ccda_by_id() IP=%s" % get_ip());
