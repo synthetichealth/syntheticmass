@@ -117,7 +117,7 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
       attrUrl += "AllergyIntolerance";
       break;
     case ATTR_CONDITION :
-      params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'onset'});
+      params = $.param({_format:format,_count:count,patient:pid});
       attrUrl += "Condition";
       break;
     case ATTR_IMMUNIZATION :
