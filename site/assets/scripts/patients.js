@@ -356,10 +356,20 @@ class Patient {
         effDate = moment(observation.resource.effectiveDateTime).format("DD.MMM.YYYY hh:mm");
       }
       if (observation.resource.hasOwnProperty("valueQuanity") || (observation.resource['valueQuantity'] != undefined)) {
-        obsValue = observation.resource.valueQuantity['value'];
+        obsValue = fmt(observation.resource.valueQuantity['value']);
         obsUnit = observation.resource.valueQuantity.unit;
       }
-      
+      if (observation.resource.hasOwnProperty("code") && observation.resource.code.coding[0].display == "Blood Pressure") {
+        if (observation.resource.hasOwnProperty("component") && observation.resource.component.length == 2) {
+          if (observation.resource.component[0].code.coding[0].code == "8480-6" && observation.resource.component[0].code.coding[0].display == "Systolic Blood Pressure") {
+            obsValue = observation.resource.component[0].valueQuantity['value'].toString();
+          }
+          if (observation.resource.component[1].code.coding[0].code == "8462-4" && observation.resource.component[1].code.coding[0].display == "Diastolic Blood Pressure") {
+            obsValue = obsValue.concat("/",observation.resource.component[1].valueQuantity['value'].toString());
+            obsUnit = observation.resource.component[1].valueQuantity.unit;
+          }
+        }
+      }
       if (this.currBodyWeight == null &&
        observation.resource.code.coding[0].hasOwnProperty("display") &&
        observation.resource.code.coding[0].display == "Body Weight" &&
@@ -375,7 +385,7 @@ class Patient {
       this.observations.push({
         name:observation.resource.code.coding[0].display,
         code:observation.resource.code.coding[0].code,
-        obsValue : fmt(obsValue),
+        obsValue : obsValue,
         obsUnit : obsUnit,
         effDate:effDate});
     }
@@ -419,7 +429,7 @@ class Patient {
       if (cond.resource.hasOwnProperty("abatementDateTime")) {
         resolveDate = moment(cond.resource.abatementDateTime).format("DD.MMM.YYYY");
       }
-      this.conditions.push({name:cond.resource.code.coding[0].display,onsetDate,resolveDate});
+      this.conditions.push({name:cond.resource.code.coding[0].display,code:cond.resource.code.coding[0].code,onsetDate,resolveDate});
     }
   }
   

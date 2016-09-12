@@ -22,3 +22,8 @@ dl.dl-horizontal {
   filter:blur(5px);
   -webkit-filter:blur(5px);
 }
+
+#p_observations_head tr th:nth-child(3), 
+#p_observations_list tr td:nth-child(3) {
+  text-align:right;
+}
