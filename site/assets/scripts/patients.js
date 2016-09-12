@@ -109,7 +109,7 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
     case ATTR_OBSERVATION : 
       //  ajaxRecordSet("Observation?_format=json&_count=500&patient=" + pId + "&date=>=" + tenYearsAgoString + "&_sort:desc=date", oIndex);
       const tenYearsAgo = moment(new Date()).subtract(10,'years').format("YYYY-MM-DD");
-      params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'date',date:`>=${tenYearsAgo}`});
+      params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'date',date:`gte${tenYearsAgo}`});
       attrUrl += "Observation";
       break;
     case ATTR_ALLERGY :
@@ -204,7 +204,18 @@ export function displayPatientDetail(patientObj,elem) {
   patient.loadPatientAttributes(ATTR_CONDITION,elem);
   patient.loadPatientAttributes(ATTR_IMMUNIZATION,elem);
   patient.loadPatientAttributes(ATTR_MEDICATION_ORDER,elem);
+  _getPhoto(patient.gender);
 } 
+
+function _getPhoto(gender) {
+  $.ajax({
+  url: 'https://randomuser.me/api/?gender=' + gender,
+  dataType: 'json',
+  success: function(data) {
+    $("#p_patient_photo").attr("src",(data.results[0].picture.large));
+  }
+});
+}
 
 function compareByBirthDate(a, b) {
   return new Date(a.resource.birthDate) - new Date(b.resource.birthDate);
@@ -252,7 +263,8 @@ class Patient {
     this.isDeceased = isDeceased;
     this.deathDate = deathDate;
     this.address = this._extractAddress(obj);
-
+    this.currBodyWeight = null;
+    this.currHeight = null;
     this.communication = this._extractCommunication(obj);
     const {race,ethnicity} = this._extractRaceAndEthnicity(obj);
     this.race = race;
@@ -277,6 +289,8 @@ class Patient {
           self._saveEntries(data,'observations');
           self._extractObservations(self.resources.observations);
           $("#p_observations").html(patient_detail__observations_tmpl({observations:self.observations}));
+          $("#p_brief_wgt_val").html(self.currBodyWeight);
+          $("#p_brief_hgt_val").html(self.currHeight);
         });
         break;
       case ATTR_ALLERGY :
@@ -344,6 +358,19 @@ class Patient {
       if (observation.resource.hasOwnProperty("valueQuanity") || (observation.resource['valueQuantity'] != undefined)) {
         obsValue = observation.resource.valueQuantity['value'];
         obsUnit = observation.resource.valueQuantity.unit;
+      }
+      
+      if (this.currBodyWeight == null &&
+       observation.resource.code.coding[0].hasOwnProperty("display") &&
+       observation.resource.code.coding[0].display == "Body Weight" &&
+       observation.resource.code.coding[0].code == "29463-7") {
+        this.currBodyWeight = fmt(observation.resource.valueQuantity.value) + " " + observation.resource.valueQuantity.unit;
+      }
+      if (this.currHeight == null &&
+       observation.resource.code.coding[0].hasOwnProperty("display") &&
+       observation.resource.code.coding[0].display == "Body Height" &&
+       observation.resource.code.coding[0].code == "8302-2") {
+        this.currHeight = fmt(observation.resource.valueQuantity.value) + " " + observation.resource.valueQuantity.unit;
       }
       this.observations.push({
         name:observation.resource.code.coding[0].display,
