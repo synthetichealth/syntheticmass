@@ -263,8 +263,8 @@ class Patient {
     this.isDeceased = isDeceased;
     this.deathDate = deathDate;
     this.address = this._extractAddress(obj);
-    this.currBodyWeight = null;
-    this.currHeight = null;
+    this.currBodyWeight = _NA;
+    this.currHeight = _NA;
     this.communication = this._extractCommunication(obj);
     const {race,ethnicity} = this._extractRaceAndEthnicity(obj);
     this.race = race;
@@ -370,13 +370,13 @@ class Patient {
           }
         }
       }
-      if (this.currBodyWeight == null &&
+      if (this.currBodyWeight == _NA &&
        observation.resource.code.coding[0].hasOwnProperty("display") &&
        observation.resource.code.coding[0].display == "Body Weight" &&
        observation.resource.code.coding[0].code == "29463-7") {
         this.currBodyWeight = fmt(observation.resource.valueQuantity.value) + " " + observation.resource.valueQuantity.unit;
       }
-      if (this.currHeight == null &&
+      if (this.currHeight == _NA &&
        observation.resource.code.coding[0].hasOwnProperty("display") &&
        observation.resource.code.coding[0].display == "Body Height" &&
        observation.resource.code.coding[0].code == "8302-2") {
