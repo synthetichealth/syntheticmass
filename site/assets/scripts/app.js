@@ -132,7 +132,7 @@ function showLayerDetails(layerKey) {
   App.dataSet.layer = layer;
   let valueKey = layer.value_key;
   App.dataSet.valueKey = valueKey;
-  _.extend(layer,{region:App.dataSet.valueSet.geometry_label});
+  _.extend(layer,{region:App.dataSet.valueSet.geometry_label,isPopulation:(layerKey === "pop")});
 
   $("#patient_detail_view button.close").trigger('click');
   $("#layer_details").empty().append(layer_details_tmpl(layer));
@@ -141,9 +141,14 @@ function showLayerDetails(layerKey) {
   $("#sort_chart").text("Sort by " + layer.name);
 
   App.dataSet.values = _.map(_.pluck(App.dataSet.json,valueKey),(x)=>x===undefined?0:x);
+  const fmt=_getFormatter(layer);
+
   const maxObj = _.max(App.dataSet.json,(d)=>{return d[valueKey]});
   const minObj = _.min(App.dataSet.json,(d)=>{return d[valueKey]});
-
+  if (layerKey == "pop") {
+    const total_pop = _.reduce(App.dataSet.values,(m,n)=>{return m+n},0);
+    $("#detail_total_population").text(fmt(total_pop));
+  }
   App.dataSet.maxValue = d3.max(App.dataSet.values);
   App.dataSet.minValue = d3.min(App.dataSet.values);
   renderFeatures(layerKey);
@@ -154,7 +159,6 @@ function showLayerDetails(layerKey) {
   const maxFeature = _findFeatureById(maxObj[App.dataSet.valueSet.primary_key]);
   const minFeature = _findFeatureById(minObj[App.dataSet.valueSet.primary_key]);
 
-  const fmt=_getFormatter(layer);
   $("#detail_median").text(fmt(median));
   $("#detail_max").text(maxObj[App.dataSet.valueSet.name_key] + " " + App.dataSet.valueSet.geometry_label + ": " + fmt(maxObj[valueKey]) )
     .mouseover(function() {

@@ -9,6 +9,12 @@
     <th>Data Set</th>
     <td>{{#if data_source_url}}<a href="{{data_source_url}}">{{data_source_name}}</a>{{else}}{{#if data_source_html}}{{{data_source_html}}}{{else}}{{data_source_name}}{{/if}}{{/if}}</td>
   </tr>
+  {{#if isPopulation}}
+  <tr>
+    <th>Total Population</th>
+    <td><span id="detail_total_population"></span></td>
+  </tr>
+  {{/if}}
   <tr>
     <th>Median</th>
     <td><span id="detail_median"></span></td>
