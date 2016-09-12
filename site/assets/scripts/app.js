@@ -1,6 +1,7 @@
 "use strict";
 
 import jQuery from 'jquery';
+import moment from 'moment';
 import colorbrewer from './colorbrewer';
 import DataCatalogCensus from './data-catalog';
 import DataCatalogSynth from './data-catalog-synth';
@@ -37,6 +38,8 @@ $(document).ready(function() {
   const tiles = new L.TileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}
   );
+  let s = moment("2016-06-30");
+  $(".navbar-header .navbar-brand").append(": Day " + moment(Date.now()).diff(s,'days'));  
   App.map.addLayer(tiles);
   App.map.on("mouseout",() => App.map.removeLayer(App.hover_layer));
   // pre-fetch the geometry layers
