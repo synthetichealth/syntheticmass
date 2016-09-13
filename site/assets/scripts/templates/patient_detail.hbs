@@ -2,7 +2,7 @@
   <h2>Patient Record<button type="button" class="close" aria-label="Close"> <span aria-hidden="true">&times;</span> Close</button></h2>
   <div id="p_brief" class="row">
     <div id="p_brief_photo" class="col-xs-4 col-sm-3">
-      <img src="assets/img/profile_placeholder.png" alt="Patient Photo" style="width:100%;">
+      <img src="assets/img/profile_placeholder.png" id="p_patient_photo" alt="Patient Photo" style="width:100%;">
     </div>
     <div id="p_brief_records" class="col-xs-8 col-sm-9">
       <div id="p_brief_name_address" class="p_block">
@@ -23,7 +23,7 @@
           <dd>{{address.postalCode}}</dd>
         </dl>
       </div>
-      <div><a target="_blank" href="{{jsonUri}}">Download Patient Data (JSON)</a> | <a target="_blank" href="{{ccdaUri}}">Download Patient Data (CCDA)</a></div>
+      <div><a target="_blank" href="{{jsonUri}}">Download Patient Data (FHIR JSON)</a> | <a target="_blank" href="{{ccdaUri}}">Download Patient Data (CCDA XML)</a></div>
 
     </div>
   </div>
@@ -47,7 +47,7 @@
               <dt>DOB</dt>
               <dd id="p_brief_dob_val">{{dob}}</dd>
               <dt>Age</dt>
-              <dd id="p_brief_age_val">{{age}}</dd>
+              <dd id="p_brief_age_val">{{age}} {{#if isDeceased}}(Died: {{deathDate}}){{/if}}</dd>
               <dt>Gender</dt>
               <dd>{{gender}}</dd>
               <dt>Race</dt>

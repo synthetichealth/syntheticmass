@@ -109,7 +109,7 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
     case ATTR_OBSERVATION : 
       //  ajaxRecordSet("Observation?_format=json&_count=500&patient=" + pId + "&date=>=" + tenYearsAgoString + "&_sort:desc=date", oIndex);
       const tenYearsAgo = moment(new Date()).subtract(10,'years').format("YYYY-MM-DD");
-      params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'date',date:`>=${tenYearsAgo}`});
+      params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'date',date:`gte${tenYearsAgo}`});
       attrUrl += "Observation";
       break;
     case ATTR_ALLERGY :
@@ -117,7 +117,7 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
       attrUrl += "AllergyIntolerance";
       break;
     case ATTR_CONDITION :
-      params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'onset'});
+      params = $.param({_format:format,_count:count,patient:pid});
       attrUrl += "Condition";
       break;
     case ATTR_IMMUNIZATION :
@@ -150,7 +150,8 @@ function getPatientDownloadUrl({id = 0, revIncludeTables = ['*'], count = 20}, f
     revIncludeStr += '&_revInclude=' + revIncludeTables[i];
   }
   const param = $.param( {_id : id, _count : count, _format : format } );
-  return BASE_URL + 'Patient?' + param + revIncludeStr;
+  // temporarily remove the revInclude string for the Go FHIR server
+  return BASE_URL + 'Patient?' + param; // + revIncludeStr;
 }
 
 function getPatientDownloadCcda(identifier) {
@@ -203,7 +204,18 @@ export function displayPatientDetail(patientObj,elem) {
   patient.loadPatientAttributes(ATTR_CONDITION,elem);
   patient.loadPatientAttributes(ATTR_IMMUNIZATION,elem);
   patient.loadPatientAttributes(ATTR_MEDICATION_ORDER,elem);
+  _getPhoto(patient.gender);
 } 
+
+function _getPhoto(gender) {
+  $.ajax({
+  url: 'https://randomuser.me/api/?gender=' + gender,
+  dataType: 'json',
+  success: function(data) {
+    $("#p_patient_photo").attr("src",(data.results[0].picture.large));
+  }
+});
+}
 
 function compareByBirthDate(a, b) {
   return new Date(a.resource.birthDate) - new Date(b.resource.birthDate);
@@ -247,8 +259,12 @@ class Patient {
     this.gender = obj.gender || _NA;
     this.dob = this._extractPatientDOB(obj);
     this.age = this._computeAge(obj);
+    const {isDeceased,deathDate} = this._extractDeceased(obj);
+    this.isDeceased = isDeceased;
+    this.deathDate = deathDate;
     this.address = this._extractAddress(obj);
-    
+    this.currBodyWeight = null;
+    this.currHeight = null;
     this.communication = this._extractCommunication(obj);
     const {race,ethnicity} = this._extractRaceAndEthnicity(obj);
     this.race = race;
@@ -273,6 +289,8 @@ class Patient {
           self._saveEntries(data,'observations');
           self._extractObservations(self.resources.observations);
           $("#p_observations").html(patient_detail__observations_tmpl({observations:self.observations}));
+          $("#p_brief_wgt_val").html(self.currBodyWeight);
+          $("#p_brief_hgt_val").html(self.currHeight);
         });
         break;
       case ATTR_ALLERGY :
@@ -311,6 +329,20 @@ class Patient {
         break;
     }
   }
+  _extractDeceased(patient) {
+    const now = new Date();
+    let isDeceased = false;
+    let deathDate = null;
+    if (patient.hasOwnProperty("deceasedDateTime")) {
+      
+      deathDate = moment(patient.deceasedDateTime).format("DD.MMM.YYYY");
+      if (moment(deathDate).isBefore(moment(now))) {
+        isDeceased = true;
+      }
+    }
+    return {isDeceased,deathDate}
+  }
+      
   _extractObservations(observations) {
     if (this.observations === undefined) {
       this.observations = [];
@@ -324,13 +356,36 @@ class Patient {
         effDate = moment(observation.resource.effectiveDateTime).format("DD.MMM.YYYY hh:mm");
       }
       if (observation.resource.hasOwnProperty("valueQuanity") || (observation.resource['valueQuantity'] != undefined)) {
-        obsValue = observation.resource.valueQuantity['value'];
+        obsValue = fmt(observation.resource.valueQuantity['value']);
         obsUnit = observation.resource.valueQuantity.unit;
+      }
+      if (observation.resource.hasOwnProperty("code") && observation.resource.code.coding[0].display == "Blood Pressure") {
+        if (observation.resource.hasOwnProperty("component") && observation.resource.component.length == 2) {
+          if (observation.resource.component[0].code.coding[0].code == "8480-6" && observation.resource.component[0].code.coding[0].display == "Systolic Blood Pressure") {
+            obsValue = observation.resource.component[0].valueQuantity['value'].toString();
+          }
+          if (observation.resource.component[1].code.coding[0].code == "8462-4" && observation.resource.component[1].code.coding[0].display == "Diastolic Blood Pressure") {
+            obsValue = obsValue.concat("/",observation.resource.component[1].valueQuantity['value'].toString());
+            obsUnit = observation.resource.component[1].valueQuantity.unit;
+          }
+        }
+      }
+      if (this.currBodyWeight == null &&
+       observation.resource.code.coding[0].hasOwnProperty("display") &&
+       observation.resource.code.coding[0].display == "Body Weight" &&
+       observation.resource.code.coding[0].code == "29463-7") {
+        this.currBodyWeight = fmt(observation.resource.valueQuantity.value) + " " + observation.resource.valueQuantity.unit;
+      }
+      if (this.currHeight == null &&
+       observation.resource.code.coding[0].hasOwnProperty("display") &&
+       observation.resource.code.coding[0].display == "Body Height" &&
+       observation.resource.code.coding[0].code == "8302-2") {
+        this.currHeight = fmt(observation.resource.valueQuantity.value) + " " + observation.resource.valueQuantity.unit;
       }
       this.observations.push({
         name:observation.resource.code.coding[0].display,
         code:observation.resource.code.coding[0].code,
-        obsValue : fmt(obsValue),
+        obsValue : obsValue,
         obsUnit : obsUnit,
         effDate:effDate});
     }
@@ -374,7 +429,7 @@ class Patient {
       if (cond.resource.hasOwnProperty("abatementDateTime")) {
         resolveDate = moment(cond.resource.abatementDateTime).format("DD.MMM.YYYY");
       }
-      this.conditions.push({name:cond.resource.code.coding[0].display,onsetDate,resolveDate});
+      this.conditions.push({name:cond.resource.code.coding[0].display,code:cond.resource.code.coding[0].code,onsetDate,resolveDate});
     }
   }
   
@@ -402,7 +457,8 @@ class Patient {
         address = [],
         postalCode = _NA;
     if (resource.address.length) {
-      return {city,state,line:address,postalCode} = resource.address[resource.address.length - 1];
+      const {city,state,line,postalCode} = resource.address[resource.address.length - 1];
+      return {city, state, address:line,postalCode};
     }
     return {city,state,address,postalCode}
   }
@@ -410,16 +466,15 @@ class Patient {
     let race=_NA,
         ethnicity = _NA;
     for (const ext of resource.extension) {
-      if (ext.valueCodeableConcept.coding.length) {
-        if (ext.url == 'http://hl7.org/fhir/StructureDefinition/us-core-race') {
-          race = ext.valueCodeableConcept.coding[ext.valueCodeableConcept.coding.length - 1].display;
+      const {url,valueCodeableConcept:{coding}={}} = ext;
+        if (url === 'http://hl7.org/fhir/StructureDefinition/us-core-race') {
+          race = coding[coding.length - 1].display;
         }
-        if (ext.url = 'http://hl7.org/fhir/StructureDefinition/us-core-ethnicity') {
-          ethnicity = ext.valueCodeableConcept.coding[ext.valueCodeableConcept.coding.length - 1].display;
+        if (url === 'http://hl7.org/fhir/StructureDefinition/us-core-ethnicity') {
+          ethnicity = coding[coding.length - 1].display;
         }
      }
-    return {race,ethnicity}
-  }
+  return {race,ethnicity}
 }
   
   _extractCommunication(resource) {

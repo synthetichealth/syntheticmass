@@ -16,3 +16,14 @@ dl.dl-horizontal {
   dt {text-align:left;width:140px;}
   dd {margin-left:160px;}
 }
+
+#p_patient_photo {
+  transition: all 1s ease-in-out;
+  filter:blur(5px);
+  -webkit-filter:blur(5px);
+}
+
+#p_observations_head tr th:nth-child(3), 
+#p_observations_list tr td:nth-child(3) {
+  text-align:right;
+}
