@@ -2,6 +2,7 @@
 
 import jQuery from 'jquery';
 import moment from 'moment';
+// import Wkt from 'wicket';
 import colorbrewer from './colorbrewer';
 import DataCatalogCensus from './data-catalog';
 import DataCatalogSynth from './data-catalog-synth';
@@ -539,7 +540,15 @@ function renderFeatures(layerKey) {
           $("#region_patients").append('<div data-loader="circle" class="loader"></div>');
           promise.done((data) => {
             const html = Patients.generatePatientsHTML(data, props.name, App.dataSet.catalogKey);
+            const points = Patients.generatePatientLocations(data);
             $("#region_patients").html(html);
+/*            var wkt = new Wkt.Wkt();
+            for (point of points) {
+              wkt.read(points.point);
+            }
+            console.log(wkt);
+            console.log(wkt.toObject());
+  */          
           });
         });
                   

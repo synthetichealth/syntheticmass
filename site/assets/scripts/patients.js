@@ -12,9 +12,17 @@ const BASE_URL = `${FHIR_HOST}`;
 const FORMAT_JSON = "json";
 const FORMAT_XML  = "xml";
 
-const BASE_URL_CCDA = BASE_URL + 'api/v1/synth/ccda/id/';
+const BASE_URL_CCDA = BASE_URL + 'htc/api/v1/synth/ccda/id/';
 const CONDITION_SYSTEM_URL = "http://snomed.info/sct";
 const CODE_DIABETES = '44054006';
+const CODES = { 
+  loinc : {
+    weight : "29463-7",
+    height : "8302-2"
+  }
+}
+  
+    
 
 
 // Returns true if the layer is a condition, rather than something that can be added as a parameter
@@ -154,8 +162,8 @@ function getPatientDownloadUrl({id = 0, revIncludeTables = ['*'], count = 20}, f
   return BASE_URL + 'Patient?' + param; // + revIncludeStr;
 }
 
-function getPatientDownloadCcda(identifier) {
-  return BASE_URL_CCDA + identifier;  
+function getPatientDownloadCcda({id=0}) {
+  return BASE_URL_CCDA + id;  
 }
 
 export function loadPaginationURL(url = '') {
@@ -166,6 +174,22 @@ export function loadPaginationURL(url = '') {
   });
   return promise;
 }
+
+export function generatePatientLocations(rawPatients) {
+  let points = [];
+  if (rawPatients.entry && rawPatients.entry.length) {
+    for (const patient of rawPatients.entry) {
+      const {id,extension} = patient.resource;
+      for (const ext of extension) {
+        if (ext.url == "http://standardhealthrecord.org/fhir/extensions/wkt-geospatialpoint") {
+          points.push({point:ext.valueString,id});
+        }
+      }
+    }
+  }
+  return points;
+}
+
 
 export function generatePatientsHTML(rawResponse, city = "", dataLayer = "") {
   let nextUrl = "",
@@ -275,8 +299,8 @@ class Patient {
     this.observations = [];
     this.allergies = [];
     this.medicationOrders = [];
-    this.jsonUri = getPatientDownloadUrl(this.pid);
-    this.ccdaUri = getPatientDownloadCcda(this._extractPatientIdentifier(obj));
+    this.jsonUri = getPatientDownloadUrl({id:this.pid});
+    this.ccdaUri = getPatientDownloadCcda({id:this._extractPatientIdentifier(obj)});
 
   }
   
@@ -352,39 +376,42 @@ class Patient {
         obsValue = _NA,
         obsUnit = "";
     for (const observation of observations) {
-      if (observation.resource.hasOwnProperty("effectiveDateTime")) {
-        effDate = moment(observation.resource.effectiveDateTime).format("DD.MMM.YYYY hh:mm");
+      const {effectiveDateTime,valueQuantity,component,code:{coding}={}} = observation.resource;
+      if (effectiveDateTime) {
+        effDate = moment(effectiveDateTime).format("DD.MMM.YYYY hh:mm");
       }
-      if (observation.resource.hasOwnProperty("valueQuanity") || (observation.resource['valueQuantity'] != undefined)) {
-        obsValue = fmt(observation.resource.valueQuantity['value']);
-        obsUnit = observation.resource.valueQuantity.unit;
+      if (valueQuantity) {
+        obsValue = fmt(valueQuantity['value']);
+        obsUnit = valueQuantity.unit;
       }
-      if (observation.resource.hasOwnProperty("code") && observation.resource.code.coding[0].display == "Blood Pressure") {
-        if (observation.resource.hasOwnProperty("component") && observation.resource.component.length == 2) {
-          if (observation.resource.component[0].code.coding[0].code == "8480-6" && observation.resource.component[0].code.coding[0].display == "Systolic Blood Pressure") {
-            obsValue = observation.resource.component[0].valueQuantity['value'].toString();
+      if (coding.length && coding[0].display == "Blood Pressure") {
+        if (component && component.length == 2) {
+          let {valueQuantity,code:{coding}={}} = component[0];
+          if (coding[0].code == "8480-6" && coding[0].display == "Systolic Blood Pressure") {
+            obsValue = valueQuantity['value'].toString();
           }
-          if (observation.resource.component[1].code.coding[0].code == "8462-4" && observation.resource.component[1].code.coding[0].display == "Diastolic Blood Pressure") {
-            obsValue = obsValue.concat("/",observation.resource.component[1].valueQuantity['value'].toString());
-            obsUnit = observation.resource.component[1].valueQuantity.unit;
+          ({valueQuantity,code:{coding}={}} = component[1]);
+          if (coding[0].code == "8462-4" && coding[0].display == "Diastolic Blood Pressure") {
+            obsValue = obsValue.concat("/",valueQuantity['value'].toString());
+            obsUnit = valueQuantity.unit;
           }
         }
       }
       if (this.currBodyWeight == _NA &&
-       observation.resource.code.coding[0].hasOwnProperty("display") &&
-       observation.resource.code.coding[0].display == "Body Weight" &&
-       observation.resource.code.coding[0].code == "29463-7") {
-        this.currBodyWeight = fmt(observation.resource.valueQuantity.value) + " " + observation.resource.valueQuantity.unit;
+       coding[0].hasOwnProperty("display") &&
+       coding[0].display == "Body Weight" &&
+       coding[0].code == CODES.loinc.weight) {
+        this.currBodyWeight = fmt(valueQuantity.value) + " " + valueQuantity.unit;
       }
       if (this.currHeight == _NA &&
-       observation.resource.code.coding[0].hasOwnProperty("display") &&
-       observation.resource.code.coding[0].display == "Body Height" &&
-       observation.resource.code.coding[0].code == "8302-2") {
-        this.currHeight = fmt(observation.resource.valueQuantity.value) + " " + observation.resource.valueQuantity.unit;
+       coding[0].hasOwnProperty("display") &&
+       coding[0].display == "Body Height" &&
+       coding[0].code == CODES.loinc.height) {
+        this.currHeight = fmt(valueQuantity.value) + " " + valueQuantity.unit;
       }
       this.observations.push({
-        name:observation.resource.code.coding[0].display,
-        code:observation.resource.code.coding[0].code,
+        name:coding[0].display,
+        code:coding[0].code,
         obsValue : obsValue,
         obsUnit : obsUnit,
         effDate:effDate});
