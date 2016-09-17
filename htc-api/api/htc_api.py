@@ -144,8 +144,10 @@ def get_counties_all():
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
         "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes_rate as chr_diabetes, " \
+	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths, " \
         "ST_AsGeoJSON(the_geom) AS geometry " \
       "FROM synth_ma.county_stats s " \
+      "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips"
     data = p2g.getData(con, sql)
@@ -221,8 +223,10 @@ def get_counties_stats():
     log.debug("entering get_counties_stats() IP=%s" % get_ip());
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
-        "chr.hs_graduate / 100 as chr_hs_grad, chr.college / 100 as chr_college, chr.unemployed / 100 as chr_unemployed, chr.diabetes_rate / 100 as chr_diabetes " \
+        "chr.hs_graduate / 100 as chr_hs_grad, chr.college / 100 as chr_college, chr.unemployed / 100 as chr_unemployed, chr.diabetes_rate / 100 as chr_diabetes, " \
+	"chr.adult_obesity / 100 as chr_adult_obesity, chr.adult_smoking / 100 as chr_adult_smoking, opioid.deaths as opioid_deaths " \
       "FROM synth_ma.county_stats s " \
+      "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips"
     data = getData(con, sql)
     log.debug("leaving get_counties_stats()");
@@ -256,8 +260,10 @@ def get_county_by_name(ct_name):
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
         "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes_rate as chr_diabetes, " \
+	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths, " \
         "ST_AsGeoJSON(s.ct_poly) AS geometry " \
       "FROM synth_ma.county_stats s " \
+      "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips " \
       "WHERE ct_name=%s"
@@ -311,8 +317,10 @@ def get_county_by_name_stats(ct_name):
     log.debug("entering get_county_by_name_stats() IP=%s" % get_ip());
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
-        "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes as chr_diabetes " \
+        "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes as chr_diabetes, " \
+	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths " \
       "FROM synth_ma.county_stats s " \
+      "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips " \
       "WHERE s.ct_name=%s"
     sql_params = (ct_name.title(),)
@@ -348,8 +356,10 @@ def get_county_by_id(ct_fips):
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
         "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes_rate as chr_diabetes, " \
+	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths, " \
         "ST_AsGeoJSON(the_geom) AS geometry " \
       "FROM synth_ma.county_stats s " \
+      "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips " \
       "WHERE ct_fips=%s"
@@ -403,8 +413,10 @@ def get_county_by_id_stats(ct_fips):
     log.debug("entering get_county_by_id_stats() IP=%s" % get_ip());
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
-        "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes_rate as chr_diabetes " \
-      "FROM synth_ma.county_stats  s " \
+        "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes_rate as chr_diabetes, " \
+	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths " \
+      "FROM synth_ma.county_stats s " \
+      "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips " \
       "WHERE ct_fips=%s"
     sql_params = (ct_fips,)
