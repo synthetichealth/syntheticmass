@@ -138,6 +138,48 @@ demographics : {
   "legend_label" : "Diabetes",
   "format_specifier" : ".1%",
   "active" : true
+},
+"chr_adult_obesity" : {
+  "name":"Adult Obesity Prevalence",
+  "description":"Percentage of the adult population with obesity",
+  "data_set_name" : "stats",
+  "data_source_name" : "US Census American Community Survey (ACS) Data",
+  "data_source_url" : "???",
+  "key" : "chr_adult_obesity",
+  "value_key" : "chr_adult_obesity",
+  "legend" : "Obesity %",
+  "legend_title":"Actual Obesity Prevalence",
+  "legend_label" : "Obesity",
+  "format_specifier" : ".1%",
+  "active" : true
+},
+"chr_adult_smoking" : {
+  "name":"Adult Smoking Prevalence",
+  "description":"Percentage of the adult population who smoke tobacco products",
+  "data_set_name" : "stats",
+  "data_source_name" : "US Census American Community Survey (ACS) Data",
+  "data_source_url" : "???",
+  "key" : "chr_adult_smoking",
+  "value_key" : "chr_adult_smoking",
+  "legend" : "Adult Smoking %",
+  "legend_title":"Adult Smoking Prevalence",
+  "legend_label" : "Adult Smoking",
+  "format_specifier" : ".1%",
+  "active" : true
+},
+"opioid_deaths" : {
+  "name":"Opioid-related dealths",
+  "description":"Number of deaths related to opioid use",
+  "data_set_name" : "stats",
+  "data_source_name" : "???",
+  "data_source_url" : "???",
+  "key" : "opioid_deaths",
+  "value_key" : "opioid_deaths",
+  "legend" : "Opioid deaths",
+  "legend_title":"Opioid Deaths",
+  "legend_label" : "Opioid deaths",
+  "format_specifier" : ",.0f",
+  "active" : true
 }
 },
 
@@ -220,7 +262,10 @@ valueSets : {
     "chr_hs_grad",
     "chr_college",
     "chr_diabetes",
-    "chr_unemployed"
+    "chr_unemployed",
+    "chr_adult_obesity",
+    "chr_adult_smoking",
+    "opioid_deaths"
   ]
 },
 "cousub_stats" : {

@@ -2,7 +2,8 @@
 
 import jQuery from 'jquery';
 import moment from 'moment';
-// import Wkt from 'wicket';
+import page from 'page';
+import Wkt from './lib/Wicket/wicket';
 import colorbrewer from './colorbrewer';
 import DataCatalogCensus from './data-catalog';
 import DataCatalogSynth from './data-catalog-synth';
@@ -31,6 +32,13 @@ var App = window.App = {
   selected_feature:{},
   selected_layer: {}
 };
+function index() {
+  console.log("called index route");
+}
+
+function parse(ctx,next) {
+  console.log('parse',window.location.pathname);
+}
 
 $(document).ready(function() {
   App.map = L.map("main_map",{doubleClickZoom:false,scrollWheelZoom:false}).setView([42.380349,-71.533836],8);
@@ -39,6 +47,12 @@ $(document).ready(function() {
   const tiles = new L.TileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}
   );
+  page.base('/dashboard');
+  page('/',index);
+  page('*',parse);
+  page('/census',(ctx, next)=>{$("#data_source_switch").val("census");next();});
+  page('/synthea',(ctx, next)=>{$("#data_source_switch").val("synthea");next();});
+  page({ dispatch: false, click:false, popstate:false });
   let s = moment("2016-06-30");
   $(".navbar-header .navbar-brand").append(": Day " + moment(Date.now()).diff(s,'days'));  
   App.map.addLayer(tiles);
@@ -74,6 +88,7 @@ $(document).ready(function() {
 
   $("#data_source_switch").change(function(e) {
     const datasource = $(e.target).val();
+    page(`dashboard/${datasource}`);
     if (datasource === "census") {
       DataCatalog = DataCatalogCensus;
     } else if (datasource === "synthea") {
@@ -160,7 +175,7 @@ function showLayerDetails(layerKey) {
   const maxFeature = _findFeatureById(maxObj[App.dataSet.valueSet.primary_key]);
   const minFeature = _findFeatureById(minObj[App.dataSet.valueSet.primary_key]);
 
-  $("#detail_median").text(fmt(median));
+  $("#detail_mean").text(fmt(mean));
   $("#detail_max").text(maxObj[App.dataSet.valueSet.name_key] + " " + App.dataSet.valueSet.geometry_label + ": " + fmt(maxObj[valueKey]) )
     .mouseover(function() {
       maxFeature.fireEvent("mouseover",maxFeature);
@@ -264,8 +279,8 @@ function renderChart() {
   };
   var chart = c3.generate(chart_data);
   App.chart = chart;
-  var median = d3.median(_.pluck(App.dataSet.json,App.dataSet.valueKey));
-  App.chart.ygrids.add([{value: median,text:'Median'}]);
+  var mean = d3.mean(_.pluck(App.dataSet.json,App.dataSet.valueKey));
+  App.chart.ygrids.add([{value: mean,text:'Mean'}]);
 }
 
 function bringToCenter(feature) {
@@ -542,13 +557,13 @@ function renderFeatures(layerKey) {
             const html = Patients.generatePatientsHTML(data, props.name, App.dataSet.catalogKey);
             const points = Patients.generatePatientLocations(data);
             $("#region_patients").html(html);
-/*            var wkt = new Wkt.Wkt();
-            for (point of points) {
+            var wkt = new Wkt.Wkt();
+            for (const point of points) {
               wkt.read(points.point);
             }
             console.log(wkt);
             console.log(wkt.toObject());
-  */          
+            
           });
         });
                   

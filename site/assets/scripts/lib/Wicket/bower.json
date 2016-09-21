@@ -1,0 +1,17 @@
+{
+  "name": "Wicket",
+  "version": "1.3.1",
+  "main": [
+    "wicket.js",
+    "wicket-arcgis.js",
+    "wicket-gmap3.js",
+    "wicket-leaflet.js"
+  ],
+  "ignore": [
+    "doc/*",
+    "tests/*"
+  ],
+  "devDependencies": {
+    "uglify-js": "2.4.x"
+  }
+}

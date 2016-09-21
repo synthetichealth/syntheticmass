@@ -23,6 +23,11 @@ var plugins = [
       title: 'Explore Synthetic Mass'
     }),
     new HtmlWebpackPlugin({
+      template: './dashboard/index.html',
+      filename:'./dashboard/index.html',
+      title: 'Explore Synthetic Mass'
+    }),
+    new HtmlWebpackPlugin({
       template:'./about.html',
       filename:'about.html',
       title: 'About Synthetic Mass',
@@ -140,5 +145,4 @@ module.exports = {
    fs: "empty"
   },
   plugins: plugins
-  
 };
