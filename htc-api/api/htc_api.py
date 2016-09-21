@@ -456,9 +456,11 @@ def get_cousub_all():
     sql = "SELECT s.ct_fips, s.ct_name, s.cs_fips, s.cs_name, s.sq_mi, s.pop, s.pop_sm, " \
         "CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, " \
         "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, " \
+	"op.deaths AS opioid_deaths, " \
         "ST_AsGeoJSON(g.the_geom) AS geometry " \
-    	"FROM synth_ma.cousub_stats s, tiger_cb14_500k.cousub g " \
-      "WHERE  g.statefp = '25' AND g.countyfp = s.ct_fips AND g.cousubfp = s.cs_fips AND s.cs_fips != '00000'"
+    	"FROM synth_ma.cousub_stats s " \
+	"JOIN tiger_cb14_500k.cousub g ON g.statefp = '25' AND g.countyfp = s.ct_fips AND g.cousubfp = s.cs_fips AND s.cs_fips != '00000' " \
+	"JOIN synth_ma.ma_opioid2 op ON op.cousubfp = s.cs_fips AND s.cs_fips != '00000' AND year = '2015'"
     data = p2g.getData(con, sql)
     log.debug("leaving get_cousub_all()");
     return data
@@ -509,8 +511,10 @@ def get_cousub_stats():
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.cs_fips, s.cs_name, s.sq_mi, s.pop, s.pop_sm, " \
         "CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, " \
-        "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female " \
+        "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, " \
+	"op.deaths AS opioid_deaths " \
       "FROM synth_ma.cousub_stats s " \
+	"JOIN synth_ma.ma_opioid2 op ON op.cousubfp = s.cs_fips AND s.cs_fips != '00000' AND year = '2015' " \
       "WHERE s.cs_fips != '00000'"
     data = getData(con, sql)
     log.debug("leaving get_cousub_stats()");
