@@ -37,3 +37,5 @@ It will also switch between the development API Server and production API server
 
 All files necessary for the production site are located in the `build` directory. Copy those files to the webroot of the server. 
 
+## Server Setup
+Server setup is documented in detail in [Synthetic Mass Server Setup](./setup/syntheticmass_setup.md). All releases should be documented in [RELEASE.md](./setup/RELEASE.md).
