@@ -1,0 +1,10 @@
+[Unit]
+Description=Job that starts the gofhir server
+After=postgresql.service mongod.service
+
+[Service]
+Type=forking
+ExecStart=/bin/bash /opt/gofhir/fhir_run.sh
+
+[Install]
+WantedBy=multi-user.target
