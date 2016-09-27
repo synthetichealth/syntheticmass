@@ -21,7 +21,17 @@ $ webpack
 $ cd build && python -m SimpleHTTPServer 8000
 ```
 
-This will run the webpack command to build the site into the `build` directory and then use a lightweight HTTP server to serve the directory on port 8000. 
+This will run the webpack command to build the site into the `build` directory and then use a lightweight HTTP server to serve the directory on port 8000.
+
+### Staging Mode
+To prepare the site for deployment to the staging server, you need to build the site in staging mode.
+
+```bash
+$ npm run build-stg
+```
+
+This will clean out the `build` directory of all files and run webpack in `staging` mode with the `production` flag **disabled**. This will turn on additional optimizations in webpack to minify the bundled code.
+It will also switch between the development API Server and staging API server. See the file `site/webpack.config.js`
 
 ### Production mode
 To prepare the site for deployment to the production server, you need to build the site in production mode.
@@ -30,12 +40,11 @@ To prepare the site for deployment to the production server, you need to build t
 $ npm run build
 ```
 
-This will clean out the `build` directory of all files, and run webpack with the `production` flag enabled. This will turn on additional optimizations in webpack to minify the bundled code.
-It will also switch between the development API Server and production API server. See the file `site/webpack.config.js`
+This will make the same optimizations as `build-stg` but will run webpack with the `production` flag **enabled**.
 
 ### Deploying the site
 
 All files necessary for the production site are located in the `build` directory. Copy those files to the webroot of the server. 
 
 ## Server Setup
-Server setup is documented in detail in [Synthetic Mass Server Setup](./setup/syntheticmass_setup.md). All releases should be documented in [RELEASE.md](./setup/RELEASE.md).
+Server setup is documented in detail in [Synthetic Mass Server Setup](./setup/README.md). All releases should be documented in [RELEASE.md](./RELEASE.md).

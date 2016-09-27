@@ -16,7 +16,7 @@ Deploying Updates
 -----------------
 Any updates to the server should be tested **FIRST** on syntheticmass-stg.mitre.org. If successful, those updates should then be repeated on syntheticmass.mitre.org (the production environment).
 
-Successful changes to syntheticmass-stg.mitre.org should be documented in [RELEASE.md](./RELEASE.md). See RELEASE.md for more details.
+Successful changes to syntheticmass-stg.mitre.org should be documented in [RELEASE.md](../RELEASE.md). See RELEASE.md for more details.
 
 Ubuntu Version
 --------------
