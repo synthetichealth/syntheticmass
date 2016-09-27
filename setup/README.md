@@ -1,6 +1,21 @@
 Synthetic Mass Server Setup
 ===========================
 
+Contents
+--------
+* [Setup MongoDB](#setup-mongodb)
+* [Setup PostgreSQL](#setup-postgresql)
+* [Setup Postgis](#setup-postgis)
+* [Setup Python](#setup-python)
+* [Setup Go](#setup-go)
+* [Setup Node](#setup-node)
+* [Setup Database Schema](#setup-database-schema)
+* [Setup GoFHIR Server](#setup-the-gofhir-server)
+* [Setup HTC API](#setup-the-htc-api)
+* [Setup Synthetic Mass UI](#setup-the-synthetic-mass-ui)
+* [Setup System Services](#setup-system-services)
+* [Configure Apache Proxy](#configure-apache-proxy)
+
 Software Installed
 ------------------
 The following software packages and versions are installed and required to run Synthetic Mass:
@@ -9,14 +24,15 @@ The following software packages and versions are installed and required to run S
 2. PostgreSQL (9.5.4)
 3. Python (2.7.11+)
 4. Go (1.7)
-4. [GoFHIR](https://github.com/synthetichealth/gofhir.git)
-5. [HTC API](https://github.com/synthetichealth/syntheticmass.git)
+5. Node (5.11.0) 
+6. [GoFHIR](https://github.com/synthetichealth/gofhir.git)
+7. [Synthetic Mass](https://github.com/synthetichealth/syntheticmass.git)
 
 Deploying Updates
 -----------------
 Any updates to the server should be tested **FIRST** on syntheticmass-stg.mitre.org. If successful, those updates should then be repeated on syntheticmass.mitre.org (the production environment).
 
-Successful changes to syntheticmass-stg.mitre.org should be documented in [RELEASE.md](./RELEASE.md). See RELEASE.md for more details.
+Successful changes to syntheticmass-stg.mitre.org should be documented in [RELEASE.md](../RELEASE.md). See RELEASE.md for more details.
 
 Ubuntu Version
 --------------
@@ -33,7 +49,7 @@ I recommend you add the following to your `.bashrc` to quickly enable or disable
 ```
 # Function to setup MITRE proxy
 function setproxy() {
-	server='gatekeeper.mitre.org:80';
+	server='<MITRE_proxy_server>:80';
 	export HTTP_PROXY=$server;
 	export http_proxy=$server;
 	export HTTPS_PROXY=$server;
@@ -55,8 +71,9 @@ For most of this setup you will need to `http_proxy` and `https_proxy` set.
 
 **NOTE:** When updating syntheticmass.mitre.org (the production site) the proxy should be **unset**.
 
-Verify MongoDB version
-----------------------
+Setup MongoDB
+-------------
+Verify the installed MongoDB version:
 
 ```
 $ mongod --version
@@ -72,8 +89,9 @@ sudo -E apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
 	
 From there the install instructions should be the same as the document linked above.	
 
-Verify PostgreSQL version
--------------------------
+Setup PostgreSQL
+-----------------
+Verify the installed PostgreSQL version:
 
 ```
 $ psql --version
@@ -86,8 +104,8 @@ $ sudo apt-get update
 $ sudo apt-get install postgresql postgresql-contrib
 ```
 
-Verify PostGIS Postgres Extension
----------------------------------
+Setup PostGIS
+-------------
 
 Synthetic Mass uses additional geolocation data stored in Postgres made possible by the [PostGIS Postgres extension](http://postgis.net/). To check if PostGIS is installed run the following:
 	
@@ -101,16 +119,19 @@ If PostGIS is not installed. Install PostGIS by running:
 $ sudo apt-get install -y postgis postgresql-9.5-postgis-2.2
 ```
 
-Verify System Python Version
+Setup Python
+------------
+Verify the system python version:
 
 ```
 $ python --version
 ```
 	
-Since the HTC API is not sensitive to the minor Python versions, any Python 2.7.11+ is fine. This includes the latest Python 2.7.12.
+Since the HTC API is not sensitive to the minor Python versions, any Python 2.7.11+ is fine. This includes the latest Python 2.7.12. In most cases an adequate version of Python will come with Ubuntu by default.
 
-Verify Go Version
------------------
+Setup Go
+--------
+Verify the installed Go version:
 
 ```
 $ go version
@@ -157,9 +178,38 @@ Finally, test that Go 1.7 is installed:
 ```
 $ go version
 ```
+
+Setup Node
+----------
+Verify the current node version:
+
+```
+$ node -v
+```
+
+If not installed or out of date, install or update Node using [NVM](https://github.com/creationix/nvm), the Node Version Manager. If you don't have NVM installed, run the following from your `install/` directory:
+
+```
+$ cd $HOME/install/
+$ wget --no-check-certificate https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh -O install_nvm.sh
+$ sudo chmod +x install_nvm.sh
+$ ./install_nvm.sh
+```
+
+This will install NVM in `~/.nvm`. You can confirm your installation was successful by running:
+
+```
+$ command -v nvm  # should print 'nvm' to the console
+```
+
+Once installed, you can then use NVM to get any node version:
+
+```
+$ nvm install 5.11.0
+```
 	
-Setup `synth_ma` Schema in Postgres
------------------------------------
+Setup Database Schema
+---------------------
 
 All patient/condition statistics used by Synthetic Mass are stored in a series of Postgres tables in the `synth_ma` schema. There are a series of `.sql` files and scripts in the `pgstats` repository that should be used to setup the database.
 	
@@ -181,8 +231,8 @@ $ ./deploy_stats_schema.sh
 This will drop the old stats tables and views if they exist, then create new tables and views populated with the latest stats data. See the `pgstats` [README](https://github.com/synthetichealth/pgstats) for more information.
 	 
 
-Setup GoFHIR
-------------
+Setup the GoFHIR Server
+-----------------------
 
 Create a new directory on your `GOPATH` and clone the GoFHIR repo:
 	
@@ -240,80 +290,82 @@ Then copy everything needed to run GoFHIR into this directory:
 ```
 $ cd $GPATH/src/github.com/synthetichealth/gofhir
 $ sudo cp gofhir /opt/gofhir
+$ sudo cp fhir_run.sh /opt/gofhir
 $ sudo cp -r config /opt/gofhir
 $ sudo cp -r conformance /opt/gofhir
 ```
 
-Create a log file to capture GoFHIR's output:
-
-```
-$ cd /opt/gofhir
-$ sudo touch gofhir.log && chmod ugo+x gofhir.log
-```
-
-Finally, create a `fhir_run.sh` script in `/opt/gofhir/` that will be called by a system service:
-
-```
-$ cd /opt/gofhir
-$ sudo touch fhir_run.sh && chmod ugo+x fhir_run.sh
-```
-
-`fhir_run.sh` should contain:
-
-```
-#!/bin/bash
-cd /opt/gofhir
-nohup ./gofhir -pgurl postgres://fhir:fhir@localhost/fhir?sslmode=disable > ./gofhir.log &
-```
-
 Setup the HTC API
--------------------------
-In `/opt/` clone the `syntheticmass` repository:
+-----------------
+Clone the `syntheticmass` repository:
 
 ```
-$ cd /opt/
+$ cd $HOME/synthetichealth/
 $ sudo - E git clone https://github.com/synthetichealth/syntheticmass.git
 ```
 
+This repository contains both the HTC API and the Synthetic Mass UI.
+
+Copy the API into `/opt/syntheticmass/`:
+
+```
+$ cd syntheticmass
+$ sudo mkdir -p /opt/syntheticmass/
+$ sudo cp -r htc-api/ /opt/syntheticmass/
+```
+
+Make sure the `htc_run.sh` script is executable:
+
+```
+$ cd /opt/syntheticmass/htc-api/api/ && ls -l
+$ sudo chmod +x htc_run.sh  # if it's not already executable
+```
+
+Setup the Synthetic Mass UI
+---------------------------
+
+From the `syntheticmass` repository build the latest version of the UI. You may need to fetch the required Node packages using npm.
+
+```
+$ cd $HOME/synthetichealth/syntheticmass/site/
+$ npm install
+```
+
+If you encounter issues with the MITRE proxy, set NPM's proxy configuration:
+
+```
+npm config set proxy http://<MITRE_proxy_server>:80
+npm config set https-proxy http://<MITRE_proxy_server>:80
+```
+
+Which build to use depends on the current server (Staging or Production). For Staging, use:
+
+```
+$ npm run build-stg
+```
+
+For production, use:
+
+```
+$ npm run build
+```
+
+This cleans the `build/` directory and rebuilds the site. When the build is finished the full site will be in `build/`. To deploy the site copy this build directory to `var/www/syntheticmass.mitre.org/public_html/`:
+
+```
+$ sudo rm -r /var/www/syntheticmass.mitre.org/public_html/
+$ sudo cp -r build/ /var/www/syntheticmass.mitre.org/public_html/
+```
+
+
 Setup System Services
 ---------------------
-We use system services to automatically start the APIs when the server boots. Create the following files in `/lib/systemd/system`:
+We use system services to automatically start the APIs when the server boots. Copy the following files from `syntheticmass/setup/services/` to `/lib/systemd/system/`:
 
 ```
-$ cd /lib/systemd/system
-$ sudo touch gofhir-auto.service
-$ sudo touch htc-api-auto.service
-```
-
-**`gofhir-auto.service`** should contain:
-
-```
-[Unit]
-Description=Job that starts the gofhir server
-After=postgresql.service mongod.service
-
-[Service]
-Type=forking
-ExecStart=/bin/bash /opt/gofhir/fhir_run.sh
-
-[Install]
-WantedBy=multi-user.target
-```
-
-**`htc-api-auto.service`** should contain:
-
-```
-[Unit]
-Description=Job that starts the syntheticmass htc api
-After=postgresql.service
-
-[Service]
-Type=forking
-WorkingDirectory=/opt/syntheticmass/htc-api/api
-ExecStart=/bin/bash /opt/syntheticmass/htc-api/api/htc_run.sh
-
-[Install]
-WantedBy=multi-user.target
+$ cd $HOME/synthetichealth/syntheticmass/setup/services/
+$ sudo cp gofhir-auto.service /lib/systemd/system/
+$ sudo cp htc-api-auto.service /lib/systemd/system/
 ```
 
 Then enable and start these services:
@@ -334,8 +386,8 @@ $ ps -aux | grep htc_api.py
 ```
 
 
-Configure Apache Mod_Proxy
---------------------------
+Configure Apache Proxy
+----------------------
 To access the GoFHIR and HTC APIs over the open web Apache's proxy settings need to be configured:
 
 ```
@@ -369,6 +421,12 @@ Where, depending on your environment, `<host>` is one of:
 1. `syntheticmass-dev`
 2. `syntheticmass-stg`
 3. `syntheticmass`
+
+Once you've updated the configuration, **restart Apache** for the new settings to take effect:
+
+```
+$ sudo systemctl restart apache2.service
+```
 
 Check that the APIs are now accessible using a web browser:
 
