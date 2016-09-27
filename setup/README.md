@@ -4,7 +4,7 @@ Synthetic Mass Server Setup
 Contents
 --------
 * [Setup MongoDB](#setup-mongodb)
-* [Setup PostgreSQL](#etup-postgresql)
+* [Setup PostgreSQL](#setup-postgresql)
 * [Setup Postgis](#setup-postgis)
 * [Setup Python](#setup-python)
 * [Setup Go](#setup-go)
@@ -290,30 +290,9 @@ Then copy everything needed to run GoFHIR into this directory:
 ```
 $ cd $GPATH/src/github.com/synthetichealth/gofhir
 $ sudo cp gofhir /opt/gofhir
+$ sudo cp fhir_run.sh /opt/gofhir
 $ sudo cp -r config /opt/gofhir
 $ sudo cp -r conformance /opt/gofhir
-```
-
-Create a log file to capture GoFHIR's output:
-
-```
-$ cd /opt/gofhir
-$ sudo touch gofhir.log && chmod ugo+x gofhir.log
-```
-
-Finally, create a `fhir_run.sh` script in `/opt/gofhir/` that will be called by a system service:
-
-```
-$ cd /opt/gofhir
-$ sudo touch fhir_run.sh && chmod ugo+x fhir_run.sh
-```
-
-`fhir_run.sh` should contain:
-
-```
-#!/bin/bash
-cd /opt/gofhir
-nohup ./gofhir -pgurl postgres://fhir:fhir@localhost/fhir?sslmode=disable > ./gofhir.log &
 ```
 
 Setup the HTC API
@@ -371,7 +350,7 @@ For production, use:
 $ npm run build
 ```
 
-This cleans the `build/` directory and rebuilds the site. When the build is finished the full site will be in `build/`. To deploy the site copy this build directory to `var/www/...`:
+This cleans the `build/` directory and rebuilds the site. When the build is finished the full site will be in `build/`. To deploy the site copy this build directory to `var/www/syntheticmass.mitre.org/public_html/`:
 
 ```
 $ sudo rm -r /var/www/syntheticmass.mitre.org/public_html/
@@ -381,43 +360,12 @@ $ sudo cp -r build/ /var/www/syntheticmass.mitre.org/public_html/
 
 Setup System Services
 ---------------------
-We use system services to automatically start the APIs when the server boots. Create the following files in `/lib/systemd/system`:
+We use system services to automatically start the APIs when the server boots. Copy the following files from `syntheticmass/setup/services/` to `/lib/systemd/system/`:
 
 ```
-$ cd /lib/systemd/system
-$ sudo touch gofhir-auto.service
-$ sudo touch htc-api-auto.service
-```
-
-**`gofhir-auto.service`** should contain:
-
-```
-[Unit]
-Description=Job that starts the gofhir server
-After=postgresql.service mongod.service
-
-[Service]
-Type=forking
-ExecStart=/bin/bash /opt/gofhir/fhir_run.sh
-
-[Install]
-WantedBy=multi-user.target
-```
-
-**`htc-api-auto.service`** should contain:
-
-```
-[Unit]
-Description=Job that starts the syntheticmass htc api
-After=postgresql.service
-
-[Service]
-Type=forking
-WorkingDirectory=/opt/syntheticmass/htc-api/api
-ExecStart=/bin/bash /opt/syntheticmass/htc-api/api/htc_run.sh
-
-[Install]
-WantedBy=multi-user.target
+$ cd $HOME/synthetichealth/syntheticmass/setup/services/
+$ sudo cp gofhir-auto.service /lib/systemd/system/
+$ sudo cp htc-api-auto.service /lib/systemd/system/
 ```
 
 Then enable and start these services:
@@ -473,6 +421,12 @@ Where, depending on your environment, `<host>` is one of:
 1. `syntheticmass-dev`
 2. `syntheticmass-stg`
 3. `syntheticmass`
+
+Once you've updated the configuration, **restart Apache** for the new settings to take effect:
+
+```
+$ sudo systemctl restart apache2.service
+```
 
 Check that the APIs are now accessible using a web browser:
 
