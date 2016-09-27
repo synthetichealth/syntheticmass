@@ -66,7 +66,7 @@ if (node_env === "production") {
     }),
     new webpack.DefinePlugin({
       'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org'),
-      'FHIR_HOST' : JSON.stringify('http://syntheticmass.mitre.org/fhir/')
+      'FHIR_HOST' : JSON.stringify('https://syntheticmass.mitre.org/fhir/')
     })
   ]);
 } else if (node_env === "staging") {
@@ -82,14 +82,14 @@ if (node_env === "production") {
     }),
     new webpack.DefinePlugin({
       'API_HOST' : JSON.stringify('https://syntheticmass-stg.mitre.org'),
-      'FHIR_HOST' : JSON.stringify('http://syntheticmass-stg.mitre.org/fhir/')
+      'FHIR_HOST' : JSON.stringify('https://syntheticmass-stg.mitre.org/fhir/')
     })
   ]);
 } else {
     plugins = plugins.concat([
     new webpack.DefinePlugin({
       'API_HOST' : JSON.stringify('https://syntheticmass-dev.mitre.org'),
-      'FHIR_HOST' : JSON.stringify('http://syntheticmass-dev.mitre.org:3001/')
+      'FHIR_HOST' : JSON.stringify('https://syntheticmass-dev.mitre.org/fhir/')
     })
     ]);
 }
