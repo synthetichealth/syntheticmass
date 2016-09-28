@@ -83,7 +83,7 @@ function getPListDownloadUrl({city = '', revIncludeTables = ['*'], count = 20}, 
     param['address-city'] = city;
     param['_format'] = format;
     for (var i = 0; i < revIncludeTables.length; i++) {
-      revIncludeStr += '&_revInclude=' + revIncludeTables[i];
+      revIncludeStr += '&_revinclude=' + revIncludeTables[i];
     }
 
     param = $.param( param );
@@ -141,12 +141,12 @@ export function loadPatient(pid = '') {
   return promise;
 }
 
-function getPatientDownloadUrl({id = 0, revIncludeTables = ['*'], count = 20}, format=FORMAT_JSON) {
+function getPatientDownloadUrl(id, {revIncludeTables = ['*'], count = 20}, format=FORMAT_JSON) {
   var paramObj = {_id : id, _count : count, _format : format};
   var revIncludeStr = '';
 
   for (var i = 0; i < revIncludeTables.length; i++) {
-    revIncludeStr += '&_revInclude=' + revIncludeTables[i];
+    revIncludeStr += '&_revinclude=' + revIncludeTables[i];
   }
   const param = $.param( {_id : id, _count : count, _format : format } );
   return BASE_URL + 'Patient?' + param + revIncludeStr;
