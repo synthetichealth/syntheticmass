@@ -82,10 +82,9 @@ function getPListDownloadUrl({city = '', revIncludeTables = ['*'], count = 20}, 
     param['_count'] = count;
     param['address-city'] = city;
     param['_format'] = format;
-    /* Temporarily remove the reverse includes for use with the GO FHIR server */
-    /* for (var i = 0; i < revIncludeTables.length; i++) {
+    for (var i = 0; i < revIncludeTables.length; i++) {
       revIncludeStr += '&_revInclude=' + revIncludeTables[i];
-    } */
+    }
 
     param = $.param( param );
     return BASE_URL + 'Patient?' + param + revIncludeStr;
@@ -150,8 +149,7 @@ function getPatientDownloadUrl({id = 0, revIncludeTables = ['*'], count = 20}, f
     revIncludeStr += '&_revInclude=' + revIncludeTables[i];
   }
   const param = $.param( {_id : id, _count : count, _format : format } );
-  // temporarily remove the revInclude string for the Go FHIR server
-  return BASE_URL + 'Patient?' + param; // + revIncludeStr;
+  return BASE_URL + 'Patient?' + param + revIncludeStr;
 }
 
 function getPatientDownloadCcda(identifier) {
