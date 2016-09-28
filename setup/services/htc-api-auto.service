@@ -1,0 +1,11 @@
+[Unit]
+Description=Job that starts the syntheticmass htc api
+After=postgresql.service
+
+[Service]
+Type=forking
+WorkingDirectory=/opt/syntheticmass/htc-api/api
+ExecStart=/bin/bash /opt/syntheticmass/htc-api/api/htc_run.sh
+
+[Install]
+WantedBy=multi-user.target

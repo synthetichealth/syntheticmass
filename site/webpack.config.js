@@ -7,7 +7,8 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 var extractCSS = new ExtractTextPlugin('stylesheets/[name].css');
 
-var production = (process.env.NODE_ENV === "production");
+var node_env = process.env.NODE_ENV;
+var production = (node_env === "production");
 var webpack = require('webpack');
 var path = require("path");
 var dir_js = path.resolve(__dirname, 'assets/scripts');
@@ -57,7 +58,7 @@ var plugins = [
       {from:'about.html'}
     ]),
 */  
-if (production) {
+if (node_env === "production") {
   plugins = plugins.concat([
       new CleanPlugin('build'),
       new webpack.optimize.DedupePlugin(),
@@ -70,14 +71,30 @@ if (production) {
     }),
     new webpack.DefinePlugin({
       'API_HOST' : JSON.stringify('https://syntheticmass.mitre.org'),
-      'FHIR_HOST' : JSON.stringify('http://syntheticmass.mitre.org:3001/')
+      'FHIR_HOST' : JSON.stringify('https://syntheticmass.mitre.org/fhir/')
+    })
+  ]);
+} else if (node_env === "staging") {
+    plugins = plugins.concat([
+      new CleanPlugin('build'),
+      new webpack.optimize.DedupePlugin(),
+      new webpack.optimize.OccurenceOrderPlugin(),
+      new webpack.optimize.UglifyJsPlugin({mangle: false, sourcemap:false}),
+      new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+      }
+    }),
+    new webpack.DefinePlugin({
+      'API_HOST' : JSON.stringify('https://syntheticmass-stg.mitre.org'),
+      'FHIR_HOST' : JSON.stringify('https://syntheticmass-stg.mitre.org/fhir/')
     })
   ]);
 } else {
     plugins = plugins.concat([
     new webpack.DefinePlugin({
       'API_HOST' : JSON.stringify('https://syntheticmass-dev.mitre.org'),
-      'FHIR_HOST' : JSON.stringify('http://syntheticmass-dev.mitre.org:3001/')
+      'FHIR_HOST' : JSON.stringify('https://syntheticmass-dev.mitre.org/fhir/')
     })
     ]);
 }
