@@ -1,4 +1,4 @@
-syntheticmass.mitre.org
+syntheticmass-dev.mitre.org
 5432
 fhir
 synth_ma
