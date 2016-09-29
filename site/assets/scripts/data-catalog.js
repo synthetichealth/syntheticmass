@@ -284,7 +284,8 @@ valueSets : {
     "pop",
     "pop_sm",
     "pct_female",
-    "pct_male"
+    "pct_male",
+    "opioid_deaths"
   ]
 }
 }

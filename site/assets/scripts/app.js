@@ -2,7 +2,7 @@
 
 import jQuery from 'jquery';
 import moment from 'moment';
-import page from 'page';
+// import page from 'page';
 import Wkt from './lib/Wicket/wicket';
 import colorbrewer from './colorbrewer';
 import DataCatalogCensus from './data-catalog';
@@ -32,6 +32,7 @@ var App = window.App = {
   selected_feature:{},
   selected_layer: {}
 };
+
 function index() {
   console.log("called index route");
 }
@@ -41,18 +42,19 @@ function parse(ctx,next) {
 }
 
 $(document).ready(function() {
-  App.map = L.map("main_map",{doubleClickZoom:false,scrollWheelZoom:false}).setView([42.380349,-71.533836],8);
+  App.map = L.map("main_map",{doubleClickZoom:false,scrollWheelZoom:false}).setView([42.1,-71.333836],8);
   const original_bounds = App.map.getBounds();
   App.mapView = $("#map_view");
   const tiles = new L.TileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}
   );
-  page.base('/dashboard');
-  page('/',index);
-  page('*',parse);
+/*  page.base('/dashboard');
+  page('/',() => {console.log("index")});
+  page('*',() => {console.log("parse")});
   page('/census',(ctx, next)=>{$("#data_source_switch").val("census");next();});
   page('/synthea',(ctx, next)=>{$("#data_source_switch").val("synthea");next();});
-  page({ dispatch: false, click:false, popstate:false });
+  page({ dispatch: false, click:false, popstate:false }); 
+*/
   let s = moment("2016-06-30");
   $(".navbar-header .navbar-brand").append(": Day " + moment(Date.now()).diff(s,'days'));  
   App.map.addLayer(tiles);
@@ -88,7 +90,7 @@ $(document).ready(function() {
 
   $("#data_source_switch").change(function(e) {
     const datasource = $(e.target).val();
-    page(`dashboard/${datasource}`);
+  //  page(`dashboard/${datasource}`);
     if (datasource === "census") {
       DataCatalog = DataCatalogCensus;
     } else if (datasource === "synthea") {
@@ -583,11 +585,7 @@ function renderFeatures(layerKey) {
   App.geoFeatureLayer = L.geoJson(App.geoLayer.geoJson);
 
   App.geoFeatureLayer.eachLayer(function(layer) {  
-    var valueKey = App.dataSet.valueSet.primary_key;
-/*    let filterObj = {
-      [valueKey] : layer.feature.properties[valueKey]
-    };
-    */
+    const valueKey = App.dataSet.valueSet.primary_key;
     const obj = App.dataSet.index[layer.feature.properties[valueKey]];
       _.extend(layer.feature.properties,obj);
   });
@@ -628,6 +626,7 @@ function _getFormatter({format_specifier=".1f",unit_label = ""}) {
   const fmt = d3.format(format_specifier);
   return (val) => { return fmt(val) + unit_label; }
 }
+
 function _getValueFormatter({value_format_specifier=".1f",format_specifier=".1f"}) {
   const fmt = d3.format(value_format_specifier);
   const mult = format_specifier.lastIndexOf("%") > -1 ? 100 :1;

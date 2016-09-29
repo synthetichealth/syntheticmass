@@ -138,6 +138,36 @@ demographics : {
   "palette" : "PuRd",
   "format_specifier" : ".1%",
   "active" : true
+},
+"pct_opioid_addiction" : {
+  "name":"Opioid Addiction Prevalence",
+  "description":"Percentage of the population with opioid addiction diagnosis in health record",
+  "data_set_name" : "stats",
+  "data_source_name" : "Synthetic data generated from Synthea",
+  "data_source_url" : "https://github.com/synthetichealth/synthea",
+  "key" : "pct_opioid_addiction",
+  "value_key" : "pct_opioid_addiction",
+  "legend" : "Opioid Addiction %",
+  "legend_title":"Opioid Addiction Prevalence",
+  "legend_label" : "Opioid Addiction %",
+  "palette" : "PuRd",
+  "format_specifier" : ".1%",
+  "active" : true
+},
+"pct_heart_disease" : {
+  "name":"Heart Disease Prevalence",
+  "description":"Percentage of the population with heart disease",
+  "data_set_name" : "stats",
+  "data_source_name" : "Synthetic data generated from Synthea",
+  "data_source_url" : "https://github.com/synthetichealth/synthea",
+  "key" : "pct_heart_disease",
+  "value_key" : "pct_heart_disease",
+  "legend" : "Heart Disease %",
+  "legend_title":"Heart Disease Prevalence",
+  "legend_label" : "Heart Disease %",
+  "palette" : "PuRd",
+  "format_specifier" : ".1%",
+  "active" : true
 }
 },
 
@@ -217,14 +247,9 @@ valueSets : {
     "pop_sm",
     "pct_female",
     "pct_male",
-    "pct_diabetes"
-  ], 
-  properties : [
-    {key:"pct_female",name:"Female Population"},
-    {key:"pct_male",name:"Male Population"},
-    {key:"pop",name:"Population",unit:""},
-    {key:"pop_sm",name:"Pop. Density",unit:"people per sq. mi."},
-    {key:"sq_mi",name:"Area",unit:"Sq. Miles"}
+    "pct_diabetes",
+    "pct_opioid_addiction",
+    "pct_heart_disease"
   ]
 },
 "cousub_stats" : {
@@ -244,14 +269,9 @@ valueSets : {
     "pop_sm",
     "pct_female",
     "pct_male",
-    "pct_diabetes"
-  ], 
-  properties : [
-    {key:"pct_female",name:"Female Population"},
-    {key:"pct_male",name:"Male Population"},
-    {key:"pop",name:"Population",unit:""},
-    {key:"pop_sm",name:"Pop. Density",unit:"people per sq. mi."},
-    {key:"sq_mi",name:"Area",unit:"Sq. Miles"}
+    "pct_diabetes",
+    "pct_opioid_addiction",
+    "pct_heart_disease"
   ]
 }
 }

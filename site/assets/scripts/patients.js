@@ -149,7 +149,7 @@ export function loadPatient(pid = '') {
   return promise;
 }
 
-function getPatientDownloadUrl(id, {revIncludeTables = ['*'], count = 20}, format=FORMAT_JSON) {
+function getPatientDownloadUrl({id,revIncludeTables = ['*'], count = 20}, format=FORMAT_JSON) {
   var paramObj = {_id : id, _count : count, _format : format};
   var revIncludeStr = '';
 
@@ -297,8 +297,8 @@ class Patient {
     this.observations = [];
     this.allergies = [];
     this.medicationOrders = [];
-    this.jsonUri = getPatientDownloadUrl(this.pid, {});
-    this.ccdaUri = getPatientDownloadCcda(this._extractPatientIdentifier(obj));
+    this.jsonUri = getPatientDownloadUrl({id:this.pid});
+    this.ccdaUri = getPatientDownloadCcda({id:this._extractPatientIdentifier(obj)});
   }
   
   loadPatientAttributes(attrType) {
