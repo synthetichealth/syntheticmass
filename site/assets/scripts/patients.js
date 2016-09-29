@@ -273,7 +273,7 @@ class Patient {
     this.observations = [];
     this.allergies = [];
     this.medicationOrders = [];
-    this.jsonUri = getPatientDownloadUrl(this.pid);
+    this.jsonUri = getPatientDownloadUrl(this.pid, {});
     this.ccdaUri = getPatientDownloadCcda(this._extractPatientIdentifier(obj));
 
   }
