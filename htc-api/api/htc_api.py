@@ -154,10 +154,11 @@ def get_synth_counties_all():
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
         "ST_AsGeoJSON(s.ct_poly) AS geometry, " \
-        "d.rate as pct_diabetes " \
+        "dd.rate as pct_diabetes, dhd.rate as pct_heart_disease, doa.rate as pct_opioid_addiction " \
         "FROM synth_ma.synth_county_pop_stats s " \
-        "JOIN synth_ma.synth_county_disease_stats d ON d.ct_fips = s.ct_fips " \
-        "WHERE d.disease_name = 'diabetes'"
+        "JOIN synth_ma.synth_county_disease_stats dd ON dd.ct_fips = s.ct_fips AND dd.disease_name = 'diabetes' " \
+	"JOIN synth_ma.synth_county_disease_stats dhd ON dhd.ct_fips = s.ct_fips AND dhd.disease_name = 'heart_disease' " \
+	"JOIN synth_ma.synth_county_disease_stats doa ON doa.ct_fips = s.ct_fips AND doa.disease_name = 'opioid_addiction' "
     data = p2g.getData(con, sql)
     log.debug("leaving get_synth_counties_all()")
     return data
@@ -244,10 +245,11 @@ def get_synth_counties_stats():
     log.debug("entering get_synth_counties_stats() IP=%s" % get_ip())
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
-      "d.rate as pct_diabetes " \
+      "dd.rate as pct_diabetes, dhd.rate as pct_heart_disease, doa.rate as pct_opioid_addiction " \
       "FROM synth_ma.synth_county_pop_stats s " \
-      "JOIN synth_ma.synth_county_disease_stats d ON d.ct_fips = s.ct_fips " \
-      "WHERE d.disease_name = 'diabetes'"
+      "JOIN synth_ma.synth_county_disease_stats dd ON dd.ct_fips = s.ct_fips AND dd.disease_name = 'diabetes' " \
+      "JOIN synth_ma.synth_county_disease_stats dhd ON dhd.ct_fips = s.ct_fips AND dhd.disease_name = 'heart_disease' " \
+      "JOIN synth_ma.synth_county_disease_stats doa ON doa.ct_fips = s.ct_fips AND doa.disease_name = 'opioid_addiction' "
     data = getData(con, sql)
     log.debug("leaving get_synth_counties_stats()")
     return data
@@ -286,10 +288,12 @@ def get_synth_county_by_name(ct_name):
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
         "ST_AsGeoJSON(s.ct_poly) AS geometry, " \
-        "d.rate AS pct_diabetes " \
+        "dd.rate AS pct_diabetes, dhd.rate as pct_heart_disease, doa.rate as pct_opioid_addiction " \
       "FROM synth_ma.synth_county_pop_stats s " \
-      "JOIN synth_ma.synth_county_disease_stats d ON d.ct_fips = s.ct_fips " \
-      "WHERE s.ct_name = %s AND d.disease_name = 'diabetes'"
+      "JOIN synth_ma.synth_county_disease_stats dd ON dd.ct_fips = s.ct_fips AND dd.disease_name = 'diabetes' " \
+      "JOIN synth_ma.synth_county_disease_stats dhd ON dhd.ct_fips = s.ct_fips AND dhd.disease_name = 'heart_disease' " \
+      "JOIN synth_ma.synth_county_disease_stats doa ON doa.ct_fips = s.ct_fips AND doa.disease_name = 'opioid_addiction' " \
+      "WHERE s.ct_name = %s"
     sql_params = (ct_name.title(),)
     data = p2g.getData(con, sql, sql_params)
     log.debug("leaving get_synth_county_by_name()")
@@ -340,10 +344,12 @@ def get_synth_county_by_name_stats(ct_name):
     log.debug("entering get_synth_county_by_name_stats() IP=%s" % get_ip())
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
-      "d.rate as pct_diabetes " \
+      "dd.rate as pct_diabetes, dhd.rate as pct_heart_disease, doa.rate as pct_opioid_addiction " \
       "FROM synth_ma.synth_county_pop_stats s " \
-      "JOIN synth_ma.synth_county_disease_stats d ON d.ct_fips = s.ct_fips " \
-      "WHERE s.ct_name = %s AND d.disease_name = 'diabetes'"
+      "JOIN synth_ma.synth_county_disease_stats dd ON dd.ct_fips = s.ct_fips AND dd.disease_name = 'diabetes' " \
+      "JOIN synth_ma.synth_county_disease_stats dhd ON dhd.ct_fips = s.ct_fips AND dhd.disease_name = 'heart_disease' " \
+      "JOIN synth_ma.synth_county_disease_stats doa ON doa.ct_fips = s.ct_fips AND doa.disease_name = 'opioid_addiction' " \
+      "WHERE s.ct_name = %s "
     sql_params = (ct_name.title(),)
     data = getData(con, sql, sql_params)
     log.debug("leaving get_synth_county_by_name_stats()")
@@ -380,11 +386,13 @@ def get_synth_county_by_id(ct_fips):
     log.debug("entering get_synth_county_by_id() IP=%s" % get_ip())
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
-        "d.rate as pct_diabetes, " \
+        "dd.rate as pct_diabetes, dhd.rate as pct_heart_disease, doa.rate as pct_opioid_addiction, " \
         "ST_AsGeoJSON(s.ct_poly) AS geometry " \
       "FROM synth_ma.synth_county_pop_stats s " \
-      "JOIN synth_ma.synth_county_disease_stats d ON d.ct_fips = s.ct_fips " \
-      "WHERE s.ct_fips = %s AND d.disease_name = 'diabetes'"
+      "JOIN synth_ma.synth_county_disease_stats dd ON dd.ct_fips = s.ct_fips AND dd.disease_name = 'diabetes' " \
+      "JOIN synth_ma.synth_county_disease_stats dhd ON dhd.ct_fips = s.ct_fips AND dhd.disease_name = 'heart_disease' " \
+      "JOIN synth_ma.synth_county_disease_stats doa ON doa.ct_fips = s.ct_fips AND doa.disease_name = 'opioid_addiction' " \
+      "WHERE s.ct_fips = %s"
     sql_params = (ct_fips,)
     data = p2g.getData(con, sql, sql_params)
     log.debug("leaving get_synth_county_by_id()")
@@ -435,10 +443,12 @@ def get_synth_county_by_id_stats(ct_fips):
     log.debug("entering get_synth_county_by_id_stats() IP=%s" % get_ip())
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, s.pop_sm, " \
-        "d.rate as pct_diabetes " \
+        "dd.rate as pct_diabetes, dhd.rate as pct_heart_disease, doa.rate as pct_opioid_addiction " \
       "FROM synth_ma.synth_county_pop_stats s " \
-      "JOIN synth_ma.synth_county_disease_stats d ON d.ct_fips = s.ct_fips " \
-      "WHERE s.ct_fips = %s AND d.disease_name = 'diabetes'"
+      "JOIN synth_ma.synth_county_disease_stats dd ON dd.ct_fips = s.ct_fips AND dd.disease_name = 'diabetes' " \
+      "JOIN synth_ma.synth_county_disease_stats dhd ON dhd.ct_fips = s.ct_fips AND dhd.disease_name = 'heart_disease' " \
+      "JOIN synth_ma.synth_county_disease_stats doa ON doa.ct_fips = s.ct_fips AND doa.disease_name = 'opioid_addiction' " \
+      "WHERE s.ct_fips = %s"
     sql_params = (ct_fips,)
     data = getData(con, sql, sql_params)
     log.debug("leaving get_synth_county_by_id_stats()")
@@ -478,11 +488,12 @@ def get_synth_cousub_all():
     sql = "SELECT s.ct_fips, s.ct_name, s.cs_fips, s.cs_name, s.sq_mi, s.pop, s.pop_sm, " \
         "CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, " \
         "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, " \
-        "d.rate as pct_diabetes, " \
+        "dd.rate as pct_diabetes, dhd.rate as pct_heart_disease, doa.rate as pct_opioid_addiction, " \
         "ST_AsGeoJSON(s.cs_poly) AS geometry " \
         "FROM synth_ma.synth_cousub_pop_stats s " \
-        "JOIN synth_ma.synth_cousub_disease_stats d ON d.cs_fips = s.cs_fips " \
-        "WHERE d.disease_name = 'diabetes'"
+        "JOIN synth_ma.synth_cousub_disease_stats dd ON dd.cs_fips = s.cs_fips AND dd.disease_name = 'diabetes' " \
+        "JOIN synth_ma.synth_cousub_disease_stats dhd ON dhd.cs_fips = s.cs_fips AND dhd.disease_name = 'heart_disease' " \
+        "JOIN synth_ma.synth_cousub_disease_stats doa ON doa.cs_fips = s.cs_fips AND doa.disease_name = 'opioid_addiction' "
     data = p2g.getData(con, sql)
     log.debug("leaving get_synth_cousub_all()")
     return data
@@ -532,10 +543,11 @@ def get_synth_cousub_stats():
     sql = "SELECT s.ct_fips, s.ct_name, s.cs_fips, s.cs_name, s.sq_mi, s.pop, s.pop_sm, " \
         "CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, " \
         "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, " \
-        "d.rate as pct_diabetes " \
+        "dd.rate as pct_diabetes, dhd.rate as pct_heart_disease, doa.rate as pct_opioid_addiction " \
       "FROM synth_ma.synth_cousub_pop_stats s " \
-      "JOIN synth_ma.synth_cousub_disease_stats d ON d.cs_fips = s.cs_fips " \
-      "WHERE d.disease_name = 'diabetes'"
+      "JOIN synth_ma.synth_cousub_disease_stats dd ON dd.cs_fips = s.cs_fips AND dd.disease_name = 'diabetes' " \
+      "JOIN synth_ma.synth_cousub_disease_stats dhd ON dhd.cs_fips = s.cs_fips AND dhd.disease_name = 'heart_disease' " \
+      "JOIN synth_ma.synth_cousub_disease_stats doa ON doa.cs_fips = s.cs_fips AND doa.disease_name = 'opioid_addiction' "
     data = getData(con, sql)
     log.debug("leaving get_synth_cousub_stats()")
     return data
