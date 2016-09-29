@@ -82,10 +82,9 @@ function getPListDownloadUrl({city = '', revIncludeTables = ['*'], count = 20}, 
     param['_count'] = count;
     param['address-city'] = city;
     param['_format'] = format;
-    /* Temporarily remove the reverse includes for use with the GO FHIR server */
-    /* for (var i = 0; i < revIncludeTables.length; i++) {
-      revIncludeStr += '&_revInclude=' + revIncludeTables[i];
-    } */
+    for (var i = 0; i < revIncludeTables.length; i++) {
+      revIncludeStr += '&_revinclude=' + revIncludeTables[i];
+    }
 
     param = $.param( param );
     return BASE_URL + 'Patient?' + param + revIncludeStr;
@@ -142,16 +141,15 @@ export function loadPatient(pid = '') {
   return promise;
 }
 
-function getPatientDownloadUrl({id = 0, revIncludeTables = ['*'], count = 20}, format=FORMAT_JSON) {
+function getPatientDownloadUrl(id, {revIncludeTables = ['*'], count = 20}, format=FORMAT_JSON) {
   var paramObj = {_id : id, _count : count, _format : format};
   var revIncludeStr = '';
 
   for (var i = 0; i < revIncludeTables.length; i++) {
-    revIncludeStr += '&_revInclude=' + revIncludeTables[i];
+    revIncludeStr += '&_revinclude=' + revIncludeTables[i];
   }
   const param = $.param( {_id : id, _count : count, _format : format } );
-  // temporarily remove the revInclude string for the Go FHIR server
-  return BASE_URL + 'Patient?' + param; // + revIncludeStr;
+  return BASE_URL + 'Patient?' + param + revIncludeStr;
 }
 
 function getPatientDownloadCcda(identifier) {
@@ -275,7 +273,7 @@ class Patient {
     this.observations = [];
     this.allergies = [];
     this.medicationOrders = [];
-    this.jsonUri = getPatientDownloadUrl(this.pid);
+    this.jsonUri = getPatientDownloadUrl(this.pid, {});
     this.ccdaUri = getPatientDownloadCcda(this._extractPatientIdentifier(obj));
 
   }
