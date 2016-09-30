@@ -1,3 +1,5 @@
+"use strict";
+import 'babel-polyfill';
 import patients_list_tmpl from './templates/patients_list.hbs';
 import patient_detail_tmpl from './templates/patient_detail.hbs';
 import patient_detail__immunization_tmpl from './templates/patient_detail_immunization.hbs';
