@@ -20,15 +20,8 @@ Contents
 
 Software Installed
 ------------------
-The following software packages and versions are installed and required to run Synthetic Mass:
+See [RELEASE.md](../RELEASE.md) for the latest list and versions of installed software packages.
 
-1. MongoDB (3.2.9)
-2. PostgreSQL (9.5.4)
-3. Python (2.7.11+)
-4. Go (1.7)
-5. Node (5.11.0) 
-6. [GoFHIR](https://github.com/synthetichealth/gofhir.git)
-7. [Synthetic Mass](https://github.com/synthetichealth/syntheticmass.git)
 
 Deploying Updates
 -----------------

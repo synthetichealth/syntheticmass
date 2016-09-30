@@ -29,10 +29,14 @@ Our initial deployment to **syntheticmass-stg.mitre.org** and **syntheticmass.mi
 
 ```
 MongoDB 3.2.9  
-PostgreSQL 9.5.4  
+PostgreSQL 9.5.4
+PostGIS 2.2.1 
 Python 2.7.11+  
 Go 1.7
 Node 5.11.0
+Apache 2.4.18
+Apache mod_proxy
+
 github.com/synthetichealth/gofhir fhir-updates 1654183
 github.com/synthetichealth/syntheticmass master 38341a1
 ```
