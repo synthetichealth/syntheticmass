@@ -26,10 +26,17 @@ SyntheticMass will provide a sandbox for Health IT developers, researchers and c
 ###The MITRE Corporation
 [The MITRE Corporation](http://www.mitre.org/) is a not-for-profit organization working in the public interest that operates federally funded research and development centers to provide innovative solutions to national problems.
 
+
 ## Supporting Documentation
 
-* [Releases](./RELEASE.md)
+* [Release Notes](./RELEASE.md)
 * [Server Setup](./setup/README.md)
 * [Building the Site](./site/readme.md)
 * [Using the FHIR API](./docs/using-fhir.md)
 * [Synthetic Statistics Using Postgres](https://github.com/synthetichealth/pgstats)
+
+## Third-Party Software
+
+The [GoFHIR server](https://github.com/synthetichealth/gofhir) used by SyntheticMass is based on a generic [Go-based FHIR server](https://github.com/intervention-engine/fhir) originally developed at MITRE for the [Intervention Engine Project](https://github.com/intervention-engine/ie).
+
+Additional third-party software packages we use are listed in the [Release Notes](./RELEASE.md) document.
