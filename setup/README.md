@@ -299,6 +299,12 @@ You will need to modify `htc_run.sh` depending on what environment (dev, staging
 $ ./gofhir -server https://syntheticmass-stg.mitre.org/fhir -pgurl ...
 ```
 
+If you wish to make the API read-only, add the `-readonly` flag:
+
+```
+$ ./gofhir -readonly ... etc.
+```
+
 Setup the HTC API
 -----------------
 Clone the `syntheticmass` repository:
