@@ -15,8 +15,8 @@ Contents
 * [Setup Synthetic Mass UI](#setup-the-synthetic-mass-ui)
 * [Setup System Services](#setup-system-services)
 * [Configure Apache Proxy](#configure-apache-proxy)
-* [Migrate the Mongo Database](#migrate-the-mongo-database)
-* [Migrate the Postgres Database](#migrate-the-postgres-database)
+* [Migrate the Mongo Database](#migrating-the-mongo-database)
+* [Migrate the Postgres Database](#migrating-the-postgres-database)
 
 Software Installed
 ------------------
@@ -297,6 +297,12 @@ You will need to modify `htc_run.sh` depending on what environment (dev, staging
 
 ```
 $ ./gofhir -server https://syntheticmass-stg.mitre.org/fhir -pgurl ...
+```
+
+If you wish to make the API read-only, add the `-readonly` flag:
+
+```
+$ ./gofhir -readonly ... etc.
 ```
 
 Setup the HTC API
