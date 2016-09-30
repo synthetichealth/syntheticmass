@@ -353,13 +353,12 @@ class Patient {
     }
   }
   _extractDeceased(patient) {
-    const now = new Date();
     let isDeceased = false;
     let deathDate = null;
     if (patient.hasOwnProperty("deceasedDateTime")) {
-      
+            
       deathDate = moment(patient.deceasedDateTime).format("DD.MMM.YYYY");
-      if (moment(deathDate).isBefore(moment(now))) {
+      if (moment(patient.deceasedDateTime).isBefore(moment(new Date()))) {
         isDeceased = true;
       }
     }

@@ -55,8 +55,8 @@ $(document).ready(function() {
   page('/synthea',(ctx, next)=>{$("#data_source_switch").val("synthea");next();});
   page({ dispatch: false, click:false, popstate:false }); 
 */
-  let s = moment("2016-06-30");
-  $(".navbar-header .navbar-brand").append(": Day " + moment(Date.now()).diff(s,'days'));  
+  let s = moment(new Date("2016-06-30"));
+  $(".navbar-header .navbar-brand").append(": Day " + moment(new Date()).diff(s,'days'));  
   App.map.addLayer(tiles);
   App.map.on("mouseout",() => App.map.removeLayer(App.hover_layer));
   // pre-fetch the geometry layers
@@ -406,7 +406,7 @@ function addDataLegend() {
           fmt2 = _getFormatter(layer);
           
     const palette = DataCatalog.demographics[App.dataSet.catalogKey].palette || 'YlOrRd';
-    const colors = colorbrewer[palette][8];
+    let colors = colorbrewer[palette][7];
     let minVal = App.dataSet.minValue,
         maxVal = App.dataSet.maxValue;
     
@@ -421,13 +421,13 @@ function addDataLegend() {
     if (App.dataSet.valueKey == "pop_sm" && App.geoId == "cousub") {
       maxVal = 1500;
       minVal = 50;
+      colors = colorbrewer[palette][9];
     }
     if (App.dataSet.valueKey == "pop_sm" && App.geoId == "county") {
       maxVal = 320;
       minVal = 100;
     }
     
-//    const q = d3.scale.quantile().domain([minVal,maxVal]).range(colors);
     const q = d3.scale.quantile().domain(App.dataSet.values).range(colors);
     const range = [Math.min(App.dataSet.minValue,minVal)].concat(q.quantiles());
     range.push(Math.max(App.dataSet.maxValue,maxVal));
@@ -444,7 +444,7 @@ function addDataLegend() {
   
 function renderFeatures(layerKey) {
   const palette = DataCatalog.demographics[App.dataSet.catalogKey].palette || 'YlOrRd';
-  let colors = colorbrewer[palette][5];
+  let colors = colorbrewer[palette][7];
   let minVal = App.dataSet.minValue;
   let maxVal = App.dataSet.maxValue;
   /* Some datasets don't look good with the d3.scale, so we do a little manual adjustment */
@@ -466,7 +466,6 @@ function renderFeatures(layerKey) {
     maxVal = 320;
     minVal = 100;
   }
-//  const q = d3.scale.quantile().domain([minVal,maxVal]).range(colors);
   const q = d3.scale.quantile().domain(App.dataSet.values).range(colors);
   const styleFn = function(feature) {
     return {weight:2, fillOpacity:AppStyles.fillOpacity, opacity:AppStyles.borderOpacity, color:AppStyles.borderColor, fillColor : q(feature.properties[App.dataSet.valueKey])}
@@ -559,13 +558,18 @@ function renderFeatures(layerKey) {
             const html = Patients.generatePatientsHTML(data, props.name, App.dataSet.catalogKey);
             const points = Patients.generatePatientLocations(data);
             $("#region_patients").html(html);
-            var wkt = new Wkt.Wkt();
+            /* var wkt = new Wkt.Wkt();
             for (const point of points) {
               wkt.read(points.point);
             }
             console.log(wkt);
             console.log(wkt.toObject());
+            */
             
+          })
+         .fail(function(e) {
+            alert("Failure loading residents list");
+            console.log("Failure loading residents list",e);
           });
         });
                   
