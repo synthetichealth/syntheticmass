@@ -135,10 +135,16 @@ def get_counties_all():
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
         "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes_rate as chr_diabetes, " \
 	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths, " \
+	"age.fact_pop_0_4 as pop_0_4,age.fact_pop_5_9 as pop_5_9,age.fact_pop_10_14 as pop_10_14,age.fact_pop_15_19 as pop_15_19, "\
+	"age.fact_pop_20_24 as pop_20_24,age.fact_pop_25_29 as pop_25_29,age.fact_pop_30_34 as pop_30_34,age.fact_pop_35_39 as pop_35_39, " \
+	"age.fact_pop_40_44 as pop_40_44,age.fact_pop_45_49 as pop_45_49,age.fact_pop_50_54 as pop_50_54,age.fact_pop_55_59 as pop_55_59, " \
+	"age.fact_pop_60_64 as pop_60_64,age.fact_pop_65_69 as pop_65_69,age.fact_pop_70_74 as pop_70_74,age.fact_pop_75_79 as pop_75_79, " \
+	"age.fact_pop_80_84 as pop_80_84,age.fact_pop_85_110 as pop_85_110, " \
         "ST_AsGeoJSON(the_geom) AS geometry " \
       "FROM synth_ma.county_stats s " \
       "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
+      "JOIN synth_ma.ma_county_age age ON age.ct_fips = s.ct_fips " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips"
     data = p2g.getData(con, sql)
     log.debug("leaving get_counties_all()")
@@ -228,9 +234,15 @@ def get_counties_stats():
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
         "chr.hs_graduate / 100 as chr_hs_grad, chr.college / 100 as chr_college, chr.unemployed / 100 as chr_unemployed, chr.diabetes_rate / 100 as chr_diabetes, " \
-	"chr.adult_obesity / 100 as chr_adult_obesity, chr.adult_smoking / 100 as chr_adult_smoking, opioid.deaths as opioid_deaths " \
+	"chr.adult_obesity / 100 as chr_adult_obesity, chr.adult_smoking / 100 as chr_adult_smoking, opioid.deaths as opioid_deaths, " \
+        "age.fact_pop_0_4 as pop_0_4,age.fact_pop_5_9 as pop_5_9,age.fact_pop_10_14 as pop_10_14,age.fact_pop_15_19 as pop_15_19, "\
+        "age.fact_pop_20_24 as pop_20_24,age.fact_pop_25_29 as pop_25_29,age.fact_pop_30_34 as pop_30_34,age.fact_pop_35_39 as pop_35_39, " \
+        "age.fact_pop_40_44 as pop_40_44,age.fact_pop_45_49 as pop_45_49,age.fact_pop_50_54 as pop_50_54,age.fact_pop_55_59 as pop_55_59, " \
+        "age.fact_pop_60_64 as pop_60_64,age.fact_pop_65_69 as pop_65_69,age.fact_pop_70_74 as pop_70_74,age.fact_pop_75_79 as pop_75_79, " \
+        "age.fact_pop_80_84 as pop_80_84,age.fact_pop_85_110 as pop_85_110 " \
       "FROM synth_ma.county_stats s " \
       "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
+      "JOIN synth_ma.ma_county_age age ON age.ct_fips = s.ct_fips " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips"
     data = getData(con, sql)
     log.debug("leaving get_counties_stats()")
@@ -267,11 +279,17 @@ def get_county_by_name(ct_name):
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
         "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes_rate as chr_diabetes, " \
 	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths, " \
+        "age.fact_pop_0_4 as pop_0_4,age.fact_pop_5_9 as pop_5_9,age.fact_pop_10_14 as pop_10_14,age.fact_pop_15_19 as pop_15_19, "\
+        "age.fact_pop_20_24 as pop_20_24,age.fact_pop_25_29 as pop_25_29,age.fact_pop_30_34 as pop_30_34,age.fact_pop_35_39 as pop_35_39, " \
+        "age.fact_pop_40_44 as pop_40_44,age.fact_pop_45_49 as pop_45_49,age.fact_pop_50_54 as pop_50_54,age.fact_pop_55_59 as pop_55_59, " \
+        "age.fact_pop_60_64 as pop_60_64,age.fact_pop_65_69 as pop_65_69,age.fact_pop_70_74 as pop_70_74,age.fact_pop_75_79 as pop_75_79, " \
+        "age.fact_pop_80_84 as pop_80_84,age.fact_pop_85_110 as pop_85_110, " \
         "ST_AsGeoJSON(s.ct_poly) AS geometry " \
       "FROM synth_ma.county_stats s " \
       "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips " \
+      "JOIN synth_ma.ma_county_age age ON age.ct_fips = s.ct_fips " \
       "WHERE ct_name=%s"
     sql_params = (ct_name.title(),)
     data = p2g.getData(con, sql, sql_params)
@@ -325,10 +343,16 @@ def get_county_by_name_stats(ct_name):
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
         "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes as chr_diabetes, " \
-	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths " \
+	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths, " \
+        "age.fact_pop_0_4 as pop_0_4,age.fact_pop_5_9 as pop_5_9,age.fact_pop_10_14 as pop_10_14,age.fact_pop_15_19 as pop_15_19, "\
+        "age.fact_pop_20_24 as pop_20_24,age.fact_pop_25_29 as pop_25_29,age.fact_pop_30_34 as pop_30_34,age.fact_pop_35_39 as pop_35_39, " \
+        "age.fact_pop_40_44 as pop_40_44,age.fact_pop_45_49 as pop_45_49,age.fact_pop_50_54 as pop_50_54,age.fact_pop_55_59 as pop_55_59, " \
+        "age.fact_pop_60_64 as pop_60_64,age.fact_pop_65_69 as pop_65_69,age.fact_pop_70_74 as pop_70_74,age.fact_pop_75_79 as pop_75_79, " \
+        "age.fact_pop_80_84 as pop_80_84,age.fact_pop_85_110 as pop_85_110, " \
       "FROM synth_ma.county_stats s " \
       "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips " \
+      "JOIN synth_ma.ma_county_age age ON age.ct_fips = s.ct_fips " \
       "WHERE s.ct_name=%s"
     sql_params = (ct_name.title(),)
     data = getData(con, sql, sql_params)
@@ -366,11 +390,17 @@ def get_county_by_id(ct_fips):
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
         "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes_rate as chr_diabetes, " \
 	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths, " \
+        "age.fact_pop_0_4 as pop_0_4,age.fact_pop_5_9 as pop_5_9,age.fact_pop_10_14 as pop_10_14,age.fact_pop_15_19 as pop_15_19, "\
+        "age.fact_pop_20_24 as pop_20_24,age.fact_pop_25_29 as pop_25_29,age.fact_pop_30_34 as pop_30_34,age.fact_pop_35_39 as pop_35_39, " \
+        "age.fact_pop_40_44 as pop_40_44,age.fact_pop_45_49 as pop_45_49,age.fact_pop_50_54 as pop_50_54,age.fact_pop_55_59 as pop_55_59, " \
+        "age.fact_pop_60_64 as pop_60_64,age.fact_pop_65_69 as pop_65_69,age.fact_pop_70_74 as pop_70_74,age.fact_pop_75_79 as pop_75_79, " \
+        "age.fact_pop_80_84 as pop_80_84,age.fact_pop_85_110 as pop_85_110, " \
         "ST_AsGeoJSON(the_geom) AS geometry " \
       "FROM synth_ma.county_stats s " \
       "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
       "JOIN tiger_cb14_500k.county g ON g.statefp = '25' AND g.countyfp = s.ct_fips " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips " \
+      "JOIN synth_ma.ma_county_age age ON age.ct_fips = s.ct_fips " \
       "WHERE ct_fips=%s"
     sql_params = (ct_fips,)
     data = p2g.getData(con, sql, sql_params)
@@ -424,10 +454,16 @@ def get_county_by_id_stats(ct_fips):
     con = get_db_con()
     sql = "SELECT s.ct_fips, s.ct_name, s.sq_mi, s.pop, s.pop_male / s.pop as pct_male, s.pop_female / s.pop as pct_female, s.pop_sm, " \
         "chr.hs_graduate as chr_hs_grad, chr.college as chr_college, chr.unemployed as chr_unemployed, chr.diabetes_rate as chr_diabetes, " \
-	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths " \
+	"chr.adult_obesity as chr_adult_obesity, chr.adult_smoking as chr_adult_smoking, opioid.deaths as opioid_deaths, " \
+        "age.fact_pop_0_4 as pop_0_4,age.fact_pop_5_9 as pop_5_9,age.fact_pop_10_14 as pop_10_14,age.fact_pop_15_19 as pop_15_19, "\
+        "age.fact_pop_20_24 as pop_20_24,age.fact_pop_25_29 as pop_25_29,age.fact_pop_30_34 as pop_30_34,age.fact_pop_35_39 as pop_35_39, " \
+        "age.fact_pop_40_44 as pop_40_44,age.fact_pop_45_49 as pop_45_49,age.fact_pop_50_54 as pop_50_54,age.fact_pop_55_59 as pop_55_59, " \
+        "age.fact_pop_60_64 as pop_60_64,age.fact_pop_65_69 as pop_65_69,age.fact_pop_70_74 as pop_70_74,age.fact_pop_75_79 as pop_75_79, " \
+        "age.fact_pop_80_84 as pop_80_84,age.fact_pop_85_110 as pop_85_110, " \
       "FROM synth_ma.county_stats s " \
       "JOIN synth_ma.ma_opioid_county opioid ON opioid.countyfp = s.ct_fips AND opioid.year = '2015' " \
       "JOIN county_health.chr ON chr.statefp = '25' AND chr.release_year = 2016 AND chr.countyfp = s.ct_fips " \
+      "JOIN synth_ma.ma_county_age age ON age.ct_fips = s.ct_fips " \
       "WHERE ct_fips=%s"
     sql_params = (ct_fips,)
     data = getData(con, sql, sql_params)
@@ -469,10 +505,16 @@ def get_cousub_all():
         "CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, " \
         "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, " \
 	"op.deaths AS opioid_deaths, pred.pred_diabetes as pct_diabetes, " \
+        "age.fact_pop_0_4 as pop_0_4,age.fact_pop_5_9 as pop_5_9,age.fact_pop_10_14 as pop_10_14,age.fact_pop_15_19 as pop_15_19, "\
+        "age.fact_pop_20_24 as pop_20_24,age.fact_pop_25_29 as pop_25_29,age.fact_pop_30_34 as pop_30_34,age.fact_pop_35_39 as pop_35_39, " \
+        "age.fact_pop_40_44 as pop_40_44,age.fact_pop_45_49 as pop_45_49,age.fact_pop_50_54 as pop_50_54,age.fact_pop_55_59 as pop_55_59, " \
+        "age.fact_pop_60_64 as pop_60_64,age.fact_pop_65_69 as pop_65_69,age.fact_pop_70_74 as pop_70_74,age.fact_pop_75_79 as pop_75_79, " \
+        "age.fact_pop_80_84 as pop_80_84,age.fact_pop_85_110 as pop_85_110, " \
         "ST_AsGeoJSON(g.the_geom) AS geometry " \
     	"FROM synth_ma.cousub_stats s " \
 	"JOIN synth_ma.ma_cousub_pred pred ON pred.state_fips = '25' AND pred.county = s.ct_fips AND pred.county_sub_fips = s.cs_fips AND s.cs_fips != '00000' " \
 	"JOIN tiger_cb14_500k.cousub g ON g.statefp = '25' AND g.countyfp = s.ct_fips AND g.cousubfp = s.cs_fips AND s.cs_fips != '00000' " \
+        "JOIN synth_ma.ma_cousub_age age ON age.cs_fips = s.cs_fips " \
 	"JOIN synth_ma.ma_opioid2 op ON op.cousubfp = s.cs_fips AND s.cs_fips != '00000' AND year = '2015'"
     data = p2g.getData(con, sql)
     log.debug("leaving get_cousub_all()")
@@ -525,10 +567,16 @@ def get_cousub_stats():
     sql = "SELECT s.ct_fips, s.ct_name, s.cs_fips, s.cs_name, s.sq_mi, s.pop, s.pop_sm, " \
         "CASE WHEN s.pop > 0 THEN s.pop_male / s.pop ELSE 0 END AS pct_male, " \
         "CASE WHEN s.pop > 0 THEN s.pop_female / s.pop ELSE 0 END AS pct_female, " \
-	"op.deaths AS opioid_deaths, pred.pred_diabetes as pct_diabetes " \
+	"op.deaths AS opioid_deaths, pred.pred_diabetes as pct_diabetes, " \
+        "age.fact_pop_0_4 as pop_0_4,age.fact_pop_5_9 as pop_5_9,age.fact_pop_10_14 as pop_10_14,age.fact_pop_15_19 as pop_15_19, "\
+        "age.fact_pop_20_24 as pop_20_24,age.fact_pop_25_29 as pop_25_29,age.fact_pop_30_34 as pop_30_34,age.fact_pop_35_39 as pop_35_39, " \
+        "age.fact_pop_40_44 as pop_40_44,age.fact_pop_45_49 as pop_45_49,age.fact_pop_50_54 as pop_50_54,age.fact_pop_55_59 as pop_55_59, " \
+        "age.fact_pop_60_64 as pop_60_64,age.fact_pop_65_69 as pop_65_69,age.fact_pop_70_74 as pop_70_74,age.fact_pop_75_79 as pop_75_79, " \
+        "age.fact_pop_80_84 as pop_80_84,age.fact_pop_85_110 as pop_85_110 " \
       "FROM synth_ma.cousub_stats s " \
 	"JOIN synth_ma.ma_cousub_pred pred ON pred.state_fips = '25' AND pred.county = s.ct_fips AND pred.county_sub_fips = s.cs_fips AND s.cs_fips != '00000' " \
 	"JOIN synth_ma.ma_opioid2 op ON op.cousubfp = s.cs_fips AND s.cs_fips != '00000' AND year = '2015' " \
+        "JOIN synth_ma.ma_cousub_age age ON age.cs_fips = s.cs_fips " \
       "WHERE s.cs_fips != '00000'"
     data = getData(con, sql)
     log.debug("leaving get_cousub_stats()")

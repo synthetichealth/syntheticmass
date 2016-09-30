@@ -15,18 +15,13 @@ Contents
 * [Setup Synthetic Mass UI](#setup-the-synthetic-mass-ui)
 * [Setup System Services](#setup-system-services)
 * [Configure Apache Proxy](#configure-apache-proxy)
+* [Migrate the Mongo Database](#migrate-the-mongo-database)
+* [Migrate the Postgres Database](#migrate-the-postgres-database)
 
 Software Installed
 ------------------
-The following software packages and versions are installed and required to run Synthetic Mass:
+See [RELEASE.md](../RELEASE.md) for the latest list and versions of installed software packages.
 
-1. MongoDB (3.2.9)
-2. PostgreSQL (9.5.4)
-3. Python (2.7.11+)
-4. Go (1.7)
-5. Node (5.11.0) 
-6. [GoFHIR](https://github.com/synthetichealth/gofhir.git)
-7. [Synthetic Mass](https://github.com/synthetichealth/syntheticmass.git)
 
 Deploying Updates
 -----------------
@@ -44,6 +39,8 @@ $ lsb_release -a
 
 Working Behind the MITRE Proxy
 ------------------------------
+**NOTE: This only applies to the dev and staging environments.**
+
 I recommend you add the following to your `.bashrc` to quickly enable or disable the MITRE proxy settings:
 
 ```
@@ -69,7 +66,6 @@ setproxy
 
 For most of this setup you will need to `http_proxy` and `https_proxy` set.
 
-**NOTE:** When updating syntheticmass.mitre.org (the production site) the proxy should be **unset**.
 
 Setup MongoDB
 -------------
@@ -211,6 +207,8 @@ $ nvm install 5.11.0
 Setup Database Schema
 ---------------------
 
+**NOTE: This only needs to be performed for a NEW database setup. If you are migrating an existing database you can skip this step.**
+
 All patient/condition statistics used by Synthetic Mass are stored in a series of Postgres tables in the `synth_ma` schema. There are a series of `.sql` files and scripts in the `pgstats` repository that should be used to setup the database.
 	
 First, clone the `pgstats` repository:
@@ -266,17 +264,17 @@ This can be fixed by installing `libsasl2-dev`:
 $ sudo apt-get install libsasl2-dev
 ```
 	
-Next, checkout and build the `disable-interceptors` branch of GoFHIR:
+Next, checkout and build the `fhir-updates` branch of GoFHIR:
 
 ```
 $ cd $GOPATH/src/github.com/synthetichealth/gofhir
-$ git checkout -b disable-interceptors
-$ git branch -u origin/disable-interceptors disable-interceptors  # set-up remote tracking
+$ git checkout -b fhir-updates
+$ git branch -u origin/fhir-updates fhir-updates  # set-up remote tracking
 $ git pull
 $ go build
 ```
 
-**NOTE:** While there are tests for the `gofhir/stats` package (containing the Data Access Layer interceptors) these interceptors are for an outdated version of the `synth_ma` schema and are therefore unusable at the moment. The `disable-interceptors` branch of this repository appropriately disables these interceptors.
+**NOTE:** While there are tests for the `gofhir/stats` package (containing the Data Access Layer interceptors) these interceptors are for an outdated version of the `synth_ma` schema and are therefore unusable at the moment. The `fhir-updates` branch of this repository appropriately disables these interceptors.
 
 
 Next, create a new directory to run GoFHIR out of:
@@ -295,13 +293,19 @@ $ sudo cp -r config /opt/gofhir
 $ sudo cp -r conformance /opt/gofhir
 ```
 
+You will need to modify `htc_run.sh` depending on what environment (dev, staging, production) you are running in. Set the `-server` flag to indicate the full URL path to the server root. For example, on staging this may look like:
+
+```
+$ ./gofhir -server https://syntheticmass-stg.mitre.org/fhir -pgurl ...
+```
+
 Setup the HTC API
 -----------------
 Clone the `syntheticmass` repository:
 
 ```
 $ cd $HOME/synthetichealth/
-$ sudo - E git clone https://github.com/synthetichealth/syntheticmass.git
+$ sudo -E git clone https://github.com/synthetichealth/syntheticmass.git
 ```
 
 This repository contains both the HTC API and the Synthetic Mass UI.
@@ -338,7 +342,13 @@ npm config set proxy http://<MITRE_proxy_server>:80
 npm config set https-proxy http://<MITRE_proxy_server>:80
 ```
 
-Which build to use depends on the current server (Staging or Production). For Staging, use:
+Which build to use depends on the current environment (dev, staging or production). For dev, use:
+
+```
+$ npm run build-dev
+```
+
+For staging, use:
 
 ```
 $ npm run build-stg
@@ -402,8 +412,11 @@ ServerAlias www.<host>.mitre.org
 
 ...
 
+ProxyPreserveHost On
+
 ProxyPass "/api" "http://localhost:8080/htc/api"
 ProxyPassReverse "/api" "http://localhost:8080/htc/api"
+
 ProxyPass "/fhir" "http://localhost:3001"
 ProxyPassReverse "/fhir" "http://localhost:3001"
 ```
@@ -433,4 +446,55 @@ Check that the APIs are now accessible using a web browser:
 ```
 $ curl https://<host>.mitre.org/api/v1          # the API root
 $ curl https://<host>.mitre.org/fhir/metadata   # the conformance statement
+```
+
+Migrating the Mongo Database
+----------------------------
+
+From your local home directory:
+
+```
+$ mongodump --out=./dump --gzip
+```
+
+This dumps the **ENTIRE** mongo database, including multiple databases if they exist, into the `dump/` folder. The `--gzip` flag significantly compresses the dump, making it easier to transfer.
+
+Next copy the dump to your home directory in another environment:
+
+```
+$ scp -r ./dump/ <user>@<host>.mitre.org:/home/<user>/
+``` 
+
+Finally, from the directory that the dump was copied to:
+
+```
+$ mongorestore --gzip ./dump
+```
+
+The restore **does not** rebuild the indexes automatically. GoFHIR must be restarted to build the indexes anew.
+
+Migrating the Postgres Database
+-------------------------------
+
+As user `postgres`:
+
+```
+$ sudo su - postgres
+$ pg_dump -F c fhir > fhir.bak
+```
+
+This dumps the database in the `pg_dump` custom format into user `postgres`'s home directory (`/var/lib/postgresql/`).
+
+Next, copy the dump to your home directory in another environment:
+
+```
+$ scp fhir.bak <user>@<host>.mitre.org:/home/<user>/
+```
+
+Finally, again as user `postgres`, perform the restore:
+
+```
+$ sudo su - postgres
+$ cd /home/<user>/
+$ pg_restore -d fhir -F c fhir.bak
 ```

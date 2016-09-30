@@ -2,7 +2,7 @@
 
 ## Building the site
 
-The Synthetic Mass website is built from the HTML, CSS and JS files in the `/site` directory. This is done using the [Webpack](http://webpack.github.io/) module builder tool.
+The SyntheticMass website is built from the HTML, CSS and JS files in the `/site` directory. This is done using the [Webpack](http://webpack.github.io/) module builder tool.
 
 ### Development mode
 ```bash
