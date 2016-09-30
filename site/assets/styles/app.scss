@@ -130,13 +130,13 @@ ul.data-sources {
 }
   
 .legend {
-    line-height: 18px;
+    line-height: 1em;
     color: #555;
 }
 .legend i {
-    width: 18px;
-    height: 18px;
-    float: left;
+    width: 16px;
+    height: 16px;
+    display:inline-block;
     margin-right: 8px;
 }
 

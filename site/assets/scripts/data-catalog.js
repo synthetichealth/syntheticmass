@@ -167,12 +167,26 @@ demographics : {
   "format_specifier" : ".1%",
   "active" : true
 },
+"pct_diabetes" : {
+  "name":"Estimated Diabetes Prevalence",
+  "description":"Percentage of the population with diabetes",
+  "data_set_name" : "stats",
+  "data_source_name" : "Computed from MITRE Model",
+  "data_source_url" : null,
+  "key" : "pct_diabetes",
+  "value_key" : "pct_diabetes",
+  "legend" : "Diabetes %",
+  "legend_title":"Diabetes Prevalence",
+  "legend_label" : "Diabetes",
+  "format_specifier" : ".1%",
+  "active" : true
+},
 "opioid_deaths" : {
   "name":"Opioid-related dealths",
   "description":"Number of deaths related to opioid use",
   "data_set_name" : "stats",
-  "data_source_name" : "???",
-  "data_source_url" : "???",
+  "data_source_name" : "Massachusetts Department of Public Health",
+  "data_source_url" : "http://www.mass.gov/eohhs/gov/departments/dph/stop-addiction/current-statistics.html",
   "key" : "opioid_deaths",
   "value_key" : "opioid_deaths",
   "legend" : "Opioid deaths",
@@ -261,9 +275,9 @@ valueSets : {
     "pct_male",
     "chr_hs_grad",
     "chr_college",
-    "chr_diabetes",
     "chr_unemployed",
     "chr_adult_obesity",
+    "chr_diabetes",
     "chr_adult_smoking",
     "opioid_deaths"
   ]
@@ -285,6 +299,7 @@ valueSets : {
     "pop_sm",
     "pct_female",
     "pct_male",
+    "pct_diabetes",
     "opioid_deaths"
   ]
 }
