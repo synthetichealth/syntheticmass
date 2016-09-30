@@ -1,4 +1,4 @@
-syntheticmass-dev.mitre.org
+localhost
 5432
 fhir
 synth_ma
