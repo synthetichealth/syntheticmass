@@ -139,6 +139,20 @@ demographics : {
   "format_specifier" : ".1%",
   "active" : true
 },
+"pred_diabetes" : {
+  "name":"Predicted Diabetes Prevalence",
+  "description":"Percentage of the population with diabetes",
+  "data_set_name":"stats",
+  "data_source_name":"Predicted from US Census American Community Survey (ACS) Data",
+  "data_source_url":"http://www2.census.gov/acs2012_5yr/summaryfile/",
+  "key":"pred_diabetes",
+  "value_key" : "pct_diabetes",
+  "legend":"Diabetes %",
+  "legend_title":"Predicted Diabetes Prevalance",
+  "legend_label":"Diabetes",
+  "format_specifier" : ".1%",
+  "active": true
+},
 "chr_adult_obesity" : {
   "name":"Adult Obesity Prevalence",
   "description":"Percentage of the adult population with obesity",
@@ -285,6 +299,7 @@ valueSets : {
     "pop_sm",
     "pct_female",
     "pct_male",
+    "pred_diabetes",
     "opioid_deaths"
   ]
 }
