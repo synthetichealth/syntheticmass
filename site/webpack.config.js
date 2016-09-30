@@ -16,12 +16,13 @@ console.log(__dirname);
 console.log(dir_js);
 
 var PATHS = {images:'/assets/img'};
-
+var analytics = (production) ? "" : "ga";
 var plugins = [
     new HtmlWebpackPlugin({
       template: 'dashboard.html',
       filename:'dashboard.html',
-      title: 'Explore Synthetic Mass'
+      title: 'Explore Synthetic Mass',
+      chunks : analytics
     }),
     new HtmlWebpackPlugin({
       template: './dashboard/index.html',
@@ -32,19 +33,19 @@ var plugins = [
       template:'./about.html',
       filename:'about.html',
       title: 'About Synthetic Mass',
-      excludeChunks : ['bundle']
+      excludeChunks : ['bundle',analytics]
     }),
     new HtmlWebpackPlugin({
       template:'./help.html',
       filename:'help.html',
       title: 'Help for Synthetic Mass',
-      excludeChunks : ['bundle']
+      excludeChunks : ['bundle',analytics]
     }),
     new HtmlWebpackPlugin({
       template:'./index.html',
       filename:'index.html',
       title: 'Synthetic Mass',
-      excludeChunks : ['bundle']
+      excludeChunks : ['bundle',analytics]
     }),
     extractCSS,
     new CopyWebpackPlugin([
@@ -123,6 +124,7 @@ module.exports = {
   entry: {
     'fa' : 'font-awesome-loader',
     'bs' : 'bootstrap-loader',
+    'ga' : path.resolve(dir_js,'ga.js'),
     'bundle' : path.resolve(dir_js,'app.js')
   },
   output: {
