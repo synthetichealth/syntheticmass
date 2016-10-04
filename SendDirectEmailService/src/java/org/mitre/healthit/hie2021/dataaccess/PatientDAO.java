@@ -13,7 +13,9 @@ public class PatientDAO {
 
     public static String loadPatientInCcda(String pPatientId) {
         try {
-            return readFile(new File("/ccda/" + pPatientId + ".xml"));
+            String dir1 = pPatientId.substring(0, 2);
+            String dir2 = pPatientId.substring(0, 3);
+            return readFile(new File("/ccda/" + dir1 + "/" + dir2 + "/" + pPatientId + ".xml"));
         } catch (IOException e) {
             e.printStackTrace();
             return null;

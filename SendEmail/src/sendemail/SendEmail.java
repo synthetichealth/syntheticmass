@@ -114,7 +114,7 @@ public class SendEmail {
             if (false) {
         // Request parameters and other properties.
                 List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-                params.add(new BasicNameValuePair("patient_id", "00ab647b-9f62-4a14-aedb-fe8872a44a47"));
+                params.add(new BasicNameValuePair("patient_id", "000e6e56-8be2-4dba-bf92-31eaa797456d"));
                 params.add(new BasicNameValuePair("message", "patient x"));
                 params.add(new BasicNameValuePair("to", "gquinn@direct.syntheticmass.mitre.org"));
                 HttpEntity entity = new UrlEncodedFormEntity(params, "UTF-8");
@@ -122,7 +122,7 @@ public class SendEmail {
             } else {
                 HttpEntity entity = MultipartEntityBuilder
                         .create()
-                        .addTextBody("patient_id", "00ab647b-9f62-4a14-aedb-fe8872a44a47")
+                        .addTextBody("patient_id", "00ab0375-9164-419e-92f9-4693c9c5cc83")
                         .addTextBody("message", "patient y")
                         .addTextBody("to", "gquinn@direct.syntheticmass.mitre.org")
                         .addBinaryBody("to_cert", new File(CERT_FILE), ContentType.create("application/octet-stream"), "org.der")
@@ -132,6 +132,7 @@ public class SendEmail {
 
     //Execute and get the response.
             HttpResponse response = httpclient.execute(httppost);
+            System.out.println("result code = " + response.getStatusLine().getStatusCode());
             HttpEntity entity = response.getEntity();
 
             if (entity != null) {
