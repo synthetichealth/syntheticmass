@@ -6,7 +6,7 @@ demographics : {
   "name":"Population",
   "description":"Number of Residents",
   "data_set_name" : "stats",
-  "data_source_name" : "US Census Demographic Profile (DP1) Data",
+  "data_source_name" : "US Census Demographic Profile (DP1) Data (2010)",
   "data_source_url" : "http://www.census.gov/2010census/data/",
   "key" : "pop",
   "value_key" : "pop",
