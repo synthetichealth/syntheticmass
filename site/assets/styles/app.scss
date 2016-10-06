@@ -4,12 +4,12 @@ $header-top-height : 50px;
 $footer-height:75px;
 
 html {
-  height: 100%; 
+  height: 100%;
 }
 
 body {
   background-color: white;
-  height: 100%; 
+  height: 100%;
   font-family:Lato,"Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .wrapper {
@@ -48,7 +48,7 @@ span.subtitle {font-weight:300}
   font-size:2rem;
   ul.nav.navbar-nav {
     width:100%;
-    
+
     li {
       width:20%;text-align:center;
       &.active a {color:black}
@@ -59,14 +59,17 @@ span.subtitle {font-weight:300}
   }
 }
 
-#about, #help {
+#about, #help, {
   padding-top:$header-top-height * 2;
   section {margin-bottom:4em;}
   h1 {padding-top:10px;}
   h1.page-title {padding-top:0}
   img.logo {padding:0 0 12px 20px;float:right}
   ul.nav-fixed {position:fixed}
+
 }
+.side_img{padding-top:30px;
+  width:200px;}
 
 @media (max-width:991px) {
   #about ul.nav-fixed {position:relative}
@@ -84,7 +87,7 @@ section.footer :target {background-color:#fe4}
   background:#00a5ea url(../assets/img/home.jpg) 50% 50% no-repeat;
   padding-top:50px;
   min-height:300px;
-  
+
   .hero {
     margin-top:25px;
     font-size:200%;
@@ -128,7 +131,7 @@ ul.data-sources {
     h3 {margin-top:10px;margin-bottom:5px;}
   }
 }
-  
+
 .legend {
     line-height: 1em;
     color: #555;
@@ -148,7 +151,7 @@ ul.data-sources {
 }
 
 #layer_details {
-  input[type="range"] {margin-bottom:5px;}  
+  input[type="range"] {margin-bottom:5px;}
   h1 {margin-top:0}
 }
 
@@ -168,7 +171,7 @@ ul.data-sources {
 
 #region_details {
   padding-right:10px;
-  
+
   table td label {
     display:block;
     font-weight:normal;
@@ -184,7 +187,7 @@ ul.data-sources {
 .c3-tooltip td {white-space:nowrap;}
 
 footer {
-  /* position: fixed; 
+  /* position: fixed;
   bottom: 0;*/
   width: 100%;
   padding: 15px 20px;
@@ -193,6 +196,10 @@ footer {
   box-shadow: inset 0 6px 20px -12px #666;
   z-index:1000;
   p {margin-bottom: 5px; }
+  .logo{
+    float:right;
+    padding-right:20px;
+    height:25px;}
 }
 
 
