@@ -34,16 +34,16 @@
         <div class="form-group">
           <label for="data_source_switch">Source of Data:</label>
           <select id="data_source_switch">
-            <option value="census" selected>Census</option>
-            <option value="synthea">Synthea</option>
+            <option value="synthea" selected>Synthea</option>
+            <option value="census">Census</option>
           </select>
         </div>
 
         <div class="form-group">
           <label for="geo_layers_switch">Geographic region:</label>
           <select id="geo_layers_switch">
-            <option value="county" selected>County</option>
-            <option value="cousub">Minor Civil Division</option>
+            <option value="town" selected>Cities and Towns</option>
+            <option value="county">County</option>
           </select>
         </div>
         <div class="form-group" id="demographics_group">
@@ -70,7 +70,6 @@
     </div>
   </div>
   <br />
-  <div class="xxxpush"></div>
   </div>
 </div>
 <%= require('html!./includes/footer.html') %>

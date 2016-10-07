@@ -214,15 +214,15 @@ geoLayers : {
     {key:"pop",name:"Population",unit:""},
     {key:"pop_sm",name:"Pop. Density",unit:"people per sq. mi."}]
 },
-"cousub":{
-  id:"cousub",
+"town":{
+  id:"town",
   name:"Census County Division GeoJSON",
   url: `${API_HOST}/api/v1/cousubs`,
   primary_key: "cs_fips",
   parent_key: "ct_fips",
   name_key: "cs_name",
-  geometry:"cousub",
-  geometry_label: "Census County Division",
+  geometry:"town",
+  geometry_label: "Cities and Towns",
   parent_geometry:"county",
   parent_geometry_label: "County",
   properties: [
@@ -241,15 +241,15 @@ geoLayers : {
   geometry_label: "County",
   properties : []
 },
-"cousub_geoms" : {
-  id:"cousub_geoms",
+"town_geoms" : {
+  id:"town_geoms",
   name:"Census County Division GeoJSON, geometry only",
   url: `${API_HOST}/api/v1/cousubs`,
   primary_key: "cs_fips",
   parent_key: "ct_fips",
   name_key: "cs_name",
-  geometry:"cousub",
-  geometry_label: "Census County Division",
+  geometry:"town",
+  geometry_label: "Cities and Towns",
   parent_geometry:"county",
   parent_geometry_label: "County",
   properties: []
@@ -282,14 +282,14 @@ valueSets : {
     "opioid_deaths"
   ]
 },
-"cousub_stats" : {
-  id:"cousub_stats",
+"town_stats" : {
+  id:"town_stats",
   data_name:'stats',
   name:"Census County Division Statistics",
   url: `${API_HOST}/api/v1/cousubs/stats`,
-  geometry:"cousub",
-  geometry_label: "Minor Civil Division",
-  geo_layer_id: "cousub",
+  geometry:"town",
+  geometry_label: "Cities and Towns",
+  geo_layer_id: "town",
   primary_key:"cs_fips",
   parent_key: "ct_fips",
   parent_name_key: "ct_name",
