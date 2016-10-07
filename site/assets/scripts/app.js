@@ -66,7 +66,6 @@ var Router = window.Router = {
 }
 
 $(document).ready(function() {
-debugger;
   App.map = L.map("main_map",{doubleClickZoom:false,scrollWheelZoom:false}).setView([42.1,-71.333836],8);
   const original_bounds = App.map.getBounds();
   App.mapView = $("#map_view");
@@ -213,8 +212,8 @@ function showLayerDetails(layerKey) {
 
   $("#patient_detail_view button.close").trigger('click');
   $("#layer_details").empty().append(layer_details_tmpl(layer));
-  $("#region_details").hide();
-  $("#layer_details").show();
+ /* $("#region_details").hide();
+  $("#layer_details").show(); */
   $("#sort_chart").text("Sort by " + layer.name);
 
   App.dataSet.values = _.map(_.pluck(App.dataSet.json,valueKey),(x)=>x===undefined?0:x);
@@ -377,8 +376,6 @@ function _updateChart(sorted) {
     columns:columns
   });
 
-//  var mean = d3.median(_.pluck(sorted,App.dataSet.valueKey));
-//  App.chart.ygrids.add([{value: mean,text:'Median'}]);
   return false;
 }
 
@@ -538,7 +535,7 @@ function renderFeatures(layerKey) {
   function highlightFeature(e) {
     const featureLayer = e.target;
     App.map.removeLayer(App.hover_layer);
-    let newLayer = L.multiPolygon(featureLayer.getLatLngs(),featureLayer.options);
+    let newLayer = L.polygon(featureLayer.getLatLngs(),featureLayer.options);
     newLayer.setStyle(AppStyles.newFeature);
     if (App.infoBox) {
       App.infoBox.update(featureLayer.feature.properties);
@@ -575,7 +572,7 @@ function renderFeatures(layerKey) {
         App.map.removeLayer(App.selected_layer);
 
         const layer = e.target;
-        let newLayer = L.multiPolygon(layer.getLatLngs(),layer.options);
+        let newLayer = L.polygon(layer.getLatLngs(),layer.options);
         newLayer.setStyle(AppStyles.selectedFeature);
         newLayer.addTo(App.map);
         App.selected_layer = newLayer;
@@ -606,8 +603,10 @@ function renderFeatures(layerKey) {
         const ix = _.findIndex(App.dataSet.json,filterObj);
         App.chart.select(null,[ ix ],true );
         $("#region_details [data-toggle='popover']").popover({container:'body'});
-        $("#zoom_to_feature_btn").on('click',function() {
-          App.map.fitBounds(e.target.getBounds());
+        $("#zoom_to_feature_btn").on('click',function(e) {
+          layer.stopPropogation;
+          e.preventDefault();
+          App.map.fitBounds(layer.getBounds());
         });
 
         $("#load_resident_list").on('click',function(){
