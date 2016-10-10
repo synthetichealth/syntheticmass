@@ -36,9 +36,9 @@ var plugins = [
       excludeChunks : ['bundle',analytics]
     }),
     new HtmlWebpackPlugin({
-      template:'./help.html',
-      filename:'help.html',
-      title: 'Help for Synthetic Mass',
+      template:'./feedback.html',
+      filename:'feedback.html',
+      title: 'Feedback for Synthetic Mass',
       excludeChunks : ['bundle',analytics]
     }),
     new HtmlWebpackPlugin({
@@ -58,7 +58,7 @@ var plugins = [
 /*     new CopyWebpackPlugin([
       {from:'about.html'}
     ]),
-*/  
+*/
 if (node_env === "production") {
   plugins = plugins.concat([
       new CleanPlugin('build'),
@@ -160,8 +160,8 @@ module.exports = {
       exclude : /node_modules/
     },
       { test: /\.css$/i, loader: extractCSS.extract(["style", "css"]) },
-      { test: /\.scss$/i, loader: extractCSS.extract(["style", "css", "postcss","sass"]) }, 
-      
+      { test: /\.scss$/i, loader: extractCSS.extract(["style", "css", "postcss","sass"]) },
+
       {
         test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: "url?limit=10000"
