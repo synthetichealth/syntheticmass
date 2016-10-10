@@ -1,5 +1,5 @@
 <div id="p_record" {{#if isDeceased}}class="deceased"{{/if}}>
-  <h2>Patient Record<button type="button" class="close" aria-label="Close"> <span aria-hidden="true">&times;</span> Close</button></h2>
+  <h2>Patient Record<button type="button" id="p_record_button" class="close" aria-label="Close"> <span aria-hidden="true">&times;</span> Close</button></h2>
   <div id="p_brief" class="row">
     <div id="p_brief_photo" class="col-xs-4 col-sm-3">
       <img src="assets/img/profile_placeholder.png" id="p_patient_photo" alt="Patient Photo" style="width:100%;">
@@ -24,44 +24,94 @@
         </dl>
       </div>
       <div><a download href="{{jsonUri}}">Download Patient Data (FHIR JSON)</a> | <a download href="{{ccdaUri}}">Download Patient Data (CCDA XML)</a></div>
+      <!-- Trigger the modal with a button -->
+      <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#send_modal">Send Data via Direct Messsage</button>
 
-    </div>
-  </div>
-  
-      <div id="p_brief_stats">
-        <div class="row">
-          <div class="p_block col-sm-6">
-            <dl class='dl-horizontal'>
-              <dt>Height</dt>
-              <dd id="p_brief_hgt_val"><span class="incomplete">n/a</span></dd>
-              <dt>Weight</dt>
-              <dd id="p_brief_wgt_val"><span class="incomplete">n/a</span></dd>
-              <dt>Blood Type</dt>
-              <dd><span class="incomplete">n/a</span></dd>
-              <dt>Vision</dt>
-              <dd><span class="incomplete">n/a</span></dd>
-            </dl>
-          </div>
-          <div class="p_block col-sm-6">
-            <dl class='dl-horizontal'>
-              <dt>DOB</dt>
-              <dd id="p_brief_dob_val">{{dob}}</dd>
-              <dt>Age</dt>
-              <dd id="p_brief_age_val">{{age}} {{#if isDeceased}}(Died: {{deathDate}}){{/if}}</dd>
-              <dt>Gender</dt>
-              <dd>{{gender}}</dd>
-              <dt>Race</dt>
-              <dd>{{race}}</dd>
-              <dt>Ethnicity</dt>
-              <dd>{{ethnicity}}</dd>
-              <dt>Spoken language</dt>
-              <dd>{{communication}}</dd>
-            </dl>
-          </div>
+      <!-- Modal -->
+      <div id="send_modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Send Data via Direct Email</h4> 
+            </div>
+            <form id="p_direct_form" action="http://syntheticmass-dev.mitre.org:8081/SendDirectEmailService/webresources/direct/send/patient" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
+              <div class="modal-body">
+                
+                <div class="form-group">
+                  <label for="to" class="col-sm-2 control-label">Recipient</label>
+                  <div class="col-sm-10">
+                    <input type="email" class="form-control stored" id="to" name="to">
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="message" class="col-sm-2 control-label">Subject</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="message" name="message" value="Report for Patient 000cb919-53b4-425c-a644-09821df33da2">
+<!--                     <input type="text" class="form-control" id="message" name="message" value="Report for Patient {{patientCCDAId}}"> -->
+                  </div>
+                </div>
 
+                <div class="form-group">
+                    <label for="to_cert" class="col-sm-2">Certificate</label>
+                    <div class="col-sm-10">
+                      <input type="file" class="form-control-file " id="to_cert" name="to_cert" aria-describedby="fileHelp">
+                      <small id="fileHelp" class="form-text text-muted">Include your digital certificate to authorize sending this patient file</small> 
+                    </div>
+                </div>
+                
+                <input type="hidden" name="patient_id" value= "000cb919-53b4-425c-a644-09821df33da2">
+<!--                 <input type="hidden" name="patient_id" value= "{{patientCCDAId}}">   -->
+              </div>
+              <div class="modal-footer">
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary" data-dismiss="send_something_modal">Send Email</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
+  </div>
+    <div id="p_brief_stats">
+      <div class="row">
+        <div class="p_block col-sm-6">
+          <dl class='dl-horizontal'>
+            <dt>Height</dt>
+            <dd id="p_brief_hgt_val"><span class="incomplete">n/a</span></dd>
+            <dt>Weight</dt>
+            <dd id="p_brief_wgt_val"><span class="incomplete">n/a</span></dd>
+            <dt>Blood Type</dt>
+            <dd><span class="incomplete">n/a</span></dd>
+            <dt>Vision</dt>
+            <dd><span class="incomplete">n/a</span></dd>
+          </dl>
+        </div>
+        <div class="p_block col-sm-6">
+          <dl class='dl-horizontal'>
+            <dt>DOB</dt>
+            <dd id="p_brief_dob_val">{{dob}}</dd>
+            <dt>Age</dt>
+            <dd id="p_brief_age_val">{{age}} {{#if isDeceased}}(Died: {{deathDate}}){{/if}}</dd>
+            <dt>Gender</dt>
+            <dd>{{gender}}</dd>
+            <dt>Race</dt>
+            <dd>{{race}}</dd>
+            <dt>Ethnicity</dt>
+            <dd>{{ethnicity}}</dd>
+            <dt>Spoken language</dt>
+            <dd>{{communication}}</dd>
+          </dl>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
 <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist" id="patient_tab_nav">

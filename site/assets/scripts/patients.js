@@ -48,7 +48,7 @@ function addLayerParam(param, layer) {
 
 export function loadPatients({city = '', count = 20}, layer = '') {
   var param = {};
-  
+
   if (addLayerParam(param, layer)) {
     param['_count'] = count * 2;
     param['patient.address-city'] = city;
@@ -277,6 +277,7 @@ const ATTR_MEDICATION_ORDER = Symbol('MedicationOrder');
 class Patient {
   constructor(obj) {
     this.pid = obj.id;
+    this.patientCCDAId = this._extractPatientIdentifier(obj);
     const name = this._extractPatientName(obj);
     this.familyName = name.familyName;
     this.givenName = name.givenName;
@@ -300,7 +301,7 @@ class Patient {
     this.allergies = [];
     this.medicationOrders = [];
     this.jsonUri = getPatientDownloadUrl({id:this.pid});
-    this.ccdaUri = getPatientDownloadCcda({id:this._extractPatientIdentifier(obj)});
+    this.ccdaUri = getPatientDownloadCcda({id:this.patientCCDAId});
   }
   
   loadPatientAttributes(attrType) {

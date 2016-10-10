@@ -577,7 +577,7 @@ function renderFeatures(layerKey) {
           if (App.selected_layer) {
             App.map.removeLayer(App.selected_layer);
           }
-          $("#patient_detail_view button.close").trigger('click');
+        $("#patient_detail_view button.close p_record").trigger('click');
           App.chart.unselect();
           $("#region_details").hide();
           $("#layer_details").show();
@@ -617,10 +617,22 @@ App.showPatientDetail = function(pid,elem) {
       e.preventDefault()
       $(this).tab('show')
     });
-    $("#patient_detail_view button.close").on('click',function() {
+    $("#patient_detail_view #p_record_button").on('click',function() {
+      console.log("In close event");
       $("#patient_detail_view").hide();
       $("#region_patients table tr").removeClass("selected");
       App.mapView.show();
+    });
+    $('form').submit(function (e) {
+      $('#send_modal').modal('toggle');
+    }); 
+    $(document).ready(function () {
+      if (sessionStorage["to"]) {
+        $('#to').val(sessionStorage["to"]);
+      }
+    });
+    $('.stored').keyup(function () {
+        sessionStorage[$(this).attr('name')] = $(this).val();
     });
   });
 }
