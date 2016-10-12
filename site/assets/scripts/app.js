@@ -2,7 +2,7 @@
 
 import jQuery from 'jquery';
 import moment from 'moment';
-// import page from 'page';
+import page from 'page';
 import Wkt from './lib/Wicket/wicket';
 import colorbrewer from './colorbrewer';
 import DataCatalogCensus from './data-catalog';
@@ -33,12 +33,36 @@ var App = window.App = {
   selected_layer: {}
 };
 
-function index() {
-  console.log("called index route");
-}
-
-function parse(ctx,next) {
-  console.log('parse',window.location.pathname);
+var Router = window.Router = {
+  ctx:null,
+  parse:(ctx,next) => {
+    Router.ctx = ctx;
+    Router.validate();
+    next();
+    },
+  goto:(fields) => {
+    let path = "/dashboard/";
+    if (fields.source == undefined) {fields.source = Router.ctx.params.source? Router.ctx.params.source : 'census';}
+    if (fields.region == undefined) {fields.region = Router.ctx.params.region? Router.ctx.params.region : 'county';}
+    if (fields.datavalue == undefined) {fields.datavalue = Router.ctx.params.datavalue? Router.ctx.params.datavalue : 'pop';}
+    path += [fields.source,fields.region,fields.datavalue].join('/');
+    page.replace(path);
+  },
+  route : (ctx) => {
+    let {source='synthea',region='town',datavalue='pop'} = ctx.params;
+    Router.ctx = ctx;
+    Router.validate();
+  },
+  show: (ctx) => { 
+    Router.ctx = ctx;
+  },
+  validate: () => {
+    let {source='synthea',region='town',datavalue='pop'} = Router.ctx.params;
+    if (source != 'synthea' && source != 'census') {source='synthea'}
+    if (region != 'town' && region != 'county') {region = 'town'}
+    Router.ctx.params.source = source;
+    Router.ctx.params.region = region;
+  }
 }
 
 $(document).ready(function() {
@@ -48,36 +72,54 @@ $(document).ready(function() {
   const tiles = new L.TileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}
   );
-/*  page.base('/dashboard');
-  page('/',() => {console.log("index")});
-  page('*',() => {console.log("parse")});
-  page('/census',(ctx, next)=>{$("#data_source_switch").val("census");next();});
-  page('/synthea',(ctx, next)=>{$("#data_source_switch").val("synthea");next();});
-  page({ dispatch: false, click:false, popstate:false }); 
-*/
+  page.base('/dashboard');
+  page('/:source/:region/:datavalue',Router.route);
+  page('/:source/:region',Router.route);
+  page('/:source',Router.route);
+
+  page('*',Router.parse);
+  page({ click:false, popstate:true });  // dispatch:false
+  page('/dashboard',Router.show);
+
+
+  
   let s = moment(new Date("2016-06-30"));
   $(".navbar-header .navbar-brand").append(": Day " + moment(new Date()).diff(s,'days'));  
   App.map.addLayer(tiles);
   App.map.on("mouseout",() => App.map.removeLayer(App.hover_layer));
   // pre-fetch the geometry layers
-  // loadGeoLayer("cousub", DataCatalogSynth);
-  // loadGeoLayer("county", DataCatalogSynth);
-  loadGeoLayer("cousub", DataCatalogCensus)
-    .done(function() {
-      loadGeoLayer("county", DataCatalogCensus)
-      .done(function(data) {
-        App.baseRegions = L.geoJson(data,{style:AppStyles.baseStyle}).addTo(App.map);
-        _.each(App.baseRegions.getLayers(),function(layer) {
-          App.baseRegionIndex[layer.feature.properties.ct_fips] = layer;
-        });
-        loadValueSet("county_stats")
-          .done(function(data) {
-            populateDemographicsDropdown(App.dataSet.valueSet,DataCatalog);
-            App.dataSet.catalogKey = "pop";
-            showLayerDetails("pop");
-          });
+
+  let {source='synthea',region='town',datavalue='pop'} = Router.ctx.params;
+
+  
+  $("#geo_layers_switch").val(region);
+  $("#data_source_switch").val(source);
+
+  DataCatalog = (source == "synthea" ? DataCatalogSynth:DataCatalogCensus);
+
+  loadGeoLayer("county", DataCatalogCensus)
+    .done(function(data) {
+      App.baseRegions = L.geoJson(data,{style:AppStyles.baseStyle}).addTo(App.map);
+      _.each(App.baseRegions.getLayers(),function(layer) {
+        App.baseRegionIndex[layer.feature.properties.ct_fips] = layer;
       });
-    });
+      loadGeoLayer(region, DataCatalog)
+        .done(function() {
+          let valueset = `${region}_stats`;
+          loadValueSet(valueset)
+            .done(function(data) {
+              let dataval = _.indexOf(App.dataSet.valueSet.demographics,datavalue) > -1 ? datavalue : "pop";
+              App.dataSet.catalogKey = dataval;
+              
+              $("#layer_select").val(dataval);
+              populateDemographicsDropdown(App.dataSet.valueSet,DataCatalog);
+              showLayerDetails(App.dataSet.catalogKey);
+            });
+        });
+      });
+    
+  
+
   
   $("#geo_layers_switch").change(function(e) {
     const geoLayerKey = $(e.target).val()
@@ -85,12 +127,12 @@ $(document).ready(function() {
     const geopromise = loadGeoLayer(geoLayerKey)
     .done(function(data) {
       refreshDataLayer(DataCatalog);
+      Router.goto({region:geoLayerKey});
     });
   }); 
 
   $("#data_source_switch").change(function(e) {
     const datasource = $(e.target).val();
-  //  page(`dashboard/${datasource}`);
     if (datasource === "census") {
       DataCatalog = DataCatalogCensus;
     } else if (datasource === "synthea") {
@@ -98,16 +140,20 @@ $(document).ready(function() {
     }
     // Reset everything so the map is regenerated
     refreshDataLayer(DataCatalog);
+    Router.goto({source:datasource});
   });
   
   $("#layer_select").change(function(e){
     const datasetId = $(e.target).val();
+    $("#region_details").hide();
+    $("#layer_details").show();
     showLayerDetails(datasetId);
   });  
   
   $("#sort_chart").click(sortChart);
   $("#sort_chart_name").click(sortChartByName);
   $("#zoom_to_all").click((e) => {e.stopPropogation;App.map.fitBounds(original_bounds);return false;});
+
 });
 
 /** Lookup the value set to use in the current DataCatalog given a geometryId and a demographics key
@@ -131,7 +177,11 @@ function refreshDataLayer(catalog) {
     });
 }
 
-
+function switchDataLayer(layerKey) {
+  if (layerKey == undefined || layerKey == "") return;
+  $("#layer_select").val(layerKey);
+  showLayerDetails(layerKey);
+}
 
 function populateDemographicsDropdown(valueSet,catalog) {
   // populate the layers dropdown
@@ -140,7 +190,9 @@ function populateDemographicsDropdown(valueSet,catalog) {
 
   const isKeyAvail = _.findWhere(demographics,{key:App.dataSet.catalogKey});
   const currentKey = isKeyAvail ? App.dataSet.catalogKey : $("#layer_select").val();
+  App.dataSet.catalogKey = currentKey;
   $("#layer_select").val(currentKey);
+  Router.goto({datavalue:currentKey});
   return currentKey;
 }
 
@@ -154,8 +206,7 @@ function showLayerDetails(layerKey) {
 
   $("#patient_detail_view button.close").trigger('click');
   $("#layer_details").empty().append(layer_details_tmpl(layer));
-  $("#region_details").hide();
-  $("#layer_details").show();
+
   $("#sort_chart").text("Sort by " + layer.name);
 
   App.dataSet.values = _.map(_.pluck(App.dataSet.json,valueKey),(x)=>x===undefined?0:x);
@@ -201,14 +252,15 @@ function showLayerDetails(layerKey) {
       App.map.fitBounds(minFeature.getBounds());
       minFeature.fireEvent("click",minFeature);
     });
-    if (App.legend) {
-      App.legend.update();
-    } else {
-      addDataLegend();
-    }
-    App.infoBox.update();
-    renderChart();
-    
+  if (App.legend) {
+    App.legend.update();
+  } else {
+    addDataLegend();
+  }
+  App.infoBox.update();
+  renderChart();
+  Router.goto({datavalue:layerKey});
+
 }
 
 
@@ -318,8 +370,6 @@ function _updateChart(sorted) {
     columns:columns
   });
 
-//  var mean = d3.median(_.pluck(sorted,App.dataSet.valueKey));
-//  App.chart.ygrids.add([{value: mean,text:'Median'}]);
   return false;
 }
 
@@ -346,7 +396,7 @@ function loadGeoLayer(layerKey, loadedCatalog = DataCatalog) {
 }
 
 /** Load one of the valueSets in the DataCatalog. The layerKey should be 
- *  one of 'county_stats' or 'cousub_stats' 
+ *  one of 'county_stats' or 'town_stats' 
  */
 function loadValueSet(layerKey) {
   const valueSet = _.findWhere(DataCatalog.valueSets,{id:layerKey});
@@ -415,10 +465,10 @@ function addDataLegend() {
       minVal = 0.4;
       maxVal = 0.6;
     }
-    if (App.dataSet.valueKey == "pop" && App.geoId == "cousub") {
+    if (App.dataSet.valueKey == "pop" && App.geoId == "town") {
       maxVal = Math.min(maxVal,75000);
     }
-    if (App.dataSet.valueKey == "pop_sm" && App.geoId == "cousub") {
+    if (App.dataSet.valueKey == "pop_sm" && App.geoId == "town") {
       maxVal = 1500;
       minVal = 50;
       colors = colorbrewer[palette][9];
@@ -452,12 +502,12 @@ function renderFeatures(layerKey) {
     minVal = 0.4;
     maxVal = 0.6;
   }
-  if (App.dataSet.valueKey == "pop" && App.geoId == "cousub") {
+  if (App.dataSet.valueKey == "pop" && App.geoId == "town") {
     maxVal = Math.min(maxVal,75000);
     minVal = 0;
 
   }
-  if (App.dataSet.valueKey == "pop_sm" && App.geoId == "cousub") {
+  if (App.dataSet.valueKey == "pop_sm" && App.geoId == "town") {
     maxVal = 2000;
     minVal = 50;
     colors = colorbrewer[palette][9];
@@ -479,11 +529,14 @@ function renderFeatures(layerKey) {
   function highlightFeature(e) {
     const featureLayer = e.target;
     App.map.removeLayer(App.hover_layer);
-    let newLayer = L.multiPolygon(featureLayer.getLatLngs(),featureLayer.options);
+    let newLayer = L.polygon(featureLayer.getLatLngs(),featureLayer.options);
     newLayer.setStyle(AppStyles.newFeature);
     if (App.infoBox) {
       App.infoBox.update(featureLayer.feature.properties);
     }
+    newLayer.on({
+      click:function(){featureLayer.fire('click');}
+    });
     newLayer.addTo(App.map);
     App.hover_layer = newLayer;
    
@@ -506,17 +559,12 @@ function renderFeatures(layerKey) {
        
       var props = _.extend({},e.target.feature.properties);
     
-      // check to see if this is the current selected feature
-      
-      if (false && App.selected_feature && App.selected_feature[App.dataSet.valueSet.primary_key] == props[App.dataSet.valueSet.primary_key]) {
-        $("#region_details").show();
-        return;
-      } else {
+     
         App.selected_feature = props;
         App.map.removeLayer(App.selected_layer);
 
         const layer = e.target;
-        let newLayer = L.multiPolygon(layer.getLatLngs(),layer.options);
+        let newLayer = L.polygon(layer.getLatLngs(),layer.options);
         newLayer.setStyle(AppStyles.selectedFeature);
         newLayer.addTo(App.map);
         App.selected_layer = newLayer;
@@ -528,27 +576,42 @@ function renderFeatures(layerKey) {
         props.pop = pop_fmt(props.pop);
         props.pop_sm = pop_sm_fmt(props.pop_sm);
         props.sq_mi = _getFormatter(DataCatalog.demographics.sq_mi)(props.sq_mi);
-        props.showResidents = (App.geoLayer.geometry == "cousub") && DataCatalog.source == 'Synthea';
+        props.showResidents = (App.geoLayer.geometry == "town") && DataCatalog.source == 'Synthea';
         const demos = _.without(App.dataSet.valueSet.demographics,"pop","pop_sm");
         props.demographics = _.map(demos,function(key){
         
           const fmt = _getFormatter(DataCatalog.demographics[key]);
           const dataVal = props[key] === undefined ? "n/a" : fmt(props[key]);
-          return {name:DataCatalog.demographics[key].name,val:dataVal}
+          const sorted = _.sortBy(App.dataSet.json,key);
+          const idx = _.sortedIndex(sorted,App.selected_feature,key) +1;
+          const length = sorted.length;
+          const pos = `${idx} of ${length}`;
+          const selectedKey = App.dataSet.catalogKey == key ? true : false;
+          return {name:DataCatalog.demographics[key].name,datasetId:key,val:dataVal,pos:pos,selectedKey:selectedKey}
         });
           
         const html = $("#region_details").empty().append(region_details_tmpl(props)).show();
-      
+        $("#region_details a.showDemographicBtn").on('click',function(evt) {
+          evt.preventDefault();
+          const datasetId = $(evt.target).data("datasetid");
+          switchDataLayer(datasetId);
+          $("#region_details tr").removeClass("selected");
+          $(`#region_details tr[data-datasetid=${datasetId}]`).addClass("selected");
+          App.selected_layer.bringToFront();
+        });
+        
         /* select the corresponding bar in the chart */
         App.chart.unselect([DataCatalog.demographics[App.dataSet.catalogKey].legend]);
         const filterObj = {
           [App.dataSet.valueSet.primary_key] : props[App.dataSet.valueSet.primary_key]
         }
-        const ix = _.findIndex(App.dataSet.json,filterObj);
-        App.chart.select(null,[ ix ],true );
+        const idx = _.findIndex(App.dataSet.json,filterObj);
+        App.chart.select(null,[ idx ],true );
         $("#region_details [data-toggle='popover']").popover({container:'body'});
-        $("#zoom_to_feature_btn").on('click',function() {
-          App.map.fitBounds(e.target.getBounds());
+        $("#zoom_to_feature_btn").on('click',function(e) {
+          layer.stopPropogation;
+          e.preventDefault();
+          App.map.fitBounds(layer.getBounds());
         });
 
         $("#load_resident_list").on('click',function(){
@@ -582,7 +645,6 @@ function renderFeatures(layerKey) {
           $("#region_details").hide();
           $("#layer_details").show();
         });
-      } // end else we clicked a different feature
     }
 }
   
@@ -623,6 +685,7 @@ App.showPatientDetail = function(pid,elem) {
       App.mapView.show();
     });
   });
+  return false;
 }
 /* Utility methods */
 /* return a function to format values for a specific demographic attribute */

@@ -12,10 +12,10 @@
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
   <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
 
@@ -34,16 +34,16 @@
         <div class="form-group">
           <label for="data_source_switch">Source of Data:</label>
           <select id="data_source_switch">
-            <option value="census" selected>Census</option>
-            <option value="synthea">Synthea</option>
+            <option value="synthea" selected>Synthea</option>
+            <option value="census">Census</option>
           </select>
         </div>
 
         <div class="form-group">
           <label for="geo_layers_switch">Geographic region:</label>
           <select id="geo_layers_switch">
-            <option value="county" selected>County</option>
-            <option value="cousub">Minor Civil Division</option>
+            <option value="town" selected>Cities and Towns</option>
+            <option value="county">County</option>
           </select>
         </div>
         <div class="form-group" id="demographics_group">
@@ -70,7 +70,6 @@
     </div>
   </div>
   <br />
-  <div class="xxxpush"></div>
   </div>
 </div>
 <%= require('html!./includes/footer.html') %>

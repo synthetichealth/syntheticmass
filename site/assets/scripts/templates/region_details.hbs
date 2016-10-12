@@ -24,9 +24,9 @@
         <th colspan="2">Demographics</th>
       </tr>
       {{#each demographics}}
-        <tr class="demographics">
-          <th>{{name}}</th>
-          <td>{{val}}</td>
+        <tr class="demographics {{#if selectedKey}}selected{{/if}}" data-datasetid="{{datasetId}}">
+          <th><a href="#" data-datasetid="{{datasetId}}" class="showDemographicBtn">{{name}}</a></th>
+          <td>{{val}} <span class="pull-right pos">({{pos}})</span></td>
         </tr>
       {{/each}}
   </tbody>
