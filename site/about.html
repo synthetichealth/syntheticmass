@@ -16,6 +16,18 @@
 <div class="container page-container" id="about">
   <div class="row">
     <div class="col-md-4 col-lg-3">
+      <div class="background">
+        <a><img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a>
+      </div>
+      <div> class="synthea">
+          <a><img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a><a href="https://github.com/synthetichealth/synthea"></a>
+        </div>
+      <div> class="SHR">
+          <a><img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a><a href="https://www.standardhealthrecord.org"></a>
+        </div>
+      <div> class="team">
+          <a><img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a><a href="http://www.mitre.org"></a>
+        </div>
 
     </div>
     <div class="col-md-8 col-lg-9">
@@ -34,23 +46,38 @@
           <li>Security and authorization models</li>
           <li>Third-party app development</li>
         </ul>
-        
+
         <p>SyntheticMass will provide a sandbox for Health IT developers, researchers and clinicians interested in prototyping new healthcare solutions. It enables this through:</p>
         <ul><li>Realistic data for fictional patients</li>
         <li>Data that is free of protected health information (PHI) and personally identifiable information (PII) constraints</li>
         <li>Datasets updated over time based on clinical healthcare models and epidemiological models of population health.</li>
-        </ul> 
+        </ul>
 
       </section>
+
       <section>
-        <h1 id="team">About the Team Behind SyntheticMass</h1>
+        <h1 id="team">About Synthea</h1>
+
+        <h2>Synthea - Synthetic Patient Population Simulator</h2>
+        <p><a href="https://github.com/synthetichealth/synthea">Synthea</a> is a Synthetic Patient Population Simulator. The goal is to output synthetic, realistic but not real, patient data and associated health records in a variety of formats. </p>
+
+      </section>
+
+      <section>
+        <h1 id="team">About the Standard Health Record Initiative</h1>
+
+        <h2>Standard Health Record Initiative</h2>
+        <p><a href="https://www.standardhealthrecord.org">The Standard Health Record Initiative</a> is working to create a single, high-quality health record for every individual in the United States.</p>
+        <p>Our vision is to fundementaly shift how health data is digitally recorded and shared to improve patient outcomes. When adopted, the SHR data model solves semantic interoperability for healthcare. As an open source project, the SHR engages a broad community and can provide a powerful model for global health.</p>
+      </section>
+
+      <section>
+        <h1 id="team">About the team behind SyntheticMass, Synthea and the Standard Health Record Initiaive</h1>
 
         <h2>The MITRE Corporation</h2>
         <p><a href="http://www.mitre.org"><img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a><a href="http://www.mitre.org">The MITRE Corporation</a> is a not-for-profit organization working in the public interest that operates federally funded research and development centers to provide innovative solutions to national problems. </p>
 
       </section>
-
-
 
     </div>
   </div>
@@ -59,11 +86,11 @@
 <script>
  $(document).ready(function(){$("#about_nav a").click(function() {
     var id =  $(this).attr('href');
-     $('html, body').animate({         
+     $('html, body').animate({
          scrollTop: $(id).offset().top-60
      }, 1000);
  });});
- 
+
 </script>
 </body>
 </html>
