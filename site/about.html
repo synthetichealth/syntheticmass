@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title><%= htmlWebpackPlugin.options.title %></title>
+  <title>
+    <%= htmlWebpackPlugin.options.title %>
+  </title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href='//fonts.googleapis.com/css?family=Lato:400,700,300' rel='stylesheet' type='text/css'>
   <link href='//fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
@@ -11,86 +14,122 @@
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
 </head>
+
 <body id="about_page">
-<%= require('html!./includes/nav.html') %>
-<div class="container page-container" id="about">
-  <div class="row">
-    <div class="col-md-4 col-lg-3">
-      <div class="background">
-        <a><img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a>
+  <%= require('html!./includes/nav.html') %>
+    <div class="container page-container" id="about">
+      <div class="row">
+        <div class="colmd4 collg3">
+          <!-- <div class="side_img" id="background">
+        <a><img src="<%= require('./assets/img/synmass_logo.jpg') %>" alt="Background image"  class="logo"/></a>
       </div>
-      <div> class="synthea">
-          <a><img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a><a href="https://github.com/synthetichealth/synthea"></a>
+      <div class="side_img" id="synthea">
+          <a><img src="<%= require('./assets/img/guy_poly2.jpg') %>" alt="Synthea image"  class="logo"/></a><a href="https://github.com/synthetichealth/synthea"></a>
         </div>
-      <div> class="SHR">
-          <a><img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a><a href="https://www.standardhealthrecord.org"></a>
+      <div class="side_img" id="SHR">
+          <a><img src="<%= require('./assets/img/shr_logo_bkgd.svg') %>" alt="SHR image"  class="logo"/></a><a href="https://www.standardhealthrecord.org"></a>
         </div>
-      <div> class="team">
-          <a><img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a><a href="http://www.mitre.org"></a>
+      <div class="side_img" id="team">
+          <a><img src="<%= require('./assets/img/mitre_bdfd.jpg') %>" alt="MITRE image"  class="logo"/></a><a href="http://www.mitre.org"></a>
+        </div> -->
         </div>
+      </div>
+      <div class="col-md-12 ">
+        <section>
+          <div class="row">
+            <div class="col-md-3">
+              <a href="http://www.standardhealthrecord.org"><img src="<%= require('./assets/img/synthmass_map.jpg') %>" alt="Background image"  class="side_img"/></a>
+            </div>
+            <div class="col-md-8 col-md-offset-1">
+              <h1 class="page-title">About SyntheticMass</h1>
+
+              <h1 id="background">Background</h1>
+              <p><a href="http://www.standardhealthrecord.org">SyntheticMass</a> is model of all 7 million (soon!) residents of the state of Massachusetts, with artificial health records for the fictional residents. This establishes a risk-free environment for:</p>
+              <ul>
+                <li>Data Visualization</li>
+                <li>Risk stratification</li>
+                <li>Care management</li>
+                <li>Clinical decision support</li>
+                <li>Patient Reported data integration</li>
+                <li>Evaluation of new treatment models</li>
+                <li>Privacy and consent models</li>
+                <li>Security and authorization models</li>
+                <li>Third-party app development</li>
+              </ul>
+
+              <p>SyntheticMass will provide a sandbox for Health IT developers, researchers and clinicians interested in prototyping new healthcare solutions. It enables this through:</p>
+              <ul>
+                <li>Realistic data for fictional patients</li>
+                <li>Data that is free of protected health information (PHI) and personally identifiable information (PII) constraints</li>
+                <li>Datasets updated over time based on clinical healthcare models and epidemiological models of population health.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="row">
+            <div class="col-md-3">
+              <a href="https://github.com/synthetichealth/synthea"><img src="<%= require('./assets/img/guy_poly2.jpg') %>" alt="Synthea image"  class="side_img"/></a>
+
+            </div>
+            <div class="col-md-8 col-md-offset-1">
+              <h1 id="team">About Synthea</h1>
+
+              <h2>Synthea - Synthetic Patient Population Simulator</h2>
+              <p><a href="https://github.com/synthetichealth/synthea">Synthea</a> is a Synthetic Patient Population Simulator. The goal is to output synthetic, realistic but not real, patient data and associated health records in a variety of formats. </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="row">
+            <div class="col-md-3">
+              <a href="http://www.standardhealthrecord.org"><img src="<%= require('./assets/img/shr_logo_bkgd.svg') %>" alt="SHR image" class="side_img"/></a>
+            </div>
+            <div class="col-md-8 col-md-offset-1">
+              <h1 id="team">About the Standard Health Record Initiative</h1>
+
+              <h2>Standard Health Record Initiative</h2>
+              <p><a href="https://standardhealthrecord.org">The Standard Health Record Initiative</a> is working to create a single, high-quality health record for every individual in the United States.</p>
+              <p>Our vision is to fundementaly shift how health data is digitally recorded and shared to improve patient outcomes. When adopted, the SHR data model solves semantic interoperability for healthcare. As an open source project, the SHR engages
+                a broad community and can provide a powerful model for global health.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="row">
+            <div class="col-md-3">
+              <a href="http://www.mitre.org"><img src="<%= require('./assets/img/mitre_bdfd.jpg') %>" alt="MITRE image" class="side_img"/></a>
+
+
+            </div>
+            <div class="col-md-8 col-md-offset-1">
+              <h1 id="team">About the team behind SyntheticMass, Synthea and the Standard Health Record Initiaive</h1>
+
+              <h2>The MITRE Corporation</h2>
+              <p><a href="http://www.mitre.org">The MITRE Corporation</a> is a not-for-profit organization working in the public interest that operates federally funded research and development centers to provide innovative solutions to national problems.
+              </p>
+              <!-- <img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a><a href="http://www.mitre.org"> -->
+            </div>
+          </div>
+        </section>
+
+      </div>
 
     </div>
-    <div class="col-md-8 col-lg-9">
-      <h1 class="page-title">About SyntheticMass</h1>
-      <section>
-        <h1 id="background">Background</h1>
-        <p>SyntheticMass is model of all 7 million (soon!) residents of the state of Massachusetts, with artificial health records for the fictional residents. This establishes a risk-free environment for:</p>
-        <ul>
-          <li>Data Visualization</li>
-          <li>Risk stratification</li>
-          <li>Care management</li>
-          <li>Clinical decision support</li>
-          <li>Patient Reported data integration</li>
-          <li>Evaluation of new treatment models</li>
-          <li>Privacy and consent models</li>
-          <li>Security and authorization models</li>
-          <li>Third-party app development</li>
-        </ul>
-
-        <p>SyntheticMass will provide a sandbox for Health IT developers, researchers and clinicians interested in prototyping new healthcare solutions. It enables this through:</p>
-        <ul><li>Realistic data for fictional patients</li>
-        <li>Data that is free of protected health information (PHI) and personally identifiable information (PII) constraints</li>
-        <li>Datasets updated over time based on clinical healthcare models and epidemiological models of population health.</li>
-        </ul>
-
-      </section>
-
-      <section>
-        <h1 id="team">About Synthea</h1>
-
-        <h2>Synthea - Synthetic Patient Population Simulator</h2>
-        <p><a href="https://github.com/synthetichealth/synthea">Synthea</a> is a Synthetic Patient Population Simulator. The goal is to output synthetic, realistic but not real, patient data and associated health records in a variety of formats. </p>
-
-      </section>
-
-      <section>
-        <h1 id="team">About the Standard Health Record Initiative</h1>
-
-        <h2>Standard Health Record Initiative</h2>
-        <p><a href="https://www.standardhealthrecord.org">The Standard Health Record Initiative</a> is working to create a single, high-quality health record for every individual in the United States.</p>
-        <p>Our vision is to fundementaly shift how health data is digitally recorded and shared to improve patient outcomes. When adopted, the SHR data model solves semantic interoperability for healthcare. As an open source project, the SHR engages a broad community and can provide a powerful model for global health.</p>
-      </section>
-
-      <section>
-        <h1 id="team">About the team behind SyntheticMass, Synthea and the Standard Health Record Initiaive</h1>
-
-        <h2>The MITRE Corporation</h2>
-        <p><a href="http://www.mitre.org"><img src="<%= require('./assets/img/MITRElogo.jpg') %>" alt="MITRE Logo"  class="logo"/></a><a href="http://www.mitre.org">The MITRE Corporation</a> is a not-for-profit organization working in the public interest that operates federally funded research and development centers to provide innovative solutions to national problems. </p>
-
-      </section>
-
-    </div>
-  </div>
-</div>
-<%= require('html!./includes/footer.html') %>
-<script>
- $(document).ready(function(){$("#about_nav a").click(function() {
-    var id =  $(this).attr('href');
-     $('html, body').animate({
-         scrollTop: $(id).offset().top-60
-     }, 1000);
- });});
-
-</script>
+    <%= require('html!./includes/footer.html') %>
+      <script>
+        $(document).ready(function() {
+          $("#about_nav a").click(function() {
+            var id = $(this).attr('href');
+            $('html, body').animate({
+              scrollTop: $(id).offset().top - 60
+            }, 1000);
+          });
+        });
+      </script>
 </body>
+
 </html>
