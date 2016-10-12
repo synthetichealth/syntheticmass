@@ -23,9 +23,14 @@
           <dd>{{address.postalCode}}</dd>
         </dl>
       </div>
-      <div><a download href="{{jsonUri}}">Download Patient Data (FHIR JSON)</a> | <a download href="{{ccdaUri}}">Download Patient Data (CCDA XML)</a></div>
-      <!-- Trigger the modal with a button -->
-      <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#send_modal">Send Data via Direct Messsage</button>
+      <div>
+        <a download href="{{jsonUri}}">Download Patient Data (FHIR JSON)</a> | <a download href="{{ccdaUri}}">Download Patient Data (CCDA XML)</a>
+      </div>
+
+      <!-- Trigger Modal -->
+      <div>
+        <a href="#" data-toggle="modal" data-target="#send_modal">Send Data via Direct Messsage</a>
+      </div>
 
       <!-- Modal -->
       <div id="send_modal" class="modal fade" role="dialog">
@@ -49,8 +54,7 @@
                 <div class="form-group">
                   <label for="message" class="col-sm-2 control-label">Subject</label>
                   <div class="col-sm-10">
-                    <input type="text" class="form-control" id="message" name="message" value="Report for Patient 000cb919-53b4-425c-a644-09821df33da2">
-<!--                     <input type="text" class="form-control" id="message" name="message" value="Report for Patient {{patientCCDAId}}"> -->
+                    <input type="text" class="form-control" id="message" name="message" value="Report for Patient {{givenName}} {{familyName}}">
                   </div>
                 </div>
 

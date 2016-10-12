@@ -618,7 +618,6 @@ App.showPatientDetail = function(pid,elem) {
       $(this).tab('show')
     });
     $("#patient_detail_view #p_record_button").on('click',function() {
-      console.log("In close event");
       $("#patient_detail_view").hide();
       $("#region_patients table tr").removeClass("selected");
       App.mapView.show();
