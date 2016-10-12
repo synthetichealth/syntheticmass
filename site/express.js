@@ -29,5 +29,5 @@ app.get('/dashboard/*', function(req, res){
   res.sendFile(__dirname + '/dashboard/index.html');
 });
 
-app.listen(4000);
-console.log('Example server listening on port 4000');
+app.listen(8000);
+console.log('Example server listening on port 8000');

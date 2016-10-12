@@ -89,7 +89,7 @@ $(document).ready(function() {
   App.map.on("mouseout",() => App.map.removeLayer(App.hover_layer));
   // pre-fetch the geometry layers
 
-  let {source='synthea',region='town',datavalue='pct_male'} = Router.ctx.params;
+  let {source='synthea',region='town',datavalue='pop'} = Router.ctx.params;
 
   
   $("#geo_layers_switch").val(region);
@@ -145,25 +145,15 @@ $(document).ready(function() {
   
   $("#layer_select").change(function(e){
     const datasetId = $(e.target).val();
+    $("#region_details").hide();
+    $("#layer_details").show();
     showLayerDetails(datasetId);
-    Router.goto({datavalue:datasetId});
   });  
   
   $("#sort_chart").click(sortChart);
   $("#sort_chart_name").click(sortChartByName);
   $("#zoom_to_all").click((e) => {e.stopPropogation;App.map.fitBounds(original_bounds);return false;});
 
-/*  let {source='synthea',region='town',datavalue='pop'} = Router.ctx.params;
-  $("#geo_layers_switch").val(region);
-  App.map.removeLayer(App.selected_layer);
-  const geopromise = loadGeoLayer(region)
-    .done(function(data) {
-      $("#data_source_switch").val(source);
-      $("#layer_select").val(datavalue);
-      refreshDataLayer(DataCatalog); 
-      showLayerDetails(datavalue);
-    });
-  */
 });
 
 /** Lookup the value set to use in the current DataCatalog given a geometryId and a demographics key
@@ -187,7 +177,11 @@ function refreshDataLayer(catalog) {
     });
 }
 
-
+function switchDataLayer(layerKey) {
+  if (layerKey == undefined || layerKey == "") return;
+  $("#layer_select").val(layerKey);
+  showLayerDetails(layerKey);
+}
 
 function populateDemographicsDropdown(valueSet,catalog) {
   // populate the layers dropdown
@@ -212,8 +206,7 @@ function showLayerDetails(layerKey) {
 
   $("#patient_detail_view button.close").trigger('click');
   $("#layer_details").empty().append(layer_details_tmpl(layer));
- /* $("#region_details").hide();
-  $("#layer_details").show(); */
+
   $("#sort_chart").text("Sort by " + layer.name);
 
   App.dataSet.values = _.map(_.pluck(App.dataSet.json,valueKey),(x)=>x===undefined?0:x);
@@ -259,14 +252,15 @@ function showLayerDetails(layerKey) {
       App.map.fitBounds(minFeature.getBounds());
       minFeature.fireEvent("click",minFeature);
     });
-    if (App.legend) {
-      App.legend.update();
-    } else {
-      addDataLegend();
-    }
-    App.infoBox.update();
-    renderChart();
-    
+  if (App.legend) {
+    App.legend.update();
+  } else {
+    addDataLegend();
+  }
+  App.infoBox.update();
+  renderChart();
+  Router.goto({datavalue:layerKey});
+
 }
 
 
@@ -540,6 +534,9 @@ function renderFeatures(layerKey) {
     if (App.infoBox) {
       App.infoBox.update(featureLayer.feature.properties);
     }
+    newLayer.on({
+      click:function(){featureLayer.fire('click');}
+    });
     newLayer.addTo(App.map);
     App.hover_layer = newLayer;
    
@@ -562,12 +559,7 @@ function renderFeatures(layerKey) {
        
       var props = _.extend({},e.target.feature.properties);
     
-      // check to see if this is the current selected feature
-      
-      if (false && App.selected_feature && App.selected_feature[App.dataSet.valueSet.primary_key] == props[App.dataSet.valueSet.primary_key]) {
-        $("#region_details").show();
-        return;
-      } else {
+     
         App.selected_feature = props;
         App.map.removeLayer(App.selected_layer);
 
@@ -590,18 +582,31 @@ function renderFeatures(layerKey) {
         
           const fmt = _getFormatter(DataCatalog.demographics[key]);
           const dataVal = props[key] === undefined ? "n/a" : fmt(props[key]);
-          return {name:DataCatalog.demographics[key].name,val:dataVal}
+          const sorted = _.sortBy(App.dataSet.json,key);
+          const idx = _.sortedIndex(sorted,App.selected_feature,key) +1;
+          const length = sorted.length;
+          const pos = `${idx} of ${length}`;
+          const selectedKey = App.dataSet.catalogKey == key ? true : false;
+          return {name:DataCatalog.demographics[key].name,datasetId:key,val:dataVal,pos:pos,selectedKey:selectedKey}
         });
           
         const html = $("#region_details").empty().append(region_details_tmpl(props)).show();
-      
+        $("#region_details a.showDemographicBtn").on('click',function(evt) {
+          evt.preventDefault();
+          const datasetId = $(evt.target).data("datasetid");
+          switchDataLayer(datasetId);
+          $("#region_details tr").removeClass("selected");
+          $(`#region_details tr[data-datasetid=${datasetId}]`).addClass("selected");
+          App.selected_layer.bringToFront();
+        });
+        
         /* select the corresponding bar in the chart */
         App.chart.unselect([DataCatalog.demographics[App.dataSet.catalogKey].legend]);
         const filterObj = {
           [App.dataSet.valueSet.primary_key] : props[App.dataSet.valueSet.primary_key]
         }
-        const ix = _.findIndex(App.dataSet.json,filterObj);
-        App.chart.select(null,[ ix ],true );
+        const idx = _.findIndex(App.dataSet.json,filterObj);
+        App.chart.select(null,[ idx ],true );
         $("#region_details [data-toggle='popover']").popover({container:'body'});
         $("#zoom_to_feature_btn").on('click',function(e) {
           layer.stopPropogation;
@@ -640,7 +645,6 @@ function renderFeatures(layerKey) {
           $("#region_details").hide();
           $("#layer_details").show();
         });
-      } // end else we clicked a different feature
     }
 }
   

@@ -152,6 +152,12 @@ ul.data-sources {
   h1 {margin-top:0}
 }
 
+#detail_table tr.demographics.selected {
+  th, td {
+    background-color:#fea;
+  }
+}
+
 .sep {margin:0 10px}
 .na {color:#888;}
 
