@@ -6,7 +6,7 @@
 
 SyntheticMass ([syntheticmass.mitre.org](https://syntheticmass.mitre.org/)) is model of all 7 million residents of the state of Massachusetts, with artificial health records for the fictional residents. This establishes a risk-free environment for:
 
-* Data Visualization
+* Data visualization
 * Risk stratification
 * Care management
 * Clinical decision support
@@ -31,6 +31,7 @@ SyntheticMass will provide a sandbox for Health IT developers, researchers and c
 
 * [Release Notes](./RELEASE.md)
 * [Server Setup](./setup/README.md)
+* [Deploying to Production](./docs/deploying.md)
 * [Building the Site](./site/readme.md)
 * [Using the FHIR API](./docs/using-fhir.md)
 * [Synthetic Statistics Using Postgres](https://github.com/synthetichealth/pgstats)

@@ -32,7 +32,11 @@ You can also request a specific resource by ID:
 GET https://syntheticmass.mitre.org/fhir/Patient/:id/
 ```
 
-See FHIR's [RESTful API Docs](http://hl7.org/fhir/2016Sep/http.html) for more information on using a FHIR-spec API.
+See FHIR's [RESTful API Documentation](http://hl7.org/fhir/2016Sep/http.html) for more information on using a FHIR-spec API.
+
+### Searching
+
+Our FHIR server also supports searching resources by a variety of criteria. See FHIR's [Search Documentation](http://hl7.org/fhir/2016Sep/search.html) for more information on using the FHIR search API.
 
 ### Authentication
 
