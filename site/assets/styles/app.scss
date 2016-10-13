@@ -59,13 +59,23 @@ span.subtitle {font-weight:300}
   }
 }
 
-#about, #help, {
-  padding-top:$header-top-height * 2;
+#about{
+  padding-top:$header-top-height*2;
   section {margin-bottom:4em;}
   h1 {padding-top:10px;}
   h1.page-title {padding-top:0}
   img.logo {padding:0 0 12px 20px;float:right}
   ul.nav-fixed {position:fixed}
+
+}
+#feedback{
+  padding-top:$header-top-height;
+  section {margin-bottom:4em;}
+  h1 {padding-top:10px;}
+  h1.page-title {padding-top:0}
+  ul.nav-fixed {position:fixed}
+  footer{position: fixed;
+  bottom: 0;}
 
 }
 .side_img{padding-top:30px;
@@ -76,7 +86,7 @@ span.subtitle {font-weight:300}
 }
 
 #about_page #nav_about {background-color:#18446e}
-#help_page #nav_help {background-color:#18446e}
+#feedback_page #nav_feedback {background-color:#18446e}
 #dashboard_page #nav_dash {background-color:#18446e}
 
 section.footer :target {background-color:#fe4}
