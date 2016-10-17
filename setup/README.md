@@ -14,9 +14,7 @@ Contents
 * [Setup HTC API](#setup-the-htc-api)
 * [Setup Synthetic Mass UI](#setup-the-synthetic-mass-ui)
 * [Setup System Services](#setup-system-services)
-* [Configure Apache Proxy](#configure-apache-proxy)
-* [Migrate the Mongo Database](#migrating-the-mongo-database)
-* [Migrate the Postgres Database](#migrating-the-postgres-database)
+* [Configure Apache](#configure-apache)
 
 Software Installed
 ------------------
@@ -401,41 +399,16 @@ $ ps -aux | grep gofhir
 $ ps -aux | grep htc_api.py
 ```
 
-
-Configure Apache Proxy
-----------------------
-To access the GoFHIR and HTC APIs over the open web Apache's proxy settings need to be configured:
-
-```
-$ cd /etc/apache2/sites-available/
-```
-
-In **`ssl-syntheticmass.mitre.org.conf`** set:
+Configure Apache
+----------------
+Copy the apache configuration files to `/etc/apache2/sites-available/`:
 
 ```
-ServerName <host>.mitre.org
-ServerAlias www.<host>.mitre.org
-
-...
-
-ProxyPreserveHost On
-
-ProxyPass "/api" "http://localhost:8080/htc/api"
-ProxyPassReverse "/api" "http://localhost:8080/htc/api"
-
-ProxyPass "/fhir" "http://localhost:3001"
-ProxyPassReverse "/fhir" "http://localhost:3001"
+$ cd $HOME/synthetichealth/syntheticmass/setup/apache/
+$ sudo cp *.mitre.org.conf /etc/apache2/sites-available/
 ```
 
-In **`syntheticmass.mitre.org.conf`** set:
-
-```
-ServerName <host>.mitre.org
-ServerAlias www.<host>.mitre.org
-RedirectMatch permanent / https://<host>.mitre.org/
-```
-
-Where, depending on your environment, `<host>` is one of:
+Depending on your environment replace all instances of `<host>` in both configuration files with one of:
 
 1. `syntheticmass-dev`
 2. `syntheticmass-stg`
@@ -452,55 +425,4 @@ Check that the APIs are now accessible using a web browser:
 ```
 $ curl https://<host>.mitre.org/api/v1          # the API root
 $ curl https://<host>.mitre.org/fhir/metadata   # the conformance statement
-```
-
-Migrating the Mongo Database
-----------------------------
-
-From your local home directory:
-
-```
-$ mongodump --out=./dump --gzip
-```
-
-This dumps the **ENTIRE** mongo database, including multiple databases if they exist, into the `dump/` folder. The `--gzip` flag significantly compresses the dump, making it easier to transfer.
-
-Next copy the dump to your home directory in another environment:
-
-```
-$ scp -r ./dump/ <user>@<host>.mitre.org:/home/<user>/
-``` 
-
-Finally, from the directory that the dump was copied to:
-
-```
-$ mongorestore --gzip ./dump
-```
-
-The restore **does not** rebuild the indexes automatically. GoFHIR must be restarted to build the indexes anew.
-
-Migrating the Postgres Database
--------------------------------
-
-As user `postgres`:
-
-```
-$ sudo su - postgres
-$ pg_dump -F c fhir > fhir.bak
-```
-
-This dumps the database in the `pg_dump` custom format into user `postgres`'s home directory (`/var/lib/postgresql/`).
-
-Next, copy the dump to your home directory in another environment:
-
-```
-$ scp fhir.bak <user>@<host>.mitre.org:/home/<user>/
-```
-
-Finally, again as user `postgres`, perform the restore:
-
-```
-$ sudo su - postgres
-$ cd /home/<user>/
-$ pg_restore -d fhir -F c fhir.bak
 ```

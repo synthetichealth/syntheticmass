@@ -1,4 +1,4 @@
-## Building the site
+## Building The Site
 
 The SyntheticMass website is built from the HTML, CSS and JS files in the `/site` directory. This is done using the [Webpack](http://webpack.github.io/) module builder tool.
 
@@ -11,15 +11,19 @@ This will start the webpack-dev-server in watch mode. As you edit the files in `
 
 In addition, most of the major libraries used by the site are referenced from CDNs directly, and are not included in the repository or installed locally. This means that you *must* have outernet access to run the application, even in development mode. 
 
-### Debugging mode
-The webpack-dev-server does not work with Chrome developer tools for debugging. Instead you need to use the regular `webpack` command and use another process to serve the built files.
+### Install Dependencies
 
-```bash
-$ webpack
-$ cd build && python -m SimpleHTTPServer 8000
+From the `site/` directory:
+
+```
+$ npm install
 ```
 
-This will run the webpack command to build the site into the `build` directory and then use a lightweight HTTP server to serve the directory on port 8000.
+### Debugging mode
+
+```
+$ npm run build-dev
+```
 
 ### Staging Mode
 To prepare the site for deployment to the staging server, you need to build the site in staging mode.
@@ -42,4 +46,4 @@ This will make the same optimizations as `build-stg` but will run webpack with t
 
 ### Deploying the site
 
-All files necessary for the production site are located in the `build` directory. Copy those files to the webroot of the server. 
+All files necessary for the production site are located in the `build` directory. Copy those files to the `DocumentRoot` of the server.

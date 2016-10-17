@@ -16,11 +16,11 @@ module.exports = {
   borderColor : "#fff",
   borderOpacity: 0.6,
   newFeature :{  
-    weight:3,
+    weight:4,
     fillColor:'none',
     fillOpacity:0,
     opacity:1,
-    color:'#444'
+    color:'#000'
   },
   overlays : {
     color:"#f60",
@@ -34,6 +34,6 @@ module.exports = {
     fillColor:'none',
     fillOpacity:0,
     opacity:1,
-    color:'black'
+    color:'#000'
   }
 }
