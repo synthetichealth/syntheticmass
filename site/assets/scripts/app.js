@@ -14,6 +14,9 @@ import bar_tooltip_tmpl from './templates/bar_tooltip.hbs'
 import AppStyles from './config';
 import * as Patients from './patients';
 
+const BASE_URL = "http://syntheticmass-dev.mitre.org" // Cannot use API_HOST because direct requires 'http' and not 'https'
+const BASE_URL_DIRECT_SERVICE = BASE_URL + ":8081/SendDirectEmailService/webresources/direct/send/patient"
+
 // Which source of data (census or synthetic) are we pulling from
 var DataCatalog = DataCatalogCensus;
 
@@ -622,15 +625,36 @@ App.showPatientDetail = function(pid,elem) {
       $("#region_patients table tr").removeClass("selected");
       App.mapView.show();
     });
-    $('form').submit(function (e) {
-      $('#send_modal').modal('toggle');
+    $('#p_direct_form').submit(function (e) {
+      e.preventDefault();
+      var form = $('#p_direct_form')[0];
+      var formData = new FormData(form)
+      console.log(form);
+      $.ajax({
+        type:"POST",
+        url: BASE_URL_DIRECT_SERVICE,
+        data: formData,
+        // Needs to be used for file uploading
+        contentType: false,
+        processData: false, 
+        success: function (response) {
+          $('#send_modal').modal('toggle');
+        },
+        error: function (jqXHR, textStatus, errorThrown ) {
+          alert("There was an error in sending your email.")
+          // Do we want to toggle the modal or not?
+          $('#send_modal').modal('toggle');
+        }
+      });
+      return false;
     }); 
+
     $(document).ready(function () {
       if (sessionStorage["to"]) {
         $('#to').val(sessionStorage["to"]);
       }
     });
-    $('.stored').keyup(function () {
+    $('.stored').change(function () {
         sessionStorage[$(this).attr('name')] = $(this).val();
     });
   });

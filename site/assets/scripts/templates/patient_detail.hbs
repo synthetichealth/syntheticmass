@@ -41,7 +41,7 @@
               <button type="button" class="close" data-dismiss="modal">&times;</button>
               <h4 class="modal-title">Send Data via Direct Email</h4> 
             </div>
-            <form id="p_direct_form" action="http://syntheticmass-dev.mitre.org:8081/SendDirectEmailService/webresources/direct/send/patient" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
+            <form id="p_direct_form" role="form" class="form-horizontal" enctype="multipart/form-data">
               <div class="modal-body">
                 
                 <div class="form-group">
@@ -66,8 +66,11 @@
                     </div>
                 </div>
                 
-                <input type="hidden" name="patient_id" value= "000cb919-53b4-425c-a644-09821df33da2">
-<!--                 <input type="hidden" name="patient_id" value= "{{patientCCDAId}}">   -->
+                <div class="form-group">
+                  <!-- For testing functionality, use the below patient id -->
+                  <!-- <input type="hidden" id="patient_id" name="patient_id" value= "000cb919-53b4-425c-a644-09821df33da2"> -->
+                  <input type="hidden" name="patient_id" value= "{{patientCCDAId}}">  
+                </div>
               </div>
               <div class="modal-footer">
                 <div class="form-group">
