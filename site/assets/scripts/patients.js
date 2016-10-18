@@ -17,6 +17,36 @@ const FORMAT_XML  = "xml";
 const BASE_URL_CCDA = BASE_URL + 'htc/api/v1/synth/ccda/id/';
 const CONDITION_SYSTEM_URL = "http://snomed.info/sct";
 const CODE_DIABETES = '44054006';
+// Heart Disease codes
+const CODE_STROKE = '230690007';
+const CODE_CORONARY_HEART_DISEASE = '53741008';
+const CODE_MYOCARDIAL_INFARCTION = '22298006';
+const CODE_CARDIAC_ARREST = '410429000';
+const CODE_ATERIAL_FIBRILLATION = '49436004';
+const CODE_CARDIOVASCULAR_DISEASE = '49601007';
+function heartDiseaseCode() {
+  // The ',' acts as an 'or' operator for the FHIR server
+  return CODE_STROKE                 + ',' + 
+         CODE_CORONARY_HEART_DISEASE + ',' + 
+         CODE_MYOCARDIAL_INFARCTION  + ',' + 
+         CODE_CARDIAC_ARREST         + ',' + 
+         CODE_ATERIAL_FIBRILLATION   + ',' + 
+         CODE_CARDIOVASCULAR_DISEASE
+         ;
+};
+// Opioid Codes
+const CODE_DRUG_REHABILITATION = '56876005';
+const CODE_DRUG_ADDICTION_THERAPY = '266707007';
+const CODE_DRUG_OVERDOSE = '55680006';
+function opioidAddictionCode() {
+  // The ',' acts as an 'or' operator for the FHIR server
+  // NOTE: Overdose is commented out because the server cannot handle the query
+  //       size for that condition. This is a problem on the server end.
+  return CODE_DRUG_REHABILITATION    + ',' + 
+         CODE_DRUG_ADDICTION_THERAPY //+ ',' + 
+         //CODE_DRUG_OVERDOSE 
+         ;
+};
 const CODES = { 
   loinc : {
     weight : "29463-7",
@@ -27,7 +57,8 @@ const CODES = {
     
 
 
-// Returns true if the layer is a condition, rather than something that can be added as a parameter
+// OLD: Returns true if the layer is a condition, rather than something that can be added as a parameter
+// TODO: Rework logic of case statement, since conditions can now be parameters.
 function addLayerParam(param, layer) {
   // If a layer is defined that restricts patient list data, add it as a parameter for the search
   switch (layer) {
@@ -37,9 +68,17 @@ function addLayerParam(param, layer) {
     case "pct_female":
       param['gender'] = "female";
       return false;
-    case "chr_diabetes":
-      param['code'] = CONDITION_SYSTEM_URL + '|' + CODE_DIABETES;
-      return true;
+    case "pct_diabetes":
+      param['condition-code'] = CODE_DIABETES;
+      return false;
+    case "pct_opioid_addiction": 
+      // TODO: devise robust method of handling multiple codes
+      param['condition-code'] = opioidAddictionCode();
+      return false;
+    case "pct_heart_disease":
+      // TODO: devise robust method of handling multiple codes
+      param['condition-code'] = heartDiseaseCode();
+      return false;
     default:
       break;
   }
