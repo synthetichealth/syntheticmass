@@ -14,8 +14,8 @@ import bar_tooltip_tmpl from './templates/bar_tooltip.hbs'
 import AppStyles from './config';
 import * as Patients from './patients';
 
-const BASE_URL = "http://syntheticmass-dev.mitre.org" // Cannot use API_HOST because direct requires 'http' and not 'https'
-const BASE_URL_DIRECT_SERVICE = BASE_URL + ":8081/SendDirectEmailService/webresources/direct/send/patient"
+const BASE_URL = `${API_HOST}`;
+const BASE_URL_DIRECT_SERVICE = BASE_URL + "/SendDirectEmailService/webresources/direct/send/patient"
 
 // Which source of data (census or synthetic) are we pulling from
 var DataCatalog = DataCatalogCensus;
