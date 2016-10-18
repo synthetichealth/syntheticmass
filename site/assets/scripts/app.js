@@ -14,6 +14,9 @@ import bar_tooltip_tmpl from './templates/bar_tooltip.hbs'
 import AppStyles from './config';
 import * as Patients from './patients';
 
+const BASE_URL = `${API_HOST}`;
+const BASE_URL_DIRECT_SERVICE = BASE_URL + "/SendDirectEmailService/webresources/direct/send/patient"
+
 // Which source of data (census or synthetic) are we pulling from
 var DataCatalog = DataCatalogCensus;
 
@@ -640,7 +643,7 @@ function renderFeatures(layerKey) {
           if (App.selected_layer) {
             App.map.removeLayer(App.selected_layer);
           }
-          $("#patient_detail_view button.close").trigger('click');
+        $("#patient_detail_view button.close p_record").trigger('click');
           App.chart.unselect();
           $("#region_details").hide();
           $("#layer_details").show();
@@ -679,10 +682,42 @@ App.showPatientDetail = function(pid,elem) {
       e.preventDefault()
       $(this).tab('show')
     });
-    $("#patient_detail_view button.close").on('click',function() {
+    $("#patient_detail_view #p_record_button").on('click',function() {
       $("#patient_detail_view").hide();
       $("#region_patients table tr").removeClass("selected");
       App.mapView.show();
+    });
+    $('#p_direct_form').submit(function (e) {
+      e.preventDefault();
+      var form = $('#p_direct_form')[0];
+      var formData = new FormData(form)
+      console.log(form);
+      $.ajax({
+        type:"POST",
+        url: BASE_URL_DIRECT_SERVICE,
+        data: formData,
+        // Needs to be used for file uploading
+        contentType: false,
+        processData: false, 
+        success: function (response) {
+          $('#send_modal').modal('toggle');
+        },
+        error: function (jqXHR, textStatus, errorThrown ) {
+          alert("There was an error in sending your email.")
+          // Do we want to toggle the modal or not?
+          $('#send_modal').modal('toggle');
+        }
+      });
+      return false;
+    }); 
+
+    $(document).ready(function () {
+      if (sessionStorage["to"]) {
+        $('#to').val(sessionStorage["to"]);
+      }
+    });
+    $('.stored').change(function () {
+        sessionStorage[$(this).attr('name')] = $(this).val();
     });
   });
   return false;
