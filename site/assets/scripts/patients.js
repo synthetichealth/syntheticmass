@@ -51,10 +51,13 @@ const CODES = {
   loinc : {
     weight : "29463-7",
     height : "8302-2"
-  }
+  },
+  causeOfDeath : "69453-9",  // Observation code
+  bodyweight : "29463-7"
 }
-  
+
     
+
 
 
 // OLD: Returns true if the layer is a condition, rather than something that can be added as a parameter
@@ -153,6 +156,7 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
     return promise;
   }
   
+  //TODO: ADD an attrtype here for diag_report or for COD that looks up based on diagnostic report querying for FHIR
   switch (attrType) {
     case ATTR_OBSERVATION : 
       //  ajaxRecordSet("Observation?_format=json&_count=500&patient=" + pId + "&date=>=" + tenYearsAgoString + "&_sort:desc=date", oIndex);
@@ -176,6 +180,9 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
       params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'datewritten'});
       attrUrl += "MedicationOrder";
       break;
+    case ATTR_CAUSE_OF_DEATH : 
+      params = $.param({patient:pid, code:CODES.causeOfDeath})
+      attrUrl += "Observation"; 
     }
     return ajaxAttributes(attrUrl,params);
   }
@@ -267,17 +274,22 @@ export function displayPatientDetail(patientObj,elem) {
   patient.loadPatientAttributes(ATTR_CONDITION,elem);
   patient.loadPatientAttributes(ATTR_IMMUNIZATION,elem);
   patient.loadPatientAttributes(ATTR_MEDICATION_ORDER,elem);
-  _getPhoto(patient.gender);
+  patient.loadPatientAttributes(ATTR_CAUSE_OF_DEATH,elem);
+  _getPhoto(patient);
 } 
 
-function _getPhoto(gender) {
-  $.ajax({
-  url: 'https://randomuser.me/api/?gender=' + gender,
-  dataType: 'json',
-  success: function(data) {
-    $("#p_patient_photo").attr("src",(data.results[0].picture.large));
+function _getPhoto(patient) {
+  if (patient.hasPhoto) {
+    $("#p_patient_photo").attr("src", (patient.photo));
+  } else {
+    $.ajax({
+    url: 'https://randomuser.me/api/?gender=' + patient.gender,
+    dataType: 'json',
+    success: function(data) {
+      $("#p_patient_photo").attr("src",(data.results[0].picture.large));
+    }
+    });
   }
-});
 }
 
 function compareByBirthDate(a, b) {
@@ -311,6 +323,7 @@ const ATTR_ALLERGY = Symbol('Allergy');
 const ATTR_CONDITION = Symbol('Condition');
 const ATTR_IMMUNIZATION = Symbol('Immunization');
 const ATTR_MEDICATION_ORDER = Symbol('MedicationOrder');
+const ATTR_CAUSE_OF_DEATH = Symbol('causeOfDeath');
 
 /* Lookup functions to extract patient resource details */
 class Patient {
@@ -326,6 +339,8 @@ class Patient {
     const {isDeceased,deathDate} = this._extractDeceased(obj);
     this.isDeceased = isDeceased;
     this.deathDate = deathDate;
+    // Default cause of death to unknown, gets loaded in loadPatientAttributes later if possible
+    this.causeOfDeath = this.isDeceased ? "Unknown" : null;
     this.address = this._extractAddress(obj);
     this.currBodyWeight = _NA;
     this.currHeight = _NA;
@@ -341,6 +356,9 @@ class Patient {
     this.medicationOrders = [];
     this.jsonUri = getPatientDownloadUrl({id:this.pid});
     this.ccdaUri = getPatientDownloadCcda({id:this.patientCCDAId});
+    const {hasPhoto, photo} = this._extractPhoto(obj);
+    this.hasPhoto = hasPhoto;
+    this.photo = photo;
   }
   
   loadPatientAttributes(attrType) {
@@ -390,13 +408,20 @@ class Patient {
             $("#p_medications").html("Error loading MedicationOrders");
           });
         break;
+      case ATTR_CAUSE_OF_DEATH : 
+        promise
+          .done((rawResponse) => {
+            console.log(rawResponse);
+            self._saveCauseOfDeath(rawResponse);
+            $("#p_brief_cause_of_death").html(self.causeOfDeath);
+          })
+        break;
     }
   }
   _extractDeceased(patient) {
     let isDeceased = false;
     let deathDate = null;
-    if (patient.hasOwnProperty("deceasedDateTime")) {
-            
+    if (patient.hasOwnProperty("deceasedDateTime")) {     
       deathDate = moment(patient.deceasedDateTime).format("DD.MMM.YYYY");
       if (moment(patient.deceasedDateTime).isBefore(moment(new Date()))) {
         isDeceased = true;
@@ -516,6 +541,12 @@ class Patient {
       this.resources[resource] = this.resources[resource].concat(rawResponse.entry);
     }
   }
+  _saveCauseOfDeath(rawResponse) {
+    if(rawResponse.entry != undefined) {
+      // NOTE: assumes there is only every one cause of death, and that the RESTapi cannot return empty array of entries
+      this.causeOfDeath = rawResponse.entry[0]["resource"]["valueCodeableConcept"]["coding"][0]["display"];
+    }
+  }
   _extractAddress(resource) {
     let city = _NA,
         state = _NA,
@@ -577,6 +608,21 @@ class Patient {
     }
     return 0;
   }  
+  // Returns a string containing the base 64 encoding for the photo, formatted for display 
+  // on most browsers
+  _extractPhoto(resource) {
+    let photo = null;
+    let hasPhoto = false;
+//    let headshotTitle = "Biometrics.Fingerprint";
+    let headshotTitle = "Photograph";
+    let headshotObjects = _.filter(resource.photo, function (curPhoto) {return (curPhoto["title"] == headshotTitle)});
+    if(headshotObjects.length > 0 ) {
+      hasPhoto = true;
+      let photoObj = headshotObjects[0];
+      photo = "data:" + photoObj["contentType"] + ";base64," + photoObj["data"];
+    }
+    return {hasPhoto, photo};
+  }
 }
 
 
