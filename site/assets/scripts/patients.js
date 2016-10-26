@@ -613,7 +613,6 @@ class Patient {
   _extractPhoto(resource) {
     let photo = null;
     let hasPhoto = false;
-//    let headshotTitle = "Biometrics.Fingerprint";
     let headshotTitle = "Photograph";
     let headshotObjects = _.filter(resource.photo, function (curPhoto) {return (curPhoto["title"] == headshotTitle)});
     if(headshotObjects.length > 0 ) {
