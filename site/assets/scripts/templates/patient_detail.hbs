@@ -1,4 +1,4 @@
-<div id="p_record" {{#if isDeceased}}class="deceased"{{/if}}>
+<div id="p_record"{{#if isDeceased}}class="deceased"{{/if}}>
   <h2>Patient Record<button type="button" id="p_record_button" class="close" aria-label="Close"> <span aria-hidden="true">&times;</span> Close</button></h2>
   <div id="p_brief" class="row">
     <div id="p_brief_photo" class="col-xs-4 col-sm-3">
@@ -105,6 +105,10 @@
             <dd id="p_brief_dob_val">{{dob}}</dd>
             <dt>Age</dt>
             <dd id="p_brief_age_val">{{age}} {{#if isDeceased}}(Died: {{deathDate}}){{/if}}</dd>
+            {{#if isDeceased}}
+              <dt>Cause of Death</dt>
+              <dd id="p_brief_cause_of_death">{{causeOfDeath}}</dd>
+            {{/if}}
             <dt>Gender</dt>
             <dd>{{gender}}</dd>
             <dt>Race</dt>
