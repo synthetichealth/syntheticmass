@@ -372,20 +372,36 @@ class Patient {
           $("#p_observations").html(patient_detail__observations_tmpl({observations:self.observations}));
           $("#p_brief_wgt_val").html(self.currBodyWeight);
           $("#p_brief_hgt_val").html(self.currHeight);
-        });
+        })
+        .fail(() => {
+            $("#p_observations").html("Error loading Observations");
+            $("#p_observations div[data-loader]").remove();
+          });
         break;
       case ATTR_ALLERGY :
         promise.done((data) => {
           self._saveEntries(data,'allergies');
           $("#p_allergies").html(patient_detail__allergies_tmpl({allergies:self.allergies}));
-        });
+          $("#p_allergies div[data-loader]").remove();
+        })
+        .fail(() => {
+            $("#p_allergies").html("Error loading Allergies");
+            $("#p_allergies div[data-loader]").remove();
+          });
+
         break;
       case ATTR_CONDITION :
         promise.done((rawResponse) => {
           self._saveEntries(rawResponse,'conditions');
           self._extractConditions(self.resources.conditions);
           $("#p_conditions").html(patient_detail__condition_tmpl({conditions:self.conditions}));
-        });
+          $("#p_vaccinations div[data-loader]").remove();
+        })
+        .fail(() => {
+            $("#p_conditions").html("Error loading Conditions");
+            $("#p_conditions div[data-loader]").remove();
+          });
+
         break;
       case ATTR_IMMUNIZATION : 
         promise.done((rawResponse) => {
@@ -395,6 +411,7 @@ class Patient {
         })
         .fail(() => {
           $("#p_vaccinations").html("Error loading Immunizations");
+          $("#p_vaccinations div[data-loader]").remove();
         });
         break;
       case ATTR_MEDICATION_ORDER : 
@@ -406,6 +423,7 @@ class Patient {
           })
           .fail(() => {
             $("#p_medications").html("Error loading MedicationOrders");
+            $("#p_medications div[data-loader]").remove();
           });
         break;
       case ATTR_CAUSE_OF_DEATH : 
