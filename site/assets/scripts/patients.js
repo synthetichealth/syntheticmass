@@ -53,15 +53,8 @@ const CODES = {
     height : "8302-2"
   },
   causeOfDeath : "69453-9",  // Observation code
-  bodyweight : "29463-7"
 }
 
-    
-
-
-
-// OLD: Returns true if the layer is a condition, rather than something that can be added as a parameter
-// TODO: Rework logic of case statement, since conditions can now be parameters.
 function addLayerParam(param, layer) {
   // If a layer is defined that restricts patient list data, add it as a parameter for the search
   switch (layer) {
@@ -75,11 +68,9 @@ function addLayerParam(param, layer) {
       param['condition-code'] = CODE_DIABETES;
       return false;
     case "pct_opioid_addiction": 
-      // TODO: devise robust method of handling multiple codes
       param['condition-code'] = opioidAddictionCode();
       return false;
     case "pct_heart_disease":
-      // TODO: devise robust method of handling multiple codes
       param['condition-code'] = heartDiseaseCode();
       return false;
     default:
@@ -156,7 +147,6 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
     return promise;
   }
   
-  //TODO: ADD an attrtype here for diag_report or for COD that looks up based on diagnostic report querying for FHIR
   switch (attrType) {
     case ATTR_OBSERVATION : 
       //  ajaxRecordSet("Observation?_format=json&_count=500&patient=" + pId + "&date=>=" + tenYearsAgoString + "&_sort:desc=date", oIndex);
