@@ -635,6 +635,7 @@ function renderFeatures(layerKey) {
           })
          .fail(function(e) {
             alert("Failure loading residents list");
+            $("#region_patients div[data-loader]").remove();
             console.log("Failure loading residents list",e);
           });
         });
