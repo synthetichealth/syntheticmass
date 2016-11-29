@@ -639,9 +639,9 @@ function _getPatientDOB(resource) {
 }
 
 function _getPatientName(resource) {
-  let name = {};
+  let name = {family:["NoFamilyName"],given:["NoGivenName"]};
   for (let j = 0; j < resource.name.length; j++) {
-    if (j == 0 || (resource.name[j].hasProperty("use") &&
+    if (j == 0 || (resource.name[j].hasOwnProperty("use") &&
                    resource.name[j].use == "official")) {
       name = resource.name[j];
     }
