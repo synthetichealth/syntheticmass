@@ -26,12 +26,12 @@ const CODE_ATERIAL_FIBRILLATION = '49436004';
 const CODE_CARDIOVASCULAR_DISEASE = '49601007';
 function heartDiseaseCode() {
   // The ',' acts as an 'or' operator for the FHIR server
-  return CODE_STROKE                 + ',' + 
-         CODE_CORONARY_HEART_DISEASE + ',' + 
-         CODE_MYOCARDIAL_INFARCTION  + ',' + 
-         CODE_CARDIAC_ARREST         + ',' + 
-         CODE_ATERIAL_FIBRILLATION   + ',' + 
-         CODE_CARDIOVASCULAR_DISEASE
+  return [CODE_STROKE,
+         CODE_CORONARY_HEART_DISEASE,
+         CODE_MYOCARDIAL_INFARCTION,
+         CODE_CARDIAC_ARREST,
+         CODE_ATERIAL_FIBRILLATION,
+         CODE_CARDIOVASCULAR_DISEASE].join(',')
          ;
 };
 // Opioid Codes
@@ -42,12 +42,12 @@ function opioidAddictionCode() {
   // The ',' acts as an 'or' operator for the FHIR server
   // NOTE: Overdose is commented out because the server cannot handle the query
   //       size for that condition. This is a problem on the server end.
-  return CODE_DRUG_REHABILITATION    + ',' + 
-         CODE_DRUG_ADDICTION_THERAPY //+ ',' + 
-         //CODE_DRUG_OVERDOSE 
+  return [CODE_DRUG_REHABILITATION,
+         CODE_DRUG_ADDICTION_THERAPY].join(',');
+         //CODE_DRUG_OVERDOSE
          ;
 };
-const CODES = { 
+const CODES = {
   loinc : {
     weight : "29463-7",
     height : "8302-2"
@@ -67,7 +67,7 @@ function addLayerParam(param, layer) {
     case "pct_diabetes":
       param['condition-code'] = CODE_DIABETES;
       return false;
-    case "pct_opioid_addiction": 
+    case "pct_opioid_addiction":
       param['condition-code'] = opioidAddictionCode();
       return false;
     case "pct_heart_disease":
@@ -146,9 +146,9 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
       data:params});
     return promise;
   }
-  
+
   switch (attrType) {
-    case ATTR_OBSERVATION : 
+    case ATTR_OBSERVATION :
       //  ajaxRecordSet("Observation?_format=json&_count=500&patient=" + pId + "&date=>=" + tenYearsAgoString + "&_sort:desc=date", oIndex);
       const tenYearsAgo = moment(new Date()).subtract(10,'years').format("YYYY-MM-DD");
       params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'date',date:`gte${tenYearsAgo}`});
@@ -170,9 +170,9 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
       params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'datewritten'});
       attrUrl += "MedicationOrder";
       break;
-    case ATTR_CAUSE_OF_DEATH : 
+    case ATTR_CAUSE_OF_DEATH :
       params = $.param({patient:pid, code:CODES.causeOfDeath})
-      attrUrl += "Observation"; 
+      attrUrl += "Observation";
     }
     return ajaxAttributes(attrUrl,params);
   }
@@ -199,7 +199,7 @@ function getPatientDownloadUrl({id,revIncludeTables = ['*'], count = 20}, format
 }
 
 function getPatientDownloadCcda({id=0}) {
-  return BASE_URL_CCDA + id;  
+  return BASE_URL_CCDA + id;
 }
 
 export function loadPaginationURL(url = '') {
@@ -266,7 +266,7 @@ export function displayPatientDetail(patientObj,elem) {
   patient.loadPatientAttributes(ATTR_MEDICATION_ORDER,elem);
   patient.loadPatientAttributes(ATTR_CAUSE_OF_DEATH,elem);
   _getPhoto(patient);
-} 
+}
 
 function _getPhoto(patient) {
   if (patient.hasPhoto) {
@@ -350,12 +350,12 @@ class Patient {
     this.hasPhoto = hasPhoto;
     this.photo = photo;
   }
-  
+
   loadPatientAttributes(attrType) {
     const self = this;
     let promise = loadPatientAttributes({pid:this.pid,attrType});
     switch (attrType) {
-      case ATTR_OBSERVATION : 
+      case ATTR_OBSERVATION :
         promise.done((data) => {
           self._saveEntries(data,'observations');
           self._extractObservations(self.resources.observations);
@@ -393,7 +393,7 @@ class Patient {
           });
 
         break;
-      case ATTR_IMMUNIZATION : 
+      case ATTR_IMMUNIZATION :
         promise.done((rawResponse) => {
           self._saveEntries(rawResponse,'immunizations');
           self._extractImmunizations(self.resources.immunizations);
@@ -404,7 +404,7 @@ class Patient {
           $("#p_vaccinations div[data-loader]").remove();
         });
         break;
-      case ATTR_MEDICATION_ORDER : 
+      case ATTR_MEDICATION_ORDER :
         promise
           .done((rawResponse) => {
             self._saveEntries(rawResponse,'medicationOrders');
@@ -416,7 +416,7 @@ class Patient {
             $("#p_medications div[data-loader]").remove();
           });
         break;
-      case ATTR_CAUSE_OF_DEATH : 
+      case ATTR_CAUSE_OF_DEATH :
         promise
           .done((rawResponse) => {
             console.log(rawResponse);
@@ -429,7 +429,7 @@ class Patient {
   _extractDeceased(patient) {
     let isDeceased = false;
     let deathDate = null;
-    if (patient.hasOwnProperty("deceasedDateTime")) {     
+    if (patient.hasOwnProperty("deceasedDateTime")) {
       deathDate = moment(patient.deceasedDateTime).format("DD.MMM.YYYY");
       if (moment(patient.deceasedDateTime).isBefore(moment(new Date()))) {
         isDeceased = true;
@@ -437,7 +437,7 @@ class Patient {
     }
     return {isDeceased,deathDate}
   }
-      
+
   _extractObservations(observations) {
     if (this.observations === undefined) {
       this.observations = [];
@@ -500,7 +500,7 @@ class Patient {
       this.medicationOrders.push({code:medication.resource.medicationCodeableConcept.coding[0].code,name:medication.resource.medicationCodeableConcept.coding[0].display,dateWritten});
     }
   }
-  
+
   _extractAllergies(allergies) {
     if (this.allergies === undefined) {
       this.allergies = [];
@@ -513,7 +513,7 @@ class Patient {
       this.allergies.push({name:allergy.resource.substance.coding[0].display,diagDate});
     }
   }
-  
+
   _extractConditions(conditions) {
     if (this.conditions === undefined) {
       this.conditions = [];
@@ -530,7 +530,7 @@ class Patient {
       this.conditions.push({name:cond.resource.code.coding[0].display,code:cond.resource.code.coding[0].code,onsetDate,resolveDate});
     }
   }
-  
+
   _extractImmunizations(immunizations) {
     let vaccineKeyChecks = [];
     if (this.immunizations === undefined) {
@@ -543,7 +543,7 @@ class Patient {
       }
     }
   }
-      
+
   _saveEntries(rawResponse,resource) {
     if (rawResponse.entry != undefined) {
       this.resources[resource] = this.resources[resource].concat(rawResponse.entry);
@@ -580,7 +580,7 @@ class Patient {
      }
   return {race,ethnicity}
 }
-  
+
   _extractCommunication(resource) {
     let comms = _NA;
     if (resource.hasOwnProperty("communication")) {
@@ -592,7 +592,7 @@ class Patient {
     }
     return comms;
   }
-  
+
   _extractPatientName(resource) {
     return _getPatientName(resource);
   }
@@ -615,8 +615,8 @@ class Patient {
       return resource.identifier[0].value;
     }
     return 0;
-  }  
-  // Returns a string containing the base 64 encoding for the photo, formatted for display 
+  }
+  // Returns a string containing the base 64 encoding for the photo, formatted for display
   // on most browsers
   _extractPhoto(resource) {
     let photo = null;
@@ -633,7 +633,7 @@ class Patient {
 }
 
 
-/* Utility functions */    
+/* Utility functions */
 function _getPatientDOB(resource) {
   return moment(resource.birthDate).format('DD.MMM.YYYY');
 }

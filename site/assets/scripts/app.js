@@ -3,6 +3,7 @@
 import jQuery from 'jquery';
 import moment from 'moment';
 import page from 'page';
+import qs from 'querystringify';
 import Wkt from './lib/Wicket/wicket';
 import colorbrewer from './colorbrewer';
 import DataCatalogCensus from './data-catalog';
@@ -40,6 +41,7 @@ var Router = window.Router = {
   ctx:null,
   parse:(ctx,next) => {
     Router.ctx = ctx;
+    Router.ctx.query = qs.parse(ctx.querystring);
     Router.validate();
     next();
     },
@@ -49,14 +51,27 @@ var Router = window.Router = {
     if (fields.region == undefined) {fields.region = Router.ctx.params.region? Router.ctx.params.region : 'county';}
     if (fields.datavalue == undefined) {fields.datavalue = Router.ctx.params.datavalue? Router.ctx.params.datavalue : 'pop';}
     path += [fields.source,fields.region,fields.datavalue].join('/');
+
+    if (fields.patient !== undefined) {
+      Router.ctx.query = {patient:fields.patient};
+    }
+    if (Router.ctx.query.patient) {
+      path += qs.stringify({patient:Router.ctx.query.patient},'?');
+      App.showPatientDetail(Router.ctx.query.patient,null);
+    }
     page.replace(path);
+  },
+  gotoPatient:(patientId) => {
+    Router.ctx.query.patient = patientId;
+    page.replace(Router.ctx.path + qs.stringify({patient:patientId},'?'));
   },
   route : (ctx) => {
     let {source='synthea',region='town',datavalue='pop'} = ctx.params;
     Router.ctx = ctx;
+    Router.ctx.query = qs.parse(Router.ctx.querystring);
     Router.validate();
   },
-  show: (ctx) => { 
+  show: (ctx) => {
     Router.ctx = ctx;
   },
   validate: () => {
@@ -85,16 +100,16 @@ $(document).ready(function() {
   page('/dashboard',Router.show);
 
 
-  
+
   let s = moment(new Date("2016-06-30"));
-  $(".navbar-header .navbar-brand").append(": Day " + moment(new Date()).diff(s,'days'));  
+  $(".navbar-header .navbar-brand").append(": Day " + moment(new Date()).diff(s,'days'));
   App.map.addLayer(tiles);
   App.map.on("mouseout",() => App.map.removeLayer(App.hover_layer));
   // pre-fetch the geometry layers
 
   let {source='synthea',region='town',datavalue='pop'} = Router.ctx.params;
 
-  
+
   $("#geo_layers_switch").val(region);
   $("#data_source_switch").val(source);
 
@@ -113,26 +128,27 @@ $(document).ready(function() {
             .done(function(data) {
               let dataval = _.indexOf(App.dataSet.valueSet.demographics,datavalue) > -1 ? datavalue : "pop";
               App.dataSet.catalogKey = dataval;
-              
+
               $("#layer_select").val(dataval);
               populateDemographicsDropdown(App.dataSet.valueSet,DataCatalog);
               showLayerDetails(App.dataSet.catalogKey);
             });
         });
       });
-    
-  
 
-  
+
+
+
   $("#geo_layers_switch").change(function(e) {
     const geoLayerKey = $(e.target).val()
     App.map.removeLayer(App.selected_layer);
     const geopromise = loadGeoLayer(geoLayerKey)
     .done(function(data) {
       refreshDataLayer(DataCatalog);
-      Router.goto({region:geoLayerKey});
+
+      Router.goto({region:geoLayerKey,patient:null});
     });
-  }); 
+  });
 
   $("#data_source_switch").change(function(e) {
     const datasource = $(e.target).val();
@@ -143,20 +159,19 @@ $(document).ready(function() {
     }
     // Reset everything so the map is regenerated
     refreshDataLayer(DataCatalog);
-    Router.goto({source:datasource});
+    Router.goto({source:datasource,patient:null});
   });
-  
+
   $("#layer_select").change(function(e){
     const datasetId = $(e.target).val();
     $("#region_details").hide();
     $("#layer_details").show();
     showLayerDetails(datasetId);
-  });  
-  
+  });
+
   $("#sort_chart").click(sortChart);
   $("#sort_chart_name").click(sortChartByName);
   $("#zoom_to_all").click((e) => {e.stopPropogation;App.map.fitBounds(original_bounds);return false;});
-
 });
 
 /** Lookup the value set to use in the current DataCatalog given a geometryId and a demographics key
@@ -166,7 +181,7 @@ function findValueSet(geometry,demographicsKey) {
 }
 function refreshDataLayer(catalog) {
 /* determine what needs to be done with the current data layer
- - it might need to change because the current selected demographic is not in the 
+ - it might need to change because the current selected demographic is not in the
  geoLayer or datasource.
  */
   App.dataSet.valueSet = findValueSet(App.geoId,App.dataSet.catalogKey);
@@ -195,7 +210,6 @@ function populateDemographicsDropdown(valueSet,catalog) {
   const currentKey = isKeyAvail ? App.dataSet.catalogKey : $("#layer_select").val();
   App.dataSet.catalogKey = currentKey;
   $("#layer_select").val(currentKey);
-  Router.goto({datavalue:currentKey});
   return currentKey;
 }
 
@@ -224,10 +238,10 @@ function showLayerDetails(layerKey) {
   App.dataSet.maxValue = d3.max(App.dataSet.values);
   App.dataSet.minValue = d3.min(App.dataSet.values);
   renderFeatures(layerKey);
-  
+
   const median = d3.median(App.dataSet.values);
   const mean = d3.mean(App.dataSet.values);
-  
+
   const maxFeature = _findFeatureById(maxObj[App.dataSet.valueSet.primary_key]);
   const minFeature = _findFeatureById(minObj[App.dataSet.valueSet.primary_key]);
 
@@ -243,7 +257,7 @@ function showLayerDetails(layerKey) {
       App.map.fitBounds(maxFeature.getBounds());
       maxFeature.fireEvent("click",maxFeature);
     });
-  
+
   $("#detail_min").text(minObj[App.dataSet.valueSet.name_key] + " " + App.dataSet.valueSet.geometry_label + ": " + fmt(minObj[valueKey]) )
     .mouseover(function() {
       minFeature.fireEvent("mouseover",minFeature);
@@ -302,7 +316,7 @@ function renderChart() {
       },
       selection : {
         enabled:true
-      } 
+      }
     },
     bar: {width: {ratio:0.8}},
     axis: {
@@ -331,8 +345,8 @@ function renderChart() {
             }
            return bar_tooltip_tmpl({name,val,val_name,col,val2,val2_name,col2});
           }
-    }  
-      
+    }
+
   };
   var chart = c3.generate(chart_data);
   App.chart = chart;
@@ -364,7 +378,7 @@ function sortChartByName(e) {
 function _updateChart(sorted) {
   var fmt = d3.format(".3f");
   App.dataSet.json = sorted;
-  
+
   var cols = _.map(App.chart.data(),function(obj) {
     return [obj.id].concat(_.map(_.pluck(App.dataSet.json,obj.id),function(d){return fmt(d)}))
   });
@@ -379,7 +393,7 @@ function _updateChart(sorted) {
 /** Load a geoLayer from a DataCatalog. This layer is expected to have only geo Features
  * and provide only the basic properties for each feature.
  */
- 
+
 function loadGeoLayer(layerKey, loadedCatalog = DataCatalog) {
   const layer = loadedCatalog.geoLayers[layerKey];
   App.geoLayer = layer;
@@ -398,8 +412,8 @@ function loadGeoLayer(layerKey, loadedCatalog = DataCatalog) {
   }
 }
 
-/** Load one of the valueSets in the DataCatalog. The layerKey should be 
- *  one of 'county_stats' or 'town_stats' 
+/** Load one of the valueSets in the DataCatalog. The layerKey should be
+ *  one of 'county_stats' or 'town_stats'
  */
 function loadValueSet(layerKey) {
   const valueSet = _.findWhere(DataCatalog.valueSets,{id:layerKey});
@@ -438,14 +452,14 @@ function addDataLegend() {
       this._div.innerHTML =  html +
        '<b>' + currItem[App.dataSet.valueSet.name_key] + parentStr + '</b><br>' + dataVal;
     } else {
-      this._div.innerHTML = html + 
+      this._div.innerHTML = html +
           '<br>Hover over a ' + App.dataSet.valueSet.geometry_label;  // will need to update this based on county/ccd geometry
     }
   };
 
   info.addTo(App.map);
   App.infoBox = info;
-  
+
   let legend = L.control({position:'bottomright'});
   legend.onAdd = function(map) {
     this._div = L.DomUtil.create('div', 'info legend');
@@ -457,12 +471,12 @@ function addDataLegend() {
     const layer = DataCatalog.demographics[App.dataSet.catalogKey],
           fmt1 = _getValueFormatter(layer),
           fmt2 = _getFormatter(layer);
-          
+
     const palette = DataCatalog.demographics[App.dataSet.catalogKey].palette || 'YlOrRd';
     let colors = colorbrewer[palette][7];
     let minVal = App.dataSet.minValue,
         maxVal = App.dataSet.maxValue;
-    
+
     /* Some datasets don't look good with the d3.scale, so we do a little manual adjustment */
     if (App.dataSet.valueKey == "pct_female" || App.dataSet.valueKey == "pct_male") {
       minVal = 0.4;
@@ -480,7 +494,7 @@ function addDataLegend() {
       maxVal = 320;
       minVal = 100;
     }
-    
+
     const q = d3.scale.quantile().domain(App.dataSet.values).range(colors);
     const range = [Math.min(App.dataSet.minValue,minVal)].concat(q.quantiles());
     range.push(Math.max(App.dataSet.maxValue,maxVal));
@@ -490,11 +504,11 @@ function addDataLegend() {
         fmt1(range[i-1]) + '&ndash;' + fmt2(range[i]) + '<br>';
     }
   };
-  
+
   legend.addTo(App.map);
   App.legend = legend;
 }
-  
+
 function renderFeatures(layerKey) {
   const palette = DataCatalog.demographics[App.dataSet.catalogKey].palette || 'YlOrRd';
   let colors = colorbrewer[palette][7];
@@ -542,27 +556,27 @@ function renderFeatures(layerKey) {
     });
     newLayer.addTo(App.map);
     App.hover_layer = newLayer;
-   
+
     const filterObj = {
       [App.dataSet.valueSet.primary_key] : featureLayer.feature.properties[App.geoLayer.primary_key]
     };
     var rank = _.findIndex(App.dataSet.json, filterObj);
     App.chart.select(null,[rank],true);
   }
-  
+
   function onEachFeature(feature,layer) {
     layer.on({
       mouseover:highlightFeature,
       dblclick:(e) => { App.map.fitBounds(e.target.getBounds()); },
       click:_showDetails
       });
-      
+
     function _showDetails(e) {
       $("#layer_details").hide();
-       
+
       var props = _.extend({},e.target.feature.properties);
-    
-     
+
+
         App.selected_feature = props;
         App.map.removeLayer(App.selected_layer);
 
@@ -582,7 +596,7 @@ function renderFeatures(layerKey) {
         props.showResidents = (App.geoLayer.geometry == "town") && DataCatalog.source == 'Synthea';
         const demos = _.without(App.dataSet.valueSet.demographics,"pop","pop_sm");
         props.demographics = _.map(demos,function(key){
-        
+
           const fmt = _getFormatter(DataCatalog.demographics[key]);
           const dataVal = props[key] === undefined ? "n/a" : fmt(props[key]);
           const sorted = _.sortBy(App.dataSet.json,key);
@@ -592,7 +606,7 @@ function renderFeatures(layerKey) {
           const selectedKey = App.dataSet.catalogKey == key ? true : false;
           return {name:DataCatalog.demographics[key].name,datasetId:key,val:dataVal,pos:pos,selectedKey:selectedKey}
         });
-          
+
         const html = $("#region_details").empty().append(region_details_tmpl(props)).show();
         $("#region_details a.showDemographicBtn").on('click',function(evt) {
           evt.preventDefault();
@@ -602,7 +616,7 @@ function renderFeatures(layerKey) {
           $(`#region_details tr[data-datasetid=${datasetId}]`).addClass("selected");
           App.selected_layer.bringToFront();
         });
-        
+
         /* select the corresponding bar in the chart */
         App.chart.unselect([DataCatalog.demographics[App.dataSet.catalogKey].legend]);
         const filterObj = {
@@ -631,7 +645,7 @@ function renderFeatures(layerKey) {
             console.log(wkt);
             console.log(wkt.toObject());
             */
-            
+
           })
          .fail(function(e) {
             alert("Failure loading residents list");
@@ -639,7 +653,7 @@ function renderFeatures(layerKey) {
             console.log("Failure loading residents list",e);
           });
         });
-                  
+
         $("#region_details h2 button").on('click',function(){
           if (App.selected_layer) {
             App.map.removeLayer(App.selected_layer);
@@ -651,10 +665,10 @@ function renderFeatures(layerKey) {
         });
     }
 }
-  
+
   App.geoFeatureLayer = L.geoJson(App.geoLayer.geoJson);
 
-  App.geoFeatureLayer.eachLayer(function(layer) {  
+  App.geoFeatureLayer.eachLayer(function(layer) {
     const valueKey = App.dataSet.valueSet.primary_key;
     const obj = App.dataSet.index[layer.feature.properties[valueKey]];
       _.extend(layer.feature.properties,obj);
@@ -675,6 +689,8 @@ App.paginatePatientList = function(url = null) {
 App.showPatientDetail = function(pid,elem) {
   $("#region_patients table tr").removeClass("selected");
   $(elem).parents("tr").addClass("selected");
+  // Add ?patient=pid to path here
+  Router.gotoPatient(pid);
   const promise = Patients.loadPatient(pid);
   promise.done((data) => {
     App.mapView.hide();
@@ -684,6 +700,9 @@ App.showPatientDetail = function(pid,elem) {
       $(this).tab('show')
     });
     $("#patient_detail_view #p_record_button").on('click',function() {
+      // clear out the query string for the patient
+      Router.ctx.query = null;
+      Router.goto({patient:null});
       $("#patient_detail_view").hide();
       $("#region_patients table tr").removeClass("selected");
       App.mapView.show();
@@ -692,14 +711,13 @@ App.showPatientDetail = function(pid,elem) {
       e.preventDefault();
       var form = $('#p_direct_form')[0];
       var formData = new FormData(form)
-      console.log(form);
       $.ajax({
         type:"POST",
         url: BASE_URL_DIRECT_SERVICE,
         data: formData,
         // Needs to be used for file uploading
         contentType: false,
-        processData: false, 
+        processData: false,
         success: function (response) {
           $('#send_modal').modal('toggle');
         },
@@ -710,7 +728,7 @@ App.showPatientDetail = function(pid,elem) {
         }
       });
       return false;
-    }); 
+    });
 
     $(document).ready(function () {
       if (sessionStorage["to"]) {
@@ -720,6 +738,11 @@ App.showPatientDetail = function(pid,elem) {
     $('.stored').change(function () {
         sessionStorage[$(this).attr('name')] = $(this).val();
     });
+  })
+  .fail(function(e) {
+    alert(`Unable to load the patient [ID:${pid}]`);
+    Router.goto({patient:null});
+    console.log(e);
   });
   return false;
 }
