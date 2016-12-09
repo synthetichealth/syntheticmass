@@ -63,7 +63,7 @@ var Router = window.Router = {
   },
   gotoPatient:(patientId) => {
     Router.ctx.query.patient = patientId;
-    page.replace(Router.ctx.path + qs.stringify({patient:patientId},'?'));
+    page.replace(Router.ctx.path.split('?')[0] + qs.stringify({patient:patientId},'?'));
   },
   route : (ctx) => {
     let {source='synthea',region='town',datavalue='pop'} = ctx.params;
