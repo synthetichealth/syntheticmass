@@ -77,5 +77,5 @@ Finally, again as user `postgres`, perform the restore:
 ```
 $ sudo su - postgres
 $ cd /home/<user>/
-$ pg_restore -c -d fhir -F c fhir.bak
+$ pg_restore -d fhir -F c fhir.bak
 ```
