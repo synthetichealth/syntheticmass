@@ -166,9 +166,9 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
       params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'date'});
       attrUrl += "Immunization";
       break;
-    case ATTR_MEDICATION_ORDER :
+    case ATTR_MEDICATION_REQUEST :
       params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'datewritten'});
-      attrUrl += "MedicationOrder";
+      attrUrl += "MedicationRequest";
       break;
     case ATTR_CAUSE_OF_DEATH :
       params = $.param({patient:pid, code:CODES.causeOfDeath})
@@ -263,7 +263,7 @@ export function displayPatientDetail(patientObj,elem) {
   patient.loadPatientAttributes(ATTR_ALLERGY,elem);
   patient.loadPatientAttributes(ATTR_CONDITION,elem);
   patient.loadPatientAttributes(ATTR_IMMUNIZATION,elem);
-  patient.loadPatientAttributes(ATTR_MEDICATION_ORDER,elem);
+  patient.loadPatientAttributes(ATTR_MEDICATION_REQUEST,elem);
   patient.loadPatientAttributes(ATTR_CAUSE_OF_DEATH,elem);
   _getPhoto(patient);
 }
@@ -312,7 +312,7 @@ const ATTR_OBSERVATION = Symbol('Observation');
 const ATTR_ALLERGY = Symbol('Allergy');
 const ATTR_CONDITION = Symbol('Condition');
 const ATTR_IMMUNIZATION = Symbol('Immunization');
-const ATTR_MEDICATION_ORDER = Symbol('MedicationOrder');
+const ATTR_MEDICATION_REQUEST = Symbol('MedicationRequest');
 const ATTR_CAUSE_OF_DEATH = Symbol('causeOfDeath');
 
 /* Lookup functions to extract patient resource details */
@@ -338,12 +338,12 @@ class Patient {
     const {race,ethnicity} = this._extractRaceAndEthnicity(obj);
     this.race = race;
     this.ethnicity = ethnicity;
-    this.resources = { immunizations:[], observations:[], allergies:[], conditions:[], medicationOrders : [] }
+    this.resources = { immunizations:[], observations:[], allergies:[], conditions:[], medicationRequests : [] }
     this.conditions = [];
     this.immunizations = [];
     this.observations = [];
     this.allergies = [];
-    this.medicationOrders = [];
+    this.medicationRequests = [];
     this.jsonUri = getPatientDownloadUrl({id:this.pid});
     this.ccdaUri = getPatientDownloadCcda({id:this.patientCCDAId});
     const {hasPhoto, photo} = this._extractPhoto(obj);
@@ -404,15 +404,15 @@ class Patient {
           $("#p_vaccinations div[data-loader]").remove();
         });
         break;
-      case ATTR_MEDICATION_ORDER :
+      case ATTR_MEDICATION_REQUEST :
         promise
           .done((rawResponse) => {
-            self._saveEntries(rawResponse,'medicationOrders');
-            self._extractMedicationOrders(self.resources.medicationOrders);
-            $("#p_medications").html(patient_detail__medications_tmpl({medicationOrders:self.medicationOrders}));
+            self._saveEntries(rawResponse,'medicationRequests');
+            self._extractMedicationRequests(self.resources.medicationRequests);
+            $("#p_medications").html(patient_detail__medications_tmpl({medicationRequests:self.medicationRequests}));
           })
           .fail(() => {
-            $("#p_medications").html("Error loading MedicationOrders");
+            $("#p_medications").html("Error loading MedicationRequests");
             $("#p_medications div[data-loader]").remove();
           });
         break;
@@ -488,16 +488,16 @@ class Patient {
         effDate:effDate});
     }
   }
-  _extractMedicationOrders(medicationOrders) {
-    if (this.medicationOrders === undefined) {
-      this.medicationOrders = [];
+  _extractMedicationRequests(medicationRequests) {
+    if (this.medicationRequests === undefined) {
+      this.medicationRequests = [];
     }
     let dateWritten = _NA;
-    for (const medication of medicationOrders) {
+    for (const medication of medicationRequests) {
       if (medication.resource.hasOwnProperty("dateWritten")) {
         dateWritten = moment(medication.resource.dateWritten).format("DD.MMM.YYYY");
       }
-      this.medicationOrders.push({code:medication.resource.medicationCodeableConcept.coding[0].code,name:medication.resource.medicationCodeableConcept.coding[0].display,dateWritten});
+      this.medicationRequests.push({code:medication.resource.medicationCodeableConcept.coding[0].code,name:medication.resource.medicationCodeableConcept.coding[0].display,dateWritten});
     }
   }
 
@@ -646,7 +646,7 @@ function _getPatientName(resource) {
       name = resource.name[j];
     }
   }
-  return {familyName:name.family[0], givenName:name.given[0]};
+  return {familyName:name.family, givenName:name.given[0]};
 }
 
 function _getPatientId(resource) {
