@@ -7,6 +7,9 @@ import patient_detail__condition_tmpl from './templates/patient_detail_condition
 import patient_detail__allergies_tmpl from './templates/patient_detail_allergies.hbs';
 import patient_detail__observations_tmpl from './templates/patient_detail_observations.hbs';
 import patient_detail__medications_tmpl from './templates/patient_detail_medications.hbs';
+import patient_detail__procedures_tmpl from './templates/patient_detail_procedures.hbs';
+import patient_detail__encounters_tmpl from './templates/patient_detail_encounters.hbs';
+import patient_detail__careplans_tmpl from './templates/patient_detail_careplans.hbs';
 
 import moment from 'moment';
 
@@ -170,6 +173,18 @@ function loadPatientAttributes({format = 'json', count = 500,pid,attrType}){
       params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'datewritten'});
       attrUrl += "MedicationRequest";
       break;
+    case ATTR_PROCEDURE :
+      params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'date'});
+      attrUrl += "Procedure";
+      break;
+    case ATTR_ENCOUNTER :
+      params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'date'});
+      attrUrl += "Encounter";
+      break;
+    case ATTR_CAREPLAN :
+      params = $.param({_format:format,_count:count,patient:pid,['_sort:desc']:'date'});
+      attrUrl += "CarePlan";
+      break;
     case ATTR_CAUSE_OF_DEATH :
       params = $.param({patient:pid, code:CODES.causeOfDeath})
       attrUrl += "Observation";
@@ -264,6 +279,9 @@ export function displayPatientDetail(patientObj,elem) {
   patient.loadPatientAttributes(ATTR_CONDITION,elem);
   patient.loadPatientAttributes(ATTR_IMMUNIZATION,elem);
   patient.loadPatientAttributes(ATTR_MEDICATION_REQUEST,elem);
+  patient.loadPatientAttributes(ATTR_PROCEDURE,elem);
+  patient.loadPatientAttributes(ATTR_ENCOUNTER,elem);
+  patient.loadPatientAttributes(ATTR_CAREPLAN,elem);
   patient.loadPatientAttributes(ATTR_CAUSE_OF_DEATH,elem);
   _getPhoto(patient);
 }
@@ -313,6 +331,9 @@ const ATTR_ALLERGY = Symbol('Allergy');
 const ATTR_CONDITION = Symbol('Condition');
 const ATTR_IMMUNIZATION = Symbol('Immunization');
 const ATTR_MEDICATION_REQUEST = Symbol('MedicationRequest');
+const ATTR_PROCEDURE = Symbol('Procedure');
+const ATTR_ENCOUNTER = Symbol('Encounter');
+const ATTR_CAREPLAN = Symbol('CarePlan');
 const ATTR_CAUSE_OF_DEATH = Symbol('causeOfDeath');
 
 /* Lookup functions to extract patient resource details */
@@ -338,7 +359,7 @@ class Patient {
     const {race,ethnicity} = this._extractRaceAndEthnicity(obj);
     this.race = race;
     this.ethnicity = ethnicity;
-    this.resources = { immunizations:[], observations:[], allergies:[], conditions:[], medicationRequests : [] }
+    this.resources = { immunizations:[], observations:[], allergies:[], conditions:[], medicationRequests : [], procedures : [], encounters : [], carePlans : [] }
     this.conditions = [];
     this.immunizations = [];
     this.observations = [];
@@ -415,6 +436,42 @@ class Patient {
           .fail(() => {
             $("#p_medications").html("Error loading MedicationRequests");
             $("#p_medications div[data-loader]").remove();
+          });
+        break;
+      case ATTR_PROCEDURE :
+        promise
+          .done((rawResponse) => {
+            self._saveEntries(rawResponse,'procedures');
+            self._extractProcedures(self.resources.procedures);
+            $("#p_procedures").html(patient_detail__procedures_tmpl({procedures:self.procedures}));
+          })
+          .fail(() => {
+            $("#p_procedures").html("Error loading Procedures");
+            $("#p_procedures div[data-loader]").remove();
+          });
+        break;
+      case ATTR_ENCOUNTER :
+        promise
+          .done((rawResponse) => {
+            self._saveEntries(rawResponse,'encounters');
+            self._extractEncounters(self.resources.encounters);
+            $("#p_encounters").html(patient_detail__encounters_tmpl({encounters:self.encounters}));
+          })
+          .fail(() => {
+            $("#p_encounters").html("Error loading Encounters");
+            $("#p_encounters div[data-loader]").remove();
+          });
+        break;
+      case ATTR_CAREPLAN :
+        promise
+          .done((rawResponse) => {
+            self._saveEntries(rawResponse,'carePlans');
+            self._extractCarePlans(self.resources.carePlans);
+            $("#p_careplans").html(patient_detail__careplans_tmpl({carePlans:self.carePlans}));
+          })
+          .fail(() => {
+            $("#p_careplans").html("Error loading Care Plans");
+            $("#p_careplans div[data-loader]").remove();
           });
         break;
       case ATTR_CAUSE_OF_DEATH :
@@ -499,6 +556,55 @@ class Patient {
         dateWritten = moment(medication.resource.dateWritten).format("DD.MMM.YYYY");
       }
       this.medicationRequests.push({code:medication.resource.medicationCodeableConcept.coding[0].code,name:medication.resource.medicationCodeableConcept.coding[0].display,dateWritten});
+    }
+  }
+
+  _extractProcedures(procedures) {
+    if (this.procedures === undefined) {
+      this.procedures = [];
+    }
+    let datePerformed = _NA;
+    for (const procedure of procedures) {
+      if (procedure.resource.hasOwnProperty("performedDateTime")) {
+        datePerformed = moment(procedure.resource.performedDateTime).format("DD.MMM.YYYY");
+      }
+      this.procedures.push({code:procedure.resource.code.coding[0].code,name:procedure.resource.code.coding[0].display,datePerformed});
+    }
+  }
+
+  _extractEncounters(encounters) {
+    if (this.encounters === undefined) {
+      this.encounters = [];
+    }
+    let startDate = _NA;
+    let duration = _NA;
+    for (const encounter of encounters) {
+      if (encounter.resource.hasOwnProperty("period")) {
+        let startDateMoment = moment(encounter.resource.period.start);
+        startDate = startDateMoment.format("DD.MMM.YYYY");
+
+        let endDateMoment = moment(encounter.resource.period.end);
+        duration = moment.duration(startDateMoment.diff(endDateMoment, 'seconds'), 'seconds').humanize();
+      }
+      this.encounters.push({code:encounter.resource.type[0].coding[0].code,name:encounter.resource.type[0].text,startDate,duration});
+    }
+  }
+
+  _extractCarePlans(carePlans) {
+    if (this.carePlans === undefined) {
+      this.carePlans = [];
+    }
+    let startDate = _NA;
+    let duration = _NA;
+    for (const carePlan of carePlans) {
+      if (carePlan.resource.hasOwnProperty("period")) {
+        let startDateMoment = moment(carePlan.resource.period.start);
+        startDate = startDateMoment.format("DD.MMM.YYYY");
+
+        let endDateMoment = moment(carePlan.resource.period.end);
+        duration = moment.duration(startDateMoment.diff(endDateMoment, 'seconds'), 'seconds').humanize();
+      }
+      this.carePlans.push({code:carePlan.resource.category[0].coding[0].code,name:carePlan.resource.category[0].coding[0].display,status: carePlan.resource.status, startDate,duration});
     }
   }
 

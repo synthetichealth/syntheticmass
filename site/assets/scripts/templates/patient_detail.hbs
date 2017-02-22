@@ -127,11 +127,20 @@
 <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist" id="patient_tab_nav">
     <li role="presentation" class="active"><a href="#p_observations" aria-controls="p_observations" role="tab" data-toggle="tab">Observations</a></li>
-    <li role="presentation"><a href="#p_allergies" aria-controls="p_allergies" role="tab" data-toggle="tab">Allergies</a></li>
-    <li role="presentation"><a href="#p_medications" aria-controls="p_medications" role="tab" data-toggle="tab">Medications</a></li>
     <li role="presentation"><a href="#p_conditions" aria-controls="p_conditions" role="tab" data-toggle="tab">Conditions</a></li>
-    <li role="presentation"><a href="#p_vaccinations" aria-controls="p_vaccinations" role="tab" data-toggle="tab">Vaccinations</a></li>
-  </ul>
+    <li role="presentation"><a href="#p_medications" aria-controls="p_medications" role="tab" data-toggle="tab">Medications</a></li>
+    <li role="presentation"><a href="#p_allergies" aria-controls="p_allergies" role="tab" data-toggle="tab">Allergies</a></li>
+    <li role="presentation"><a href="#p_careplans" aria-controls="p_careplans" role="tab" data-toggle="tab">Care Plans</a></li>
+    <li class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="title">More</span>
+      <span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li role="presentation"><a href="#p_procedures" aria-controls="p_procedures" role="tab" data-toggle="tab">Procedures</a></li>
+        <li role="presentation"><a href="#p_encounters" aria-controls="p_encounters" role="tab" data-toggle="tab">Encounters</a></li>
+        <li role="presentation"><a href="#p_vaccinations" aria-controls="p_vaccinations" role="tab" data-toggle="tab">Vaccinations</a></li>
+      </ul>
+    </li>
+ </ul>
   <div class="tab-content" id="patient_tab_content">
     <div role="tabpanel" class="tab-pane active" id="p_observations">
         <table class="table">
@@ -227,5 +236,69 @@
             </tbody>
         </table>
     </div>
+
+    <div role="tabpanel" class="tab-pane"  id="p_procedures">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Code</th>
+                    <th scope="col">Procedure</th>
+                    <th scope="col">Date</th>
+                </tr>
+            </thead>
+            <tbody id="p_procedures_list">
+                 <tr>
+                    <td><div data-loader="circle" class="loader"></div></td>
+                    <td>--</td>
+                    <td>--</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div role="tabpanel" class="tab-pane"  id="p_encounters">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Code</th>
+                    <th scope="col">Encounter</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">Duration</th>
+                </tr>
+            </thead>
+            <tbody id="p_encounter_list">
+                 <tr>
+                    <td><div data-loader="circle" class="loader"></div></td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div role="tabpanel" class="tab-pane"  id="p_careplans">
+        <table class="table">
+            <thead>
+                <tr>
+                  <th scope="col">Code</th>
+                  <th scope="col">Care Plan</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Start Date</th>
+                  <th scope="col">Duration</th>
+                </tr>
+            </thead>
+            <tbody id="p_careplan_list">
+                 <tr>
+                    <td><div data-loader="circle" class="loader"></div></td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
   </div>
 </div>
