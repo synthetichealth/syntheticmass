@@ -371,6 +371,7 @@ class Patient {
       case ATTR_ALLERGY :
         promise.done((data) => {
           self._saveEntries(data,'allergies');
+          self._extractAllergies(self.resources.allergies);
           $("#p_allergies").html(patient_detail__allergies_tmpl({allergies:self.allergies}));
           $("#p_allergies div[data-loader]").remove();
         })
@@ -507,10 +508,10 @@ class Patient {
     }
     let diagDate = _NA;
     for (const allergy of allergies) {
-      if (allergy.resource.hasOwnProperty("recordedDate")) {
-        diagDate = moment(allergy.resource.recordedDate).format("DD.MMM.YYYY");
+      if (allergy.resource.hasOwnProperty("assertedDate")) {
+        diagDate = moment(allergy.resource.assertedDate).format("DD.MMM.YYYY");
       }
-      this.allergies.push({name:allergy.resource.substance.coding[0].display,diagDate});
+      this.allergies.push({name:allergy.resource.code.coding[0].display,diagDate});
     }
   }
 
