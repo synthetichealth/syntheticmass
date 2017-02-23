@@ -1,0 +1,26 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Code</th>
+      <th scope="col">Care Plan</th>
+      <th scope="col">Status</th>
+      <th scope="col">Start Date</th>
+      <th scope="col">Duration</th>
+    </tr>
+  </thead>
+  <tbody id="p_encounter_list">
+    {{#each carePlans}}
+     <tr>
+      <td>{{code}}</td>
+      <td>{{name}}</td>
+      <td>{{status}}</td>
+      <td>{{startDate}}</td>
+      <td>{{duration}}</td>
+    </tr>
+    {{else}}
+      <tr>
+        <td colspan="3">No Care Plans Recorded</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

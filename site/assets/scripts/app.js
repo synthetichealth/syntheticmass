@@ -699,6 +699,15 @@ App.showPatientDetail = function(pid,elem) {
       e.preventDefault()
       $(this).tab('show')
     });
+
+    // Update the MORE menu to have the name of the selected element, clear when another tab is selected
+    $("#patient_tab_nav .dropdown-menu").on('click', 'li a', function(){
+      $(".dropdown-toggle .title").text("More: " + $(this).text())
+    });
+    $("#patient_tab_nav li").not('.dropdown').on('click', 'a', function(){
+      $(".dropdown-toggle .title").text("More")
+    });
+
     $("#patient_detail_view #p_record_button").on('click',function() {
       // clear out the query string for the patient
       Router.ctx.query = null;
