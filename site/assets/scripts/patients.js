@@ -565,9 +565,13 @@ class Patient {
     }
     let datePerformed = _NA;
     for (const procedure of procedures) {
+      let date = null;
       if (procedure.resource.hasOwnProperty("performedDateTime")) {
-        datePerformed = moment(procedure.resource.performedDateTime).format("DD.MMM.YYYY");
+        date = procedure.resource.performedDateTime;
+      } else if (procedure.resource.hasOwnProperty("performedPeriod")) {
+        date = procedure.resource.performedPeriod.start;
       }
+      if (date) datePerformed = moment(date).format("DD.MMM.YYYY");
       this.procedures.push({code:procedure.resource.code.coding[0].code,name:procedure.resource.code.coding[0].display,datePerformed});
     }
   }
