@@ -124,11 +124,6 @@ queries = [
         "values": ["313191000", "428191000124101", "73761001"]
     },
     {
-        "description": "Patient, by reverse-chained Procedure (date and code)",
-        "query": "Patient?_has:Procedure:patient:code={0}&_has:Procedure:patient:date={1}",
-        "values": [("313191000", "gt1975-01-06"), ("428191000124101", "lte1950-04-19"), ("73761001","lt1986-01-01")]
-    },
-    {
         "description": "Encounter by code",
         "query": "Encounter?type={0}",
         "values": ["185349003", "308646001", "170258001"]
