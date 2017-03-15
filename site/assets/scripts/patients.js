@@ -17,7 +17,7 @@ const BASE_URL = `${FHIR_HOST}`;
 const FORMAT_JSON = "json";
 const FORMAT_XML  = "xml";
 
-const BASE_URL_CCDA = BASE_URL + 'ccda/';
+const BASE_URL_CCDA = `${API_HOST}` + 'ccda/';
 const CONDITION_SYSTEM_URL = "http://snomed.info/sct";
 const CODE_DIABETES = '44054006';
 // Heart Disease codes
