@@ -17,7 +17,7 @@ const BASE_URL = `${FHIR_HOST}`;
 const FORMAT_JSON = "json";
 const FORMAT_XML  = "xml";
 
-const BASE_URL_CCDA = BASE_URL + 'htc/api/v1/synth/ccda/id/';
+const BASE_URL_CCDA = `${API_HOST}` + '/ccda/';
 const CONDITION_SYSTEM_URL = "http://snomed.info/sct";
 const CODE_DIABETES = '44054006';
 // Heart Disease codes
@@ -214,7 +214,7 @@ function getPatientDownloadUrl({id,revIncludeTables = ['*'], count = 20}, format
 }
 
 function getPatientDownloadCcda({id=0}) {
-  return BASE_URL_CCDA + id;
+  return BASE_URL_CCDA + id.substring(0, 2) + "/" + id.substring(2, 5) + "/" + id + ".xml";
 }
 
 export function loadPaginationURL(url = '') {
