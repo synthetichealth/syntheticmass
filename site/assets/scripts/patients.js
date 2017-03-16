@@ -214,7 +214,7 @@ function getPatientDownloadUrl({id,revIncludeTables = ['*'], count = 20}, format
 }
 
 function getPatientDownloadCcda({id=0}) {
-  return BASE_URL_CCDA + id.substring(0, 2) + "/" + id.substring(2, 5) + "/" + id + ".xml";
+  return BASE_URL_CCDA + id.substring(0, 2) + "/" + id.substring(0, 3) + "/" + id + ".xml";
 }
 
 export function loadPaginationURL(url = '') {
