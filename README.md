@@ -4,7 +4,7 @@
 
 ## About SyntheticMass
 
-SyntheticMass ([syntheticmass.mitre.org](https://syntheticmass.mitre.org/)) is model of synthetic residents of the state of Massachusetts, with artificial health records for the fictional residents. This establishes a risk-free environment for:
+SyntheticMass ([syntheticmass.mitre.org](https://syntheticmass.mitre.org/)) is a model of synthetic residents of the state of Massachusetts, with artificial health records for the fictional residents. This establishes a risk-free environment for:
 
 * Data visualization
 * Risk stratification
@@ -16,7 +16,7 @@ SyntheticMass ([syntheticmass.mitre.org](https://syntheticmass.mitre.org/)) is m
 * Security and authorization models
 * Third-party app development
 
-SyntheticMass will provide a sandbox for Health IT developers, researchers and clinicians interested in prototyping new healthcare solutions. It enables this through:
+SyntheticMass provides a sandbox for Health IT developers, researchers and clinicians interested in prototyping new healthcare solutions. It enables this through:
 
 * Realistic data for fictional patients
 * Data that is free of protected health information (PHI) and personally identifiable information (PII) constraints
