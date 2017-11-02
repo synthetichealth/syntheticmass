@@ -42,6 +42,18 @@ var plugins = [
       excludeChunks : ['bundle',analytics]
     }),
     new HtmlWebpackPlugin({
+      template:'./api.html',
+      filename:'api.html',
+      title: 'Synthetic Mass FHIR API',
+      excludeChunks : ['bundle',analytics]
+    }),
+    new HtmlWebpackPlugin({
+      template:'./download.html',
+      filename:'download.html',
+      title: 'Synthetic Mass Download',
+      excludeChunks : ['bundle',analytics]
+    }),
+    new HtmlWebpackPlugin({
       template:'./index.html',
       filename:'index.html',
       title: 'Synthetic Mass',

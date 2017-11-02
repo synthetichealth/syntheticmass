@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>
+    <%= htmlWebpackPlugin.options.title %>
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='//fonts.googleapis.com/css?family=Lato:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+</head>
+
+<body id="api_page">
+  <%= require('html!./includes/nav.html') %>
+    <div class="container page-container" id="api">
+      <div class="row">
+        <div class="colmd4 collg3">
+
+        </div>
+      </div>
+      <div class="col-md-12">
+        <section>
+          <div class="row">
+            <div class="col-md-3">
+              <a href="http://syntheticmass.mitre.org"><img src="<%= require('./assets/img/synthmass_map.jpg') %>" alt="Background image"  class="side_img"/></a>
+            </div>
+            <div class="col-md-8 col-md-offset-1">
+              <h1 class="page-title">HL7 FHIR API</h1>
+
+              <h2>Overview</h2>
+              <p>
+                SyntheticMass exposes all synthetic medical record data using an HL7 FHIR (Fast Healthcare Interoperability Resources) v.1.8.0 compatible server. 
+                FHIR is a standard for exchanging healthcare data electronically and takes a modern, web-based approach to API design.
+                For information about how to use FHIR, please visit the <a href="http://hl7.org/fhir/2017Jan/index.html">HL7 FHIR v.1.8.0 Documentation</a>.
+                SyntheticMass uses the open source <a href="https://github.com/synthetichealth/gofhir">GoFHIR</a> FHIR server.
+              </p>
+
+              <div class="fhir-endpoint">
+                SyntheticMass FHIR Endpoint: <a href="https://syntheticmass.mitre.org/fhir/">https://syntheticmass.mitre.org/fhir/</a>
+              </div>
+
+              <h2>Examples</h2>
+              <p>
+                 The below examples demonstrate types of queries that can be executed against the SyntheticMass FHIR server using your browser.  
+                 This is not an exhaustive list of the query capabilities of FHIR or the GoFHIR server implementation.
+                 Please review the <a href="http://hl7.org/fhir/2017Jan/index.html">HL7 FHIR v.1.8.0 Documentation</a> for more information.
+              </p>
+
+              <p>
+              Simple Examples:
+              </p>
+
+              <ul>
+                <li><a href="/fhir/Patient?_count=100">All patients, paginated at 100 records</a></li>
+                <li><a href="/fhir/Patient/58b3663e3425def0f0f6a229">Basic information about a single patient</a></li>
+                <li><a href="/fhir/Patient/58b3663e3425def0f0f6a229/$everything">All medical record data related to a patient</a></li>
+              </ul>
+
+              <p>
+              Search Examples:
+              </p>
+
+              <ul>
+                <li><a href="/fhir/Patient?birthdate=gt1947-03-26&birthdate=lte1999-03-26&_count=100">Patients between the ages of 18 and 70</a></li>
+                <li><a href="/fhir/Patient?_has:Condition:subject:code=444814009,75498004,36971009,40055000">Patients with sinusitus</a></li>
+                <li><a href="/fhir/Observation?code=http://loinc.org|19926-5&patient=58b3663e3425def0f0f696a9">Peak flow meter results for a patient</a></li>
+                <li><a href="/fhir/Patient?_has:Procedure:patient:code=112790001 ">Patients that have had a nasal endoscopy procedure</a></li>
+              </ul>
+
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </div>
+    <%= require('html!./includes/footer.html') %>
+      <script>
+        $(document).ready(function() {
+          $("#api_nav a").click(function() {
+            var id = $(this).attr('href');
+            $('html, body').animate({
+              scrollTop: $(id).offset().top - 60
+            }, 1000);
+          });
+        });
+      </script>
+</body>
+
+</html>

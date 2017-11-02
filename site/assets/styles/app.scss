@@ -66,8 +66,8 @@ span.subtitle {font-weight:300}
   h1.page-title {padding-top:0}
   img.logo {padding:0 0 12px 20px;float:right}
   ul.nav-fixed {position:fixed}
-
 }
+
 #feedback{
   padding-top:$header-top-height;
   section {margin-bottom:4em;}
@@ -76,8 +76,28 @@ span.subtitle {font-weight:300}
   ul.nav-fixed {position:fixed}
   footer{position: fixed;
   bottom: 0;}
-
 }
+
+#api{
+  padding-top:$header-top-height*2;
+  section {margin-bottom:4em;}
+  h1 {padding-top:10px;}
+  h1.page-title {padding-top:0}
+  img.logo {padding:0 0 12px 20px;float:right}
+  ul.nav-fixed {position:fixed}
+  a {font-weight:bold;}
+  .fhir-endpoint {font-size: 1.1em; font-weight: bold;}
+}
+
+#download{
+  padding-top:$header-top-height*2;
+  section {margin-bottom:4em;}
+  h1 {padding-top:10px;}
+  h1.page-title {padding-top:0}
+  img.logo {padding:0 0 12px 20px;float:right}
+  ul.nav-fixed {position:fixed}
+}
+
 .side_img{padding-top:30px;
   width:200px;}
 
@@ -88,6 +108,8 @@ span.subtitle {font-weight:300}
 #about_page #nav_about {background-color:#18446e}
 #feedback_page #nav_feedback {background-color:#18446e}
 #dashboard_page #nav_dash {background-color:#18446e}
+#api_page #nav_api {background-color:#18446e}
+#download_page #nav_download {background-color:#18446e}
 
 section.footer :target {background-color:#fe4}
 
