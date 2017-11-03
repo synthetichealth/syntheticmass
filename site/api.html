@@ -51,25 +51,42 @@
                  Please review the <a href="http://hl7.org/fhir/2017Jan/index.html">HL7 FHIR v.1.8.0 Documentation</a> for more information.
               </p>
 
-              <p>
-              Simple Examples:
-              </p>
+              <h3>Basic Examples</h3>
 
               <ul>
-                <li><a href="/fhir/Patient?_count=100">All patients, paginated at 100 records</a></li>
-                <li><a href="/fhir/Patient/58b3663e3425def0f0f6a229">Basic information about a single patient</a></li>
-                <li><a href="/fhir/Patient/58b3663e3425def0f0f6a229/$everything">All medical record data related to a patient</a></li>
+                <li>
+                  <div>All patients, paginated at 100 records:</div>
+                  <a href="https://syntheticmass.mitre.org/fhir/Patient?_count=100">https://syntheticmass.mitre.org/fhir/Patient?_count=100</a>
+                </li>
+                <li>
+                  <div>Basic information about a single patient:</div>
+                  <a href="https://syntheticmass.mitre.org/fhir/Patient/58b3663e3425def0f0f6a229">https://syntheticmass.mitre.org/fhir/Patient/58b3663e3425def0f0f6a229</a>
+                </li>
+                <li>
+                  <div>All medical record data related to a patient:</div>
+                  <a href="https://syntheticmass.mitre.org/fhir/Patient/58b3663e3425def0f0f6a229/$everything">https://syntheticmass.mitre.org/fhir/Patient/58b3663e3425def0f0f6a229/$everything</a>
+                </li>
               </ul>
 
-              <p>
-              Search Examples:
-              </p>
+              <h3>Search Examples</h3>
 
               <ul>
-                <li><a href="/fhir/Patient?birthdate=gt1947-03-26&birthdate=lte1999-03-26&_count=100">Patients between the ages of 18 and 70</a></li>
-                <li><a href="/fhir/Patient?_has:Condition:subject:code=444814009,75498004,36971009,40055000">Patients with sinusitus</a></li>
-                <li><a href="/fhir/Observation?code=http://loinc.org|19926-5&patient=58b3663e3425def0f0f696a9">Peak flow meter results for a patient</a></li>
-                <li><a href="/fhir/Patient?_has:Procedure:patient:code=112790001 ">Patients that have had a nasal endoscopy procedure</a></li>
+                <li>
+                  <div>Patients between the ages of 18 and 70:</div>
+                  <a href="https://syntheticmass.mitre.org/fhir/Patient?birthdate=gt1947-03-26&birthdate=lte1999-03-26&_count=100">https://syntheticmass.mitre.org/fhir/Patient?birthdate=gt1947-03-26&birthdate=lte1999-03-26&_count=100</a>
+                </li>
+                <li>
+                  <div>Patients with sinusitus:</div>
+                  <a href="https://syntheticmass.mitre.org/fhir/Patient?_has:Condition:subject:code=444814009,75498004,36971009,40055000">https://syntheticmass.mitre.org/fhir/Patient?_has:Condition:subject:code=444814009,75498004,36971009,40055000</a>
+                </li>
+                <li>
+                  <div>Peak flow meter results for a patient:</div>
+                  <a href="https://syntheticmass.mitre.org/fhir/Observation?code=http://loinc.org|19926-5&patient=58b3663e3425def0f0f696a9">https://syntheticmass.mitre.org/fhir/Observation?code=http://loinc.org|19926-5&patient=58b3663e3425def0f0f696a9</a>
+                </li>
+                <li>
+                  <div>Patients that have had a nasal endoscopy procedure:</div>
+                  <a href="https://syntheticmass.mitre.org/fhir/Patient?_has:Procedure:patient:code=112790001">https://syntheticmass.mitre.org/fhir/Patient?_has:Procedure:patient:code=112790001</a>
+                </li>
               </ul>
 
             </div>

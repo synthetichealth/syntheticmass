@@ -85,8 +85,9 @@ span.subtitle {font-weight:300}
   h1.page-title {padding-top:0}
   img.logo {padding:0 0 12px 20px;float:right}
   ul.nav-fixed {position:fixed}
-  a {font-weight:bold;}
   .fhir-endpoint {font-size: 1.1em; font-weight: bold;}
+  ul {padding: 0}
+  li {padding: 0 0 10px; list-style-type: none; a {font-size: .9em}}
 }
 
 #download{
