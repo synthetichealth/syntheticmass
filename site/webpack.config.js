@@ -16,7 +16,7 @@ console.log(__dirname);
 console.log(dir_js);
 
 var PATHS = {images:'/assets/img'};
-var analytics = (production) ? "" : "ga";
+var analytics = (production) ? "ga_disabled" : "ga";
 var plugins = [
     new HtmlWebpackPlugin({
       template: 'dashboard.html',
@@ -137,6 +137,7 @@ module.exports = {
     'fa' : 'font-awesome-loader',
     'bs' : 'bootstrap-loader',
     'ga' : path.resolve(dir_js,'ga.js'),
+    'ga_disabled' : path.resolve(dir_js,'ga_disabled.js'),
     'bundle' : path.resolve(dir_js,'app.js')
   },
   output: {
