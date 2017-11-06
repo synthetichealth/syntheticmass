@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>
+    <%= htmlWebpackPlugin.options.title %>
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='//fonts.googleapis.com/css?family=Lato:400,700,300' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+</head>
+
+<body id="download_page">
+  <%= require('html!./includes/nav.html') %>
+    <div class="container page-container" id="api">
+      <div class="row">
+        <div class="colmd4 collg3">
+
+        </div>
+      </div>
+      <div class="col-md-12">
+        <section>
+          <div class="row">
+            <div class="col-md-3">
+              <a href="http://syntheticmass.mitre.org"><img src="<%= require('./assets/img/synthmass_map.jpg') %>" alt="Background image"  class="side_img"/></a>
+            </div>
+            <div class="col-md-8 col-md-offset-1">
+              <h1 class="page-title">Download</h1>
+
+              <p>
+                 The SyntheticMass data set is available for download in bulk as gzip archives.  Each archive contains one million synthetic patient medical records,
+                 encoded in HL7 FHIR, C-CDA and CSV.  Please consider <a href="/feedback.html">reaching out</a> and letting us know how you are using this data set so we can improve it in the future.
+              </p>
+
+               <ul>
+                 <li><a 
+                     onclick="trackOutboundLink('https://syntheticmass.mitre.org/downloads/2017_05_24/synthea_1m_fhir_3_0_May_24.tar.gz'); return false;" 
+                     href="https://syntheticmass.mitre.org/downloads/2017_05_24/synthea_1m_fhir_3_0_May_24.tar.gz">SyntheticMass Data, Version 2 (24 May, 2017)
+                   </a>: 21GB. FHIR 3.0.1, CSV, C-CDA
+                 </li>
+                 <li><a 
+                     onclick="trackOutboundLink('https://syntheticmass.mitre.org/downloads/2017_02_27/synthea_2017_02_27.tar.gz'); return false;" 
+                     href="https://syntheticmass.mitre.org/downloads/2017_02_27/synthea_2017_02_27.tar.gz">SyntheticMass Data, Version 1 (27 Feb, 2017)
+                   </a>: 28GB. FHIR 1.8.0, CSV, C-CDA
+                 </li>
+               </ul>
+
+               <p>
+                 Sample files containing 1,000 patient records in multiple formats are available below:
+                 <ul>
+                   <li><a 
+                       onclick="trackOutboundLink('https://syntheticmass.mitre.org/downloads/2017_11_06/synthea_sample_data_fhir_stu3_nov2017.zip'); return false;" 
+                       href="https://syntheticmass.mitre.org/downloads/2017_11_06/synthea_sample_data_fhir_stu3_nov2017.zip">1K Sample Synthetic Patient Records, FHIR DSTU3
+                     </a>: 20MB
+                   </li>
+                   <li><a 
+                       onclick="trackOutboundLink('https://syntheticmass.mitre.org/downloads/2017_11_06/synthea_sample_data_fhir_dstu2_nov2017.zip'); return false;" 
+                       href="https://syntheticmass.mitre.org/downloads/2017_11_06/synthea_sample_data_fhir_dstu2_nov2017.zip">1K Sample Synthetic Patient Records, FHIR DSTU2
+                     </a>: 13MB
+                   </li>
+                   <li><a 
+                       onclick="trackOutboundLink('https://syntheticmass.mitre.org/downloads/2017_11_06/synthea_sample_data_ccda_nov2017.zip'); return false;" 
+                       href="https://syntheticmass.mitre.org/downloads/2017_11_06/synthea_sample_data_ccda_nov2017.zip">1K Sample Synthetic Patient Records, C-CDA
+                     </a>: 12MB
+                   </li>
+                   <li><a 
+                       onclick="trackOutboundLink('https://syntheticmass.mitre.org/downloads/2017_11_06/synthea_sample_data_csv_nov2017.zip'); return false;" 
+                       href="https://syntheticmass.mitre.org/downloads/2017_11_06/synthea_sample_data_csv_nov2017.zip">1K Sample Synthetic Patient Records, CSV
+                     </a>: 3.6MB
+                   </li>
+                 </ul>
+               </p>
+               <p>
+                 SyntheticMass Data is also available through a rich public data query API using the HL7 FHIR v.1.8.0 standard.  
+                 More information is available on the <a href="api.html">FHIR API</a> page.
+               </p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </div>
+    <%= require('html!./includes/footer.html') %>
+      <script>
+        $(document).ready(function() {
+          $("#download_nav a").click(function() {
+            var id = $(this).attr('href');
+            $('html, body').animate({
+              scrollTop: $(id).offset().top - 60
+            }, 1000);
+          });
+        });
+      </script>
+</body>
+
+</html>
